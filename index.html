@@ -6,16 +6,7 @@
   <title>Chalet Le Renard</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <script>
-    // Language switch function
-    function switchLanguage() {
-      let userLang = navigator.language || navigator.userLanguage;
-      if (userLang.startsWith('en')) {
-        window.location.href = 'index-en.html';
-      }
-    }
-  </script>
-  <style>
+    <style>
     body {
       font-family: 'Montserrat', sans-serif;
       margin: 0;
@@ -25,7 +16,7 @@
       background-color: #f8f9fa;
     }
     header {
-      background: url('header-image.jpg') no-repeat center center fixed;
+      background: url('exterieur.jpeg') no-repeat center center fixed;
       background-size: cover;
       height: 70vh;
       display: flex;
@@ -76,13 +67,6 @@
     }
   </style>
 </head>
-<body onload="switchLanguage()">
-<header>
-  <h1>Chalet Le Renard</h1>
-  <div class="lang-switch" onclick="switchLanguage()">
-    🌐 Changer de langue
-  </div>
-</header>
 <nav>
   <a href="#about">À Propos</a>
   <a href="#gallery">Galerie</a>
