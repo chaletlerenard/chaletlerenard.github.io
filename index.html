@@ -6,9 +6,9 @@
   <title>Chalet Le Renard</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
+  <style>
     body {
-      font-family: 'Montserrat', sans-serif;
+      font-family: "Montserrat", sans-serif;
       margin: 0;
       padding: 0;
       line-height: 1.6;
@@ -16,37 +16,44 @@
       background-color: #f8f9fa;
     }
     header {
-      background: url('exterieur.jpeg') no-repeat center center fixed;
+      background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("exterieur.jpeg") no-repeat center center fixed;
       background-size: cover;
       height: 70vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       color: white;
+      text-align: center;
       text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+    }
+    header h1 {
+      font-size: 3em;
+      margin: 0;
+    }
+    header p {
+      font-size: 1.2em;
+      margin-top: 10px;
     }
     nav {
       display: flex;
       justify-content: center;
       background-color: #ffffff;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
     nav a {
       padding: 15px 20px;
-      color: #555;
+      color: #333;
       text-decoration: none;
-      font-weight: bold;
+      font-weight: 500;
+      transition: color 0.3s ease, border-bottom 0.3s ease;
     }
     nav a:hover {
       color: #000;
-      border-bottom: 2px solid #a78bfa;
-    }
-    .lang-switch {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      cursor: pointer;
-      font-size: 1.2em;
+      border-bottom: 2px solid #5c6bc0;
     }
     section {
       padding: 60px 20px;
@@ -62,48 +69,76 @@
       margin-bottom: 10px;
     }
     .amenities-list li i {
-      color: #a78bfa;
+      color: #5c6bc0;
       margin-right: 10px;
+    }
+    .cta-btn {
+      display: inline-block;
+      padding: 12px 25px;
+      margin-top: 10px;
+      background-color: #5c6bc0;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .cta-btn:hover {
+      background-color: #3f51b5;
+    }
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 0.9em;
+    }
+    footer p {
+      margin: 5px 0;
     }
   </style>
 </head>
-<nav>
-  <a href="#about">À Propos</a>
-  <a href="#gallery">Galerie</a>
-  <a href="#amenities">Commodités</a>
-  <a href="#pets">Animaux</a>
-  <a href="#location">Localisation</a>
-  <a href="#booking">Réserver</a>
-</nav>
-<section id="about">
-  <h2>À Propos du Chalet Le Renard</h2>
-  <p>Séjournez en pleine nature au Chalet Le Renard, où vous pourrez contempler la vie sauvage à même la cour. C'est l'endroit parfait pour relaxer et se ressourcer.</p>
-</section>
-<section id="amenities">
-  <h2>Commodités</h2>
-  <ul class="amenities-list">
-    <li><i class="fa-solid fa-hot-tub-person"></i> Spa Privé</li>
-    <li><i class="fa-solid fa-wifi"></i> Wi-Fi Ultra Rapide</li>
-    <li><i class="fa-solid fa-fire"></i> Foyer Intérieur à Bois</li>
-    <li><i class="fa-solid fa-temperature-arrow-up"></i> Chauffage Central</li>
-    <li><i class="fa-solid fa-snowflake"></i> Climatisation Centrale</li>
-    <li><i class="fa-solid fa-kitchen-set"></i> Cuisine Entièrement Équipée</li>
-    <li><i class="fa-solid fa-car"></i> Stationnement Privé</li>
-    <li><i class="fa-solid fa-plug-circle-bolt"></i> Borne pour Véhicule Électrique</li>
-  </ul>
-</section>
-<section id="pets">
-  <h2>Animaux Acceptés</h2>
-  <p><i class="fa-solid fa-dog"></i> Nous acceptons un chien adulte petit/moyen par réservation. Contactez-nous pour confirmation.</p>
-</section>
-<section id="booking">
-  <h2>Réservez Votre Séjour</h2>
-  <p>Contactez-nous pour les disponibilités et réserver votre séjour.</p>
-  <a class="cta-btn" href="mailto:votre-email@example.com">Réserver Maintenant</a>
-</section>
-<footer>
-  <p>Numéro d'enregistrement : 252803, expire le 2025-11-26</p>
-  <p>© 2025 Chalet Le Renard. Tous droits réservés.</p>
-</footer>
+<body>
+  <header>
+    <h1>Chalet Le Renard</h1>
+    <p>Experience Luxury in Nature</p>
+  </header>
+  <nav>
+    <a href="#about">À Propos</a>
+    <a href="#gallery">Galerie</a>
+    <a href="#amenities">Commodités</a>
+    <a href="#pets">Animaux</a>
+    <a href="#location">Localisation</a>
+    <a href="#booking">Réserver</a>
+  </nav>
+  <section id="about">
+    <h2>À Propos du Chalet Le Renard</h2>
+    <p>Séjournez en pleine nature au Chalet Le Renard, où vous pourrez contempler la vie sauvage à même la cour. C'est l'endroit parfait pour relaxer et se ressourcer.</p>
+  </section>
+  <section id="amenities">
+    <h2>Commodités</h2>
+    <ul class="amenities-list">
+      <li><i class="fa-solid fa-hot-tub-person"></i> Spa Privé</li>
+      <li><i class="fa-solid fa-wifi"></i> Wi-Fi Ultra Rapide</li>
+      <li><i class="fa-solid fa-fire"></i> Foyer Intérieur à Bois</li>
+      <li><i class="fa-solid fa-temperature-arrow-up"></i> Chauffage Central</li>
+      <li><i class="fa-solid fa-snowflake"></i> Climatisation Centrale</li>
+      <li><i class="fa-solid fa-kitchen-set"></i> Cuisine Entièrement Équipée</li>
+      <li><i class="fa-solid fa-car"></i> Stationnement Privé</li>
+      <li><i class="fa-solid fa-plug-circle-bolt"></i> Borne pour Véhicule Électrique</li>
+    </ul>
+  </section>
+  <section id="pets">
+    <h2>Animaux Acceptés</h2>
+    <p><i class="fa-solid fa-dog"></i> Nous acceptons un chien adulte petit/moyen par réservation. Contactez-nous pour confirmation.</p>
+  </section>
+  <section id="booking">
+    <h2>Réservez Votre Séjour</h2>
+    <p>Contactez-nous pour les disponibilités et réserver votre séjour.</p>
+    <a class="cta-btn" href="mailto:votre-email@example.com">Réserver Maintenant</a>
+  </section>
+  <footer>
+    <p>Numéro d'enregistrement : 252803, expire le 2025-11-26</p>
+    <p>© 2025 Chalet Le Renard. Tous droits réservés.</p>
+  </footer>
 </body>
 </html>
