@@ -64,23 +64,26 @@
       max-width: 1200px;
       margin: auto;
     }
-    /* Gallery Section */
-    .gallery {
+    /* Featured Gallery (Preview) */
+    #preview-gallery,
+    #all-gallery .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       grid-gap: 15px;
     }
-    .gallery img {
+    #preview-gallery img,
+    #all-gallery .gallery img {
       width: 100%;
       height: auto;
       border-radius: 4px;
       cursor: pointer;
       transition: transform 0.3s;
     }
-    .gallery img:hover {
+    #preview-gallery img:hover,
+    #all-gallery .gallery img:hover {
       transform: scale(1.05);
     }
-    /* Modal for Gallery Images */
+    /* Modal for Enlarging Clicked Images */
     .modal {
       display: none;
       position: fixed;
@@ -148,9 +151,14 @@
       text-decoration: none;
       border-radius: 4px;
       transition: background-color 0.3s;
+      margin: 20px 0;
     }
     .cta-btn:hover {
       background-color: #3f51b5;
+    }
+    /* Full Gallery Section */
+    #all-gallery {
+      display: none; /* hidden by default */
     }
     /* Footer */
     footer {
@@ -172,7 +180,7 @@
   </style>
 </head>
 <body>
-  <!-- Header Section: Replace "exterieur.jpeg" with your desired header background image -->
+  <!-- Header Section -->
   <header>
     <h1>Chalet Le Renard</h1>
     <p>Experience Luxury in Nature</p>
@@ -181,7 +189,7 @@
   <!-- Navigation Bar -->
   <nav>
     <a href="#about">À Propos</a>
-    <a href="#gallery">Galerie</a>
+    <a href="#featured-gallery">Galerie</a>
     <a href="#amenities">Commodités</a>
     <a href="#pets">Animaux</a>
     <a href="#booking">Réserver</a>
@@ -193,12 +201,27 @@
     <p>Experience serene nature at Chalet Le Renard, where you can enjoy the calm environment and reconnect with nature. This is the perfect place to relax and unwind.</p>
   </section>
   
-  <!-- Gallery Section: Images are automatically loaded from the "gallery" subfolder.
-       This section uses Jekyll's Liquid templating to loop through images in the gallery folder.
-       To add new images to the gallery, simply upload them into the "gallery" folder in your repository.
-       Only image files with extensions .jpg, .jpeg, .png, or .gif will be displayed. -->
-  <section id="gallery">
+  <!-- Featured Gallery Section: Displays only a few images (e.g., 4). -->
+  <section id="featured-gallery">
     <h2>Galerie</h2>
+    <div id="preview-gallery">
+      {% assign displayed_images = 0 %}
+      {% for file in site.static_files %}
+        {% if file.path contains '/gallery/' and (file.extname == ".jpg" or file.extname == ".jpeg" or file.extname == ".png" or file.extname == ".gif") %}
+          {% if displayed_images < 4 %}
+            <img src="{{ file.path }}" alt="Gallery image">
+            {% assign displayed_images = displayed_images | plus: 1 %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+    <!-- Button to show the full gallery -->
+    <button class="cta-btn" onclick="document.getElementById('all-gallery').style.display='block'">Voir toutes les photos</button>
+  </section>
+
+  <!-- Full Gallery Section: Hidden by default; shows all images in "gallery" folder. -->
+  <section id="all-gallery">
+    <h2>Toutes les Photos</h2>
     <div class="gallery">
       {% for file in site.static_files %}
         {% if file.path contains '/gallery/' and (file.extname == ".jpg" or file.extname == ".jpeg" or file.extname == ".png" or file.extname == ".gif") %}
@@ -206,9 +229,78 @@
         {% endif %}
       {% endfor %}
     </div>
+    <!-- Button to hide the full gallery -->
+    <button class="cta-btn" onclick="document.getElementById('all-gallery').style.display='none'">Fermer</button>
   </section>
   
   <!-- Amenities Section -->
   <section id="amenities">
     <h2>Commodités</h2>
-    <ul cla
+    <ul class="amenities-list">
+      <li><i class="fa-solid fa-hot-tub-person"></i> Spa Privé</li>
+      <li><i class="fa-solid fa-wifi"></i> Wi-Fi Ultra Rapide</li>
+      <li><i class="fa-solid fa-fire"></i> Foyer Intérieur à Bois</li>
+      <li><i class="fa-solid fa-temperature-arrow-up"></i> Chauffage Central</li>
+      <li><i class="fa-solid fa-snowflake"></i> Climatisation Centrale</li>
+      <li><i class="fa-solid fa-kitchen-set"></i> Cuisine Entièrement Équipée</li>
+      <li><i class="fa-solid fa-car"></i> Stationnement Privé</li>
+      <li><i class="fa-solid fa-plug-circle-bolt"></i> Borne pour Véhicule Électrique</li>
+    </ul>
+  </section>
+  
+  <!-- Animals Section -->
+  <section id="pets">
+    <h2>Animaux Acceptés</h2>
+    <p>We welcome small to medium-sized adult dogs by reservation. Please contact us for confirmation.</p>
+    <img src="animal.jpeg" alt="Animal">
+  </section>
+  
+  <!-- Booking Section -->
+  <section id="booking">
+    <h2>Réservez Votre Séjour</h2>
+    <p>Contact us for availability and booking details.</p>
+    <a class="cta-btn" href="mailto:votre-email@example.com">Réserver Maintenant</a>
+  </section>
+  
+  <!-- Footer Section -->
+  <footer>
+    <p>Numéro d'enregistrement : 252803, expire le 2025-11-26</p>
+    <p>© 2025 Chalet Le Renard. Tous droits réservés.</p>
+  </footer>
+
+  <!-- Modal for Enlarging Clicked Images -->
+  <div id="imgModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImg">
+  </div>
+
+  <script>
+    // JavaScript for Modal Image Gallery
+    // Clicking any preview or full-gallery image will open it in a larger view.
+    const modal = document.getElementById("imgModal");
+    const modalImg = document.getElementById("modalImg");
+    const closeModal = document.querySelector(".close");
+    const allGalleryImages = document.querySelectorAll("#preview-gallery img, #all-gallery .gallery img");
+
+    // Add click event listener to each image in both preview and full galleries
+    allGalleryImages.forEach(img => {
+      img.addEventListener("click", () => {
+        modal.style.display = "block";
+        modalImg.src = img.src;
+      });
+    });
+
+    // Close the modal when the close button is clicked
+    closeModal.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    // Close the modal if the user clicks outside of the modal image
+    window.addEventListener("click", event => {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
