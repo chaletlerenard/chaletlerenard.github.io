@@ -56,6 +56,10 @@ layout: none
       position: sticky;
       top: 0;
       z-index: 1000;
+      transition: transform 0.3s ease-in-out;
+    }
+    nav.nav-hidden {
+      transform: translateY(-100%);
     }
     nav a {
       padding: 15px 20px;
@@ -77,9 +81,10 @@ layout: none
 
     /* New Details Section above Gallery */
     #details {
-      font-size: 0.9rem; /* Slightly smaller than nav items */
+      font-size: 1.1rem; /* Increased font size for readability */
       text-align: left;
       line-height: 1.5;
+      padding: 0 20px; /* Added padding for desktop */
     }
     #details p {
       margin: 0;
@@ -130,6 +135,9 @@ layout: none
       display: grid;
       grid-template-columns: 1fr 1fr; /* Each row with 2 images */
       gap: 10px;
+    }
+    .photo-collage .right .row img {
+      aspect-ratio: 1 / 1; /* Ensure square containers */
     }
 
     /* "Show All Photos" Button */
@@ -277,7 +285,7 @@ layout: none
   </header>
   
   <!-- Navigation Bar -->
-  <nav>
+  <nav id="navbar">
     <a href="#about">À Propos</a>
     <a href="#gallery-section">Galerie</a>
     <a href="#amenities">Commodités</a>
@@ -454,6 +462,22 @@ layout: none
       if (e.target === carouselOverlay) {
         closeCarousel();
       }
+    });
+
+    // Hide/show navigation bar on scroll
+    let lastScrollTop = 0;
+    const navbar = document.getElementById('navbar');
+
+    window.addEventListener('scroll', function() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      if (scrollTop > lastScrollTop) {
+        // Scroll down
+        navbar.classList.add('nav-hidden');
+      } else {
+        // Scroll up
+        navbar.classList.remove('nav-hidden');
+      }
+      lastScrollTop = scrollTop;
     });
   </script>
 </body>
