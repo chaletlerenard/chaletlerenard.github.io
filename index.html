@@ -305,7 +305,7 @@ layout: none
       <!-- Left side (main image) -->
       <div class="left">
         {% if all_images.size > 0 %}
-          <img src="{{ all_images[0].path }}" alt="Main Photo">
+          <img src="{{ site.baseurl }}{{ all_images[0].path }}" alt="Main Photo">
         {% else %}
           <img src="https://via.placeholder.com/800x600?text=No+images" alt="No images">
         {% endif %}
@@ -314,24 +314,24 @@ layout: none
       <div class="right">
         <div class="row">
           {% if all_images.size > 1 %}
-            <img src="{{ all_images[1].path }}" alt="Photo 2">
+            <img src="{{ site.baseurl }}{{ all_images[1].path }}" alt="Photo 2">
           {% else %}
             <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
           {% endif %}
           {% if all_images.size > 2 %}
-            <img src="{{ all_images[2].path }}" alt="Photo 3">
+            <img src="{{ site.baseurl }}{{ all_images[2].path }}" alt="Photo 3">
           {% else %}
             <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
           {% endif %}
         </div>
         <div class="row">
           {% if all_images.size > 3 %}
-            <img src="{{ all_images[3].path }}" alt="Photo 4">
+            <img src="{{ site.baseurl }}{{ all_images[3].path }}" alt="Photo 4">
           {% else %}
             <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
           {% endif %}
           {% if all_images.size > 4 %}
-            <img src="{{ all_images[4].path }}" alt="Photo 5">
+            <img src="{{ site.baseurl }}{{ all_images[4].path }}" alt="Photo 5">
           {% else %}
             <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
           {% endif %}
@@ -363,7 +363,7 @@ layout: none
   <section id="pets">
     <h2>Animaux Acceptés</h2>
     <p>We welcome small to medium-sized adult dogs by reservation. Please contact us for confirmation.</p>
-    <img src="animal.jpeg" alt="Animal">
+    <img src="{{ site.baseurl }}/animal.jpeg" alt="Animal">
   </section>
   
   <!-- Booking Section -->
@@ -389,7 +389,7 @@ layout: none
       {% for file in all_images %}
         {% if file.extname == ".jpg" or file.extname == ".jpeg" or file.extname == ".png" or file.extname == ".gif" %}
           <div class="carousel-slide">
-            <img src="{{ file.path }}" alt="Full image">
+            <img src="{{ site.baseurl }}{{ file.path }}" alt="Full image">
           </div>
         {% endif %}
       {% endfor %}
