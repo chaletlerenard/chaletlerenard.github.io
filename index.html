@@ -293,8 +293,8 @@ layout: none
   <!-- Gallery Section -->
   <section id="gallery-section">
     <h2>Galerie</h2>
-    <!-- Gather all images from the "gallery" folder -->
-    {% assign all_images = site.static_files | where_exp:"file", "file.path contains '/gallery/' and (file.extname == '.jpg' or file.extname == '.jpeg' or file.extname == '.png' or file.extname == '.gif')" %}
+    <!-- Gather all images from the "gallery" folder using a simpler filter -->
+    {% assign all_images = site.static_files | where: "path", "/gallery/" %}
     {% assign total_images = all_images | size %}
     
     <!-- Collage layout: Big image on left and four small images on the right -->
@@ -389,4 +389,52 @@ layout: none
             <img src="{{ file.path }}" alt="Full image">
           </div>
         {% endif %}
-      {% end
+      {% endfor %}
+    </div>
+  </div>
+
+  <script>
+    // JavaScript for Fullscreen Carousel
+
+    const carouselOverlay = document.getElementById("carouselOverlay");
+    let currentIndex = 0;
+    let totalSlides = 0;
+
+    function openCarousel() {
+      carouselOverlay.style.display = "flex";
+      const slides = document.querySelectorAll(".carousel-slide");
+      totalSlides = slides.length;
+      currentIndex = 0;
+      updateCarousel();
+    }
+
+    function closeCarousel() {
+      carouselOverlay.style.display = "none";
+    }
+
+    function nextSlide() {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      updateCarousel();
+    }
+
+    function prevSlide() {
+      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+      updateCarousel();
+    }
+
+    function updateCarousel() {
+      const slides = document.querySelectorAll(".carousel-slide");
+      slides.forEach((slide, index) => {
+        slide.style.transform = `translateX(${(index - currentIndex) * 100}%)`;
+      });
+    }
+
+    // Close carousel if clicking outside the container
+    window.addEventListener("click", (e) => {
+      if (e.target === carouselOverlay) {
+        closeCarousel();
+      }
+    });
+  </script>
+</body>
+</html>
