@@ -37,6 +37,7 @@ layout: none
       align-items: center;
       text-align: center;
       color: #fff;
+      width: 100%; /* Ensure full width */
     }
     header h1 {
       font-size: 3.5em;
@@ -81,13 +82,14 @@ layout: none
 
     /* New Details Section above Gallery */
     #details {
-      font-size: 1.5rem; /* Increased font size for readability */
+      font-size: 0.875rem; /* Set font size to 0.875rem */
       text-align: left;
       line-height: 1.5;
       padding: 0 20px; /* Added padding for desktop */
     }
     #details p {
       margin: 0;
+      padding-left: 20px; /* Added slight padding before the line */
     }
     /* Use a centered dot (middot) between elements */
     #details .info::after {
@@ -305,7 +307,6 @@ layout: none
   
   <!-- Gallery Section (placed above About) -->
   <section id="gallery-section">
-    <h2>Galerie</h2>
     {%- comment -%}
       1) Gather image files in the "gallery" folder, filter out non-images, then sort alphabetically.
     {%- endcomment -%}
@@ -467,14 +468,501 @@ layout: none
     // Hide/show navigation bar on scroll
     let lastScrollTop = 0;
     const navbar = document.getElementById('navbar');
+    const header = document.querySelector('header');
 
     window.addEventListener('scroll', function() {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      if (scrollTop > lastScrollTop) {
-        // Scroll down
+      if (scrollTop > lastScrollTop && scrollTop > header.offsetHeight) {
+        // Scroll down and past the header
         navbar.classList.add('nav-hidden');
       } else {
-        // Scroll up
+        // Scroll up or still within the header
+        navbar.classList.remove('nav-hidden');
+      }
+      lastScrollTop = scrollTop;
+    });
+  </script>
+</body>
+</<!-- filepath: c:\Users\Guillaume\Documents\GitHub\chaletlerenard.github.io\index.html -->
+---
+layout: none
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Chalet Le Renard</title>
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Global Styles */
+    body {
+      font-family: "Montserrat", sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    h1, h2, h3, h4, h5, h6, p {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Header Section with Parallax */
+    header {
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("exterieur.jpeg") no-repeat center center;
+      background-size: cover;
+      background-attachment: fixed;
+      height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #fff;
+      width: 100%; /* Ensure full width */
+    }
+    header h1 {
+      font-size: 3.5em;
+    }
+    header p {
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+
+    /* Navigation Bar (full width) */
+    nav {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: fixed;
+      top: 0;
+      z-index: 1000;
+      transition: transform 0.3s ease-in-out;
+    }
+    nav.nav-hidden {
+      transform: translateY(-100%);
+    }
+    nav a {
+      padding: 15px 20px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: color 0.3s, border-bottom 0.3s;
+    }
+    nav a:hover {
+      color: #000;
+      border-bottom: 2px solid #5c6bc0;
+    }
+
+    /* Section Styling (full width with side padding) */
+    section {
+      padding: 60px 20px;
+      width: 100%;
+    }
+
+    /* New Details Section above Gallery */
+    #details {
+      font-size: 0.875rem; /* Set font size to 0.875rem */
+      text-align: left;
+      line-height: 1.5;
+      padding: 0 20px; /* Added padding for desktop */
+    }
+    #details p {
+      margin: 0;
+      padding-left: 20px; /* Added slight padding before the line */
+    }
+    /* Use a centered dot (middot) between elements */
+    #details .info::after {
+      content: " · ";
+      margin: 0 8px;
+    }
+    #details .info:last-child::after {
+      content: "";
+      margin: 0;
+    }
+
+    /* Airbnb-Style Collage Gallery for Desktop */
+    .photo-collage {
+      height: 500px; /* Desktop fixed height */
+      display: grid;
+      grid-template-columns: 2fr 1fr; /* Large image on left, 4 images on right */
+      gap: 10px;
+      position: relative;
+      margin-bottom: 30px;
+    }
+    .photo-collage .left,
+    .photo-collage .right img {
+      overflow: hidden;
+      position: relative;
+    }
+    .photo-collage img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 5px;
+      transition: filter 0.3s;
+    }
+    /* Hover effect on collage images */
+    .photo-collage img:hover {
+      filter: brightness(0.8);
+      cursor: pointer;
+    }
+    .photo-collage .right {
+      display: grid;
+      grid-template-rows: 1fr 1fr; /* Two rows for 4 images */
+      gap: 10px;
+      height: 100%;
+    }
+    .photo-collage .right .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Each row with 2 images */
+      gap: 10px;
+    }
+    .photo-collage .right .row img {
+      aspect-ratio: 1 / 1; /* Ensure square containers */
+    }
+
+    /* "Show All Photos" Button */
+    .show-all-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background-color: #fff;
+      color: #000;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: background-color 0.2s;
+      z-index: 5;
+    }
+    .show-all-btn:hover {
+      background-color: #f1f1f1;
+    }
+
+    /* Carousel Fullscreen Overlay */
+    .carousel-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    .carousel-container {
+      position: relative;
+      width: 90%;
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .carousel-inner {
+      display: flex;
+      transition: transform 0.5s ease;
+      will-change: transform;
+    }
+    .carousel-slide {
+      flex: 0 0 100%;
+      text-align: center;
+    }
+    .carousel-slide img {
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: 5px;
+    }
+
+    /* Carousel Buttons */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.8);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.2s;
+    }
+    .carousel-btn:hover {
+      background: rgba(255,255,255,1);
+    }
+    .prev-btn {
+      left: 20px;
+    }
+    .next-btn {
+      right: 20px;
+    }
+    /* Close Button in Carousel */
+    .carousel-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+      line-height: 40px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      z-index: 20;
+    }
+
+    /* Responsive Adjustments for Mobile/Tablet */
+    @media (max-width: 768px) {
+      .photo-collage {
+        /* Switch to vertical layout on smaller screens */
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        height: auto;
+      }
+      .photo-collage .left {
+        grid-column: 1 / -1;
+        grid-row: 1;
+      }
+      .photo-collage .right {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      /* Flatten any inner row structure */
+      .photo-collage .right .row {
+        display: contents;
+      }
+      .photo-collage img {
+        height: auto;
+      }
+      /* Adjust carousel close button for mobile */
+      .carousel-close {
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+        line-height: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav id="navbar">
+    <a href="#about">À Propos</a>
+    <a href="#gallery-section">Galerie</a>
+    <a href="#amenities">Commodités</a>
+    <a href="#pets">Animaux</a>
+    <a href="#booking">Réserver</a>
+  </nav>
+
+  <!-- Header Section with Parallax -->
+  <header>
+    <h1>Chalet Le Renard</h1>
+    <p>Orford, Qc - Chalet à louer avec spa - Niché dans la nature</p>
+  </header>
+  
+  <!-- New Details Section -->
+  <section id="details">
+    <p>
+      <span class="info">6 voyageurs</span>
+      <span class="info">3 chambres</span>
+      <span class="info">3 lits</span>
+      <span class="info">1.5 salle de bains</span>
+    </p>
+  </section>
+  
+  <!-- Gallery Section (placed above About) -->
+  <section id="gallery-section">
+    {%- comment -%}
+      1) Gather image files in the "gallery" folder, filter out non-images, then sort alphabetically.
+    {%- endcomment -%}
+    {% assign all_files = site.static_files | where_exp:"file", "file.path contains 'gallery/'" %}
+    {% assign images_filtered = "" | split: "" %}
+    {% for file in all_files %}
+      {% if file.extname == ".jpg" or file.extname == ".jpeg" or file.extname == ".png" or file.extname == ".gif" %}
+        {% assign images_filtered = images_filtered | push: file %}
+      {% endif %}
+    {% endfor %}
+    {% assign sorted_images = images_filtered | sort: "path" %}
+    {%- comment -%}
+      Use the full sorted list for both the collage and carousel so that clicking an image opens the carousel at that same image.
+    {%- endcomment -%}
+    {% assign collage_images = sorted_images | limit:5 %}
+    {% assign carousel_images = sorted_images %}
+
+    <!-- Collage Layout -->
+    <div class="photo-collage">
+      <!-- Left side (main image) -->
+      <div class="left">
+        {% if collage_images.size > 0 %}
+          <img src="{{ site.baseurl }}{{ collage_images[0].path }}" alt="Main Photo" onclick="openCarousel(0)">
+        {% else %}
+          <img src="https://via.placeholder.com/800x600?text=No+images" alt="No images">
+        {% endif %}
+      </div>
+      <!-- Right side: 2×2 grid -->
+      <div class="right">
+        <div class="row">
+          {% if collage_images.size > 1 %}
+            <img src="{{ site.baseurl }}{{ collage_images[1].path }}" alt="Photo 2" onclick="openCarousel(1)">
+          {% else %}
+            <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
+          {% endif %}
+          {% if collage_images.size > 2 %}
+            <img src="{{ site.baseurl }}{{ collage_images[2].path }}" alt="Photo 3" onclick="openCarousel(2)">
+          {% else %}
+            <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
+          {% endif %}
+        </div>
+        <div class="row">
+          {% if collage_images.size > 3 %}
+            <img src="{{ site.baseurl }}{{ collage_images[3].path }}" alt="Photo 4" onclick="openCarousel(3)">
+          {% else %}
+            <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
+          {% endif %}
+          {% if collage_images.size > 4 %}
+            <img src="{{ site.baseurl }}{{ collage_images[4].path }}" alt="Photo 5" onclick="openCarousel(4)">
+          {% else %}
+            <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
+          {% endif %}
+        </div>
+      </div>
+      <!-- "Show All Photos" Button -->
+      <button class="show-all-btn" onclick="openCarousel(0)">Show all photos</button>
+    </div>
+  </section>
+  
+  <!-- About Section (moved below Gallery) -->
+  <section id="about">
+    <h2>À Propos du Chalet Le Renard</h2>
+    <p>Experience serene nature at Chalet Le Renard, where you can enjoy the calm environment and reconnect with nature. This is the perfect place to relax and unwind.</p>
+  </section>
+  
+  <!-- Amenities Section -->
+  <section id="amenities">
+    <h2>Commodités</h2>
+    <ul class="amenities-list">
+      <li><i class="fa-solid fa-hot-tub-person"></i> Spa Privé</li>
+      <li><i class="fa-solid fa-wifi"></i> Wi-Fi Ultra Rapide</li>
+      <li><i class="fa-solid fa-fire"></i> Foyer Intérieur à Bois</li>
+      <li><i class="fa-solid fa-temperature-arrow-up"></i> Chauffage Central</li>
+      <li><i class="fa-solid fa-snowflake"></i> Climatisation Centrale</li>
+      <li><i class="fa-solid fa-kitchen-set"></i> Cuisine Entièrement Équipée</li>
+      <li><i class="fa-solid fa-car"></i> Stationnement Privé</li>
+      <li><i class="fa-solid fa-plug-circle-bolt"></i> Borne pour Véhicule Électrique</li>
+    </ul>
+  </section>
+  
+  <!-- Animals Section -->
+  <section id="pets">
+    <h2>Animaux Acceptés</h2>
+    <p>We welcome small to medium-sized adult dogs by reservation. Please contact us for confirmation.</p>
+    <img src="{{ site.baseurl }}/animal.jpeg" alt="Animal">
+  </section>
+  
+  <!-- Booking Section -->
+  <section id="booking">
+    <h2>Réservez Votre Séjour</h2>
+    <p>Contact us for availability and booking details.</p>
+    <a class="cta-btn" href="mailto:votre-email@example.com">Réserver Maintenant</a>
+  </section>
+  
+  <!-- Footer Section -->
+  <footer>
+    <p>Numéro d'enregistrement : 252803, expire le 2025-11-26</p>
+    <p>© 2025 Chalet Le Renard. Tous droits réservés.</p>
+  </footer>
+
+  <!-- FULLSCREEN CAROUSEL OVERLAY -->
+  <div id="carouselOverlay" class="carousel-overlay">
+    <div class="carousel-container" id="carouselContainer">
+      <button class="carousel-btn prev-btn" onclick="prevSlide()">&#10094;</button>
+      <button class="carousel-btn next-btn" onclick="nextSlide()">&#10095;</button>
+      <button class="carousel-close" onclick="closeCarousel()">&#10006;</button>
+      
+      <!-- Carousel Inner -->
+      <div class="carousel-inner" id="carouselInner">
+        {% for file in carousel_images %}
+          <div class="carousel-slide">
+            <img src="{{ site.baseurl }}{{ file.path }}" alt="Full image">
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const carouselOverlay = document.getElementById("carouselOverlay");
+    const carouselInner = document.getElementById("carouselInner");
+    let currentIndex = 0;
+    let totalSlides = 0;
+
+    function openCarousel(startIndex) {
+      currentIndex = typeof startIndex !== 'undefined' ? startIndex : 0;
+      carouselOverlay.style.display = "flex";
+      const slides = document.querySelectorAll(".carousel-slide");
+      totalSlides = slides.length;
+      updateCarousel();
+    }
+
+    function closeCarousel() {
+      carouselOverlay.style.display = "none";
+    }
+
+    function nextSlide() {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      updateCarousel();
+    }
+
+    function prevSlide() {
+      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+      updateCarousel();
+    }
+
+    function updateCarousel() {
+      const offset = currentIndex * 100;
+      carouselInner.style.transform = "translateX(-" + offset + "%)";
+    }
+
+    // Close carousel if clicking outside the container
+    window.addEventListener("click", (e) => {
+      if (e.target === carouselOverlay) {
+        closeCarousel();
+      }
+    });
+
+    // Hide/show navigation bar on scroll
+    let lastScrollTop = 0;
+    const navbar = document.getElementById('navbar');
+    const header = document.querySelector('header');
+
+    window.addEventListener('scroll', function() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      if (scrollTop > lastScrollTop && scrollTop > header.offsetHeight) {
+        // Scroll down and past the header
+        navbar.classList.add('nav-hidden');
+      } else {
+        // Scroll up or still within the header
         navbar.classList.remove('nav-hidden');
       }
       lastScrollTop = scrollTop;
