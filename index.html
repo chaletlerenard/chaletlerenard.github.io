@@ -321,11 +321,11 @@ layout: none
     <!-- 3) Sort them alphabetically by path -->
     {% assign sorted_images = images_filtered | sort: "path" %}
 
-    <!-- 4) First five images for the collage -->
-    {% assign collage_images = sorted_images | first: 5 %}
+    <!-- 4) First five images for the collage using 'limit:5' -->
+    {% assign collage_images = sorted_images | limit:5 %}
 
-    <!-- 5) Remaining images for the carousel -->
-    {% assign carousel_images = sorted_images | slice: 5, 9999 %}
+    <!-- 5) Remaining images for the carousel using 'offset:5' -->
+    {% assign carousel_images = sorted_images | offset:5 %}
 
     <!-- Collage layout: Big image on left and four small images on the right -->
     <div class="photo-collage">
