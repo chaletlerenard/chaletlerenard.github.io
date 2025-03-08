@@ -1,5 +1,7 @@
 ---
+layout: none
 ---
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -387,52 +389,4 @@
             <img src="{{ file.path }}" alt="Full image">
           </div>
         {% endif %}
-      {% endfor %}
-    </div>
-  </div>
-
-  <script>
-    // JavaScript for Fullscreen Carousel
-
-    const carouselOverlay = document.getElementById("carouselOverlay");
-    let currentIndex = 0;
-    let totalSlides = 0;
-
-    function openCarousel() {
-      carouselOverlay.style.display = "flex";
-      const slides = document.querySelectorAll(".carousel-slide");
-      totalSlides = slides.length;
-      currentIndex = 0;
-      updateCarousel();
-    }
-
-    function closeCarousel() {
-      carouselOverlay.style.display = "none";
-    }
-
-    function nextSlide() {
-      currentIndex = (currentIndex + 1) % totalSlides;
-      updateCarousel();
-    }
-
-    function prevSlide() {
-      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-      updateCarousel();
-    }
-
-    function updateCarousel() {
-      const slides = document.querySelectorAll(".carousel-slide");
-      slides.forEach((slide, index) => {
-        slide.style.transform = `translateX(${(index - currentIndex) * 100}%)`;
-      });
-    }
-
-    // Close carousel if clicking outside the container
-    window.addEventListener("click", (e) => {
-      if (e.target === carouselOverlay) {
-        closeCarousel();
-      }
-    });
-  </script>
-</body>
-</html>
+      {% end
