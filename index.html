@@ -154,7 +154,6 @@ layout: none
       align-items: center;
       overflow: hidden;
     }
-    /* Carousel Inner (all slides side by side) */
     .carousel-inner {
       display: flex;
       transition: transform 0.5s ease;
@@ -308,14 +307,32 @@ layout: none
   <!-- Gallery Section -->
   <section id="gallery-section">
     <h2>Galerie</h2>
-    {% assign all_images = site.static_files | where_exp:"file", "file.path contains 'gallery/'" %}
-    
+    <!-- 1) Collect only images in the 'gallery' folder -->
+    {% assign all_files = site.static_files | where_exp:"file", "file.path contains 'gallery/'" %}
+
+    <!-- 2) Filter out non-image files -->
+    {% assign images_filtered = "" | split: "" %}
+    {% for file in all_files %}
+      {% if file.extname == ".jpg" or file.extname == ".jpeg" or file.extname == ".png" or file.extname == ".gif" %}
+        {% assign images_filtered = images_filtered | push: file %}
+      {% endif %}
+    {% endfor %}
+
+    <!-- 3) Sort them alphabetically by path -->
+    {% assign sorted_images = images_filtered | sort: "path" %}
+
+    <!-- 4) First five images for the collage -->
+    {% assign collage_images = sorted_images | first: 5 %}
+
+    <!-- 5) Remaining images for the carousel -->
+    {% assign carousel_images = sorted_images | slice: 5, 9999 %}
+
     <!-- Collage layout: Big image on left and four small images on the right -->
     <div class="photo-collage">
       <!-- Left side (main image) -->
       <div class="left">
-        {% if all_images.size > 0 %}
-          <img src="{{ site.baseurl }}{{ all_images[0].path }}" alt="Main Photo">
+        {% if collage_images.size > 0 %}
+          <img src="{{ site.baseurl }}{{ collage_images[0].path }}" alt="Main Photo">
         {% else %}
           <img src="https://via.placeholder.com/800x600?text=No+images" alt="No images">
         {% endif %}
@@ -323,32 +340,32 @@ layout: none
       <!-- Right side: 2×2 grid (4 images) -->
       <div class="right">
         <div class="row">
-          {% if all_images.size > 1 %}
-            <img src="{{ site.baseurl }}{{ all_images[1].path }}" alt="Photo 2">
+          {% if collage_images.size > 1 %}
+            <img src="{{ site.baseurl }}{{ collage_images[1].path }}" alt="Photo 2">
           {% else %}
             <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
           {% endif %}
-          {% if all_images.size > 2 %}
-            <img src="{{ site.baseurl }}{{ all_images[2].path }}" alt="Photo 3">
+          {% if collage_images.size > 2 %}
+            <img src="{{ site.baseurl }}{{ collage_images[2].path }}" alt="Photo 3">
           {% else %}
             <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
           {% endif %}
         </div>
         <div class="row">
-          {% if all_images.size > 3 %}
-            <img src="{{ site.baseurl }}{{ all_images[3].path }}" alt="Photo 4">
+          {% if collage_images.size > 3 %}
+            <img src="{{ site.baseurl }}{{ collage_images[3].path }}" alt="Photo 4">
           {% else %}
             <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
           {% endif %}
-          {% if all_images.size > 4 %}
-            <img src="{{ site.baseurl }}{{ all_images[4].path }}" alt="Photo 5">
+          {% if collage_images.size > 4 %}
+            <img src="{{ site.baseurl }}{{ collage_images[4].path }}" alt="Photo 5">
           {% else %}
             <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
           {% endif %}
         </div>
       </div>
       <!-- "Show All Photos" Button -->
-      {% if all_images.size > 5 %}
+      {% if carousel_images.size > 0 %}
         <button class="show-all-btn" onclick="openCarousel()">Show all photos</button>
       {% endif %}
     </div>
@@ -398,13 +415,10 @@ layout: none
       
       <!-- Carousel Inner -->
       <div class="carousel-inner" id="carouselInner">
-        <!-- Only show images beyond the first 5, to avoid duplication -->
-        {% for file in all_images offset:5 %}
-          {% if file.extname == ".jpg" or file.extname == ".jpeg" or file.extname == ".png" or file.extname == ".gif" %}
-            <div class="carousel-slide">
-              <img src="{{ site.baseurl }}{{ file.path }}" alt="Full image">
-            </div>
-          {% endif %}
+        {% for file in carousel_images %}
+          <div class="carousel-slide">
+            <img src="{{ site.baseurl }}{{ file.path }}" alt="Full image">
+          </div>
         {% endfor %}
       </div>
     </div>
