@@ -3,7 +3,6 @@ layout: none
 ---
 
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8"> 
@@ -31,6 +30,7 @@ layout: none
       padding: 60px 20px;
       max-width: 1200px;
       margin: 0 auto;
+      width: 100%;
     }
 
     /* Header Section with Parallax */
@@ -45,7 +45,11 @@ layout: none
       align-items: center;
       text-align: center;
       color: #fff;
-      width: 100%;
+      width: 100vw;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
     }
     header h1 {
       font-size: 3.5em;
@@ -89,7 +93,7 @@ layout: none
       font-size: 0.875rem;
       text-align: left;
       line-height: 1.5;
-      padding: 0 20px;
+      padding: 20px 20px; /* Adjusted padding for equal spacing */
     }
     #details p {
       margin: 0;
@@ -301,6 +305,7 @@ layout: none
       <span class="info">3 lits</span>
       <span class="info">1.5 salle de bains</span>
     </p>
+    <p>Chalet à louer à Orford <span class="info">Avec spa</span></p>
   </section>
   
   <!-- Gallery Section (included via Liquid) -->
