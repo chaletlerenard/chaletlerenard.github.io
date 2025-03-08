@@ -79,7 +79,7 @@ layout: none
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
       grid-gap: 10px;
-      position: relative; /* For positioning the button */
+      position: relative;
       margin-bottom: 30px;
     }
     .photo-collage .left img {
@@ -293,13 +293,7 @@ layout: none
   <!-- Gallery Section -->
   <section id="gallery-section">
     <h2>Galerie</h2>
-    <!-- Debug snippet to output file paths -->
     {% assign all_images = site.static_files | where_exp:"file", "file.path contains 'gallery/'" %}
-    <h3>Debug: Listing image file paths</h3>
-    {% for file in all_images %}
-      <p>{{ file.path }}</p>
-    {% endfor %}
-    
     <!-- Collage layout: Big image on left and four small images on the right -->
     <div class="photo-collage">
       <!-- Left side (main image) -->
