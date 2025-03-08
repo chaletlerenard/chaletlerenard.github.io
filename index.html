@@ -74,11 +74,11 @@ layout: none
       margin: auto;
     }
 
-    /* Airbnb-Style Collage Gallery */
+    /* Airbnb-Style Collage Gallery for Desktop */
     .photo-collage {
-      height: 500px; /* Adjust as desired */
+      height: 500px; /* Desktop fixed height */
       display: grid;
-      grid-template-columns: 2fr 1fr; /* Main image on left, 4 images on right */
+      grid-template-columns: 2fr 1fr; /* Large image on left, 4 images on right */
       gap: 10px;
       position: relative;
       margin-bottom: 30px;
@@ -102,13 +102,13 @@ layout: none
     }
     .photo-collage .right {
       display: grid;
-      grid-template-rows: 1fr 1fr;
+      grid-template-rows: 1fr 1fr; /* Two rows for 4 images */
       gap: 10px;
       height: 100%;
     }
     .photo-collage .right .row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr; /* Each row with 2 images */
       gap: 10px;
     }
 
@@ -204,80 +204,47 @@ layout: none
       width: 40px;
       height: 40px;
       font-size: 1.2rem;
+      line-height: 40px;
+      text-align: center;
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      z-index: 20; /* Ensure it stays on top */
+      z-index: 20;
     }
 
-    /* Amenities Section */
-    .amenities-list {
-      list-style: none;
-      padding: 0;
-      columns: 2;
-    }
-    .amenities-list li {
-      margin-bottom: 10px;
-      font-size: 1.1em;
-    }
-    .amenities-list li i {
-      color: #5c6bc0;
-      margin-right: 10px;
-    }
-
-    /* Animals Section */
-    #pets img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 4px;
-      margin-top: 20px;
-    }
-
-    /* Call-to-Action Button */
-    .cta-btn {
-      display: inline-block;
-      padding: 12px 25px;
-      background-color: #5c6bc0;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 4px;
-      transition: background-color 0.3s;
-      margin-top: 20px;
-    }
-    .cta-btn:hover {
-      background-color: #3f51b5;
-    }
-
-    /* Footer */
-    footer {
-      background-color: #222;
-      color: #fff;
-      text-align: center;
-      padding: 20px 0;
-      font-size: 0.9em;
-      margin-top: 40px;
-    }
-    footer p {
-      margin: 5px 0;
-    }
-
-    /* Responsive Adjustments */
+    /* Responsive Adjustments for Mobile/Tablet */
     @media (max-width: 768px) {
       .photo-collage {
+        /* Remove fixed height and switch to a vertical layout */
         grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
         height: auto;
       }
-      .photo-collage .right {
-        grid-template-rows: auto;
+      .photo-collage .left {
+        grid-column: 1 / -1;
+        grid-row: 1;
       }
-      .photo-collage .row {
+      .photo-collage .right {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        display: grid;
         grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      /* Flatten the inner row structure */
+      .photo-collage .right .row {
+        display: contents;
       }
       .photo-collage img {
         height: auto;
       }
-      .show-all-btn {
-        position: static;
-        margin-top: 10px;
+      /* Adjust carousel close button for mobile */
+      .carousel-close {
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+        line-height: 30px;
       }
     }
   </style>
@@ -308,7 +275,7 @@ layout: none
   <section id="gallery-section">
     <h2>Galerie</h2>
     {%- comment -%}
-      1) Gather files in the 'gallery' folder, filter for images, then sort alphabetically.
+      1) Collect image files in the "gallery" folder, filter out non-images, then sort alphabetically.
     {%- endcomment -%}
     {% assign all_files = site.static_files | where_exp:"file", "file.path contains 'gallery/'" %}
     {% assign images_filtered = "" | split: "" %}
@@ -318,10 +285,13 @@ layout: none
       {% endif %}
     {% endfor %}
     {% assign sorted_images = images_filtered | sort: "path" %}
+    {%- comment -%}
+      Use the full sorted list for both the collage and carousel so that clicking an image in the collage opens that same image.
+    {%- endcomment -%}
     {% assign collage_images = sorted_images | limit:5 %}
     {% assign carousel_images = sorted_images %}
 
-    <!-- Collage layout: Big image on left and four small images on the right -->
+    <!-- Collage Layout -->
     <div class="photo-collage">
       <!-- Left side (main image) -->
       <div class="left">
@@ -424,9 +394,7 @@ layout: none
 
     function openCarousel(startIndex) {
       currentIndex = typeof startIndex !== 'undefined' ? startIndex : 0;
-      // Show the overlay
       carouselOverlay.style.display = "flex";
-      // Count the slides
       const slides = document.querySelectorAll(".carousel-slide");
       totalSlides = slides.length;
       updateCarousel();
