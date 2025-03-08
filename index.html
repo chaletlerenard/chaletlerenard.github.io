@@ -25,10 +25,11 @@ layout: none
       padding: 0;
     }
 
-    /* Header Section */
+    /* Header Section with Parallax */
     header {
       background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("exterieur.jpeg") no-repeat center center;
       background-size: cover;
+      background-attachment: fixed;
       height: 70vh;
       display: flex;
       flex-direction: column;
@@ -45,8 +46,9 @@ layout: none
       margin-top: 10px;
     }
 
-    /* Navigation Bar */
+    /* Navigation Bar (full width) */
     nav {
+      width: 100%;
       display: flex;
       justify-content: center;
       background-color: #fff;
@@ -67,11 +69,29 @@ layout: none
       border-bottom: 2px solid #5c6bc0;
     }
 
-    /* Section Styling */
+    /* Section Styling (full width with side padding) */
     section {
       padding: 60px 20px;
-      max-width: 1200px;
-      margin: auto;
+      width: 100%;
+    }
+
+    /* New Details Section above Gallery */
+    #details {
+      font-size: 0.9rem; /* Slightly smaller than nav items */
+      text-align: left;
+      line-height: 1.5;
+    }
+    #details p {
+      margin: 0;
+    }
+    /* Use a centered dot (middot) between elements */
+    #details .info::after {
+      content: " · ";
+      margin: 0 8px;
+    }
+    #details .info:last-child::after {
+      content: "";
+      margin: 0;
     }
 
     /* Airbnb-Style Collage Gallery for Desktop */
@@ -214,7 +234,7 @@ layout: none
     /* Responsive Adjustments for Mobile/Tablet */
     @media (max-width: 768px) {
       .photo-collage {
-        /* Remove fixed height and switch to a vertical layout */
+        /* Switch to vertical layout on smaller screens */
         grid-template-columns: 1fr;
         grid-template-rows: auto auto;
         height: auto;
@@ -230,7 +250,7 @@ layout: none
         grid-template-columns: 1fr 1fr;
         gap: 10px;
       }
-      /* Flatten the inner row structure */
+      /* Flatten any inner row structure */
       .photo-collage .right .row {
         display: contents;
       }
@@ -250,10 +270,10 @@ layout: none
   </style>
 </head>
 <body>
-  <!-- Header Section -->
+  <!-- Header Section with Parallax -->
   <header>
     <h1>Chalet Le Renard</h1>
-    <p>Experience Luxury in Nature</p>
+    <p>Orford, Qc - Chalet à louer avec spa - Niché dans la nature</p>
   </header>
   
   <!-- Navigation Bar -->
@@ -265,17 +285,21 @@ layout: none
     <a href="#booking">Réserver</a>
   </nav>
   
-  <!-- About Section -->
-  <section id="about">
-    <h2>À Propos du Chalet Le Renard</h2>
-    <p>Experience serene nature at Chalet Le Renard, where you can enjoy the calm environment and reconnect with nature. This is the perfect place to relax and unwind.</p>
+  <!-- New Details Section -->
+  <section id="details">
+    <p>
+      <span class="info">6 voyageurs</span>
+      <span class="info">3 chambres</span>
+      <span class="info">3 lits</span>
+      <span class="info">1.5 salle de bains</span>
+    </p>
   </section>
   
-  <!-- Gallery Section -->
+  <!-- Gallery Section (placed above About) -->
   <section id="gallery-section">
     <h2>Galerie</h2>
     {%- comment -%}
-      1) Collect image files in the "gallery" folder, filter out non-images, then sort alphabetically.
+      1) Gather image files in the "gallery" folder, filter out non-images, then sort alphabetically.
     {%- endcomment -%}
     {% assign all_files = site.static_files | where_exp:"file", "file.path contains 'gallery/'" %}
     {% assign images_filtered = "" | split: "" %}
@@ -286,7 +310,7 @@ layout: none
     {% endfor %}
     {% assign sorted_images = images_filtered | sort: "path" %}
     {%- comment -%}
-      Use the full sorted list for both the collage and carousel so that clicking an image in the collage opens that same image.
+      Use the full sorted list for both the collage and carousel so that clicking an image opens the carousel at that same image.
     {%- endcomment -%}
     {% assign collage_images = sorted_images | limit:5 %}
     {% assign carousel_images = sorted_images %}
@@ -331,6 +355,12 @@ layout: none
       <!-- "Show All Photos" Button -->
       <button class="show-all-btn" onclick="openCarousel(0)">Show all photos</button>
     </div>
+  </section>
+  
+  <!-- About Section (moved below Gallery) -->
+  <section id="about">
+    <h2>À Propos du Chalet Le Renard</h2>
+    <p>Experience serene nature at Chalet Le Renard, where you can enjoy the calm environment and reconnect with nature. This is the perfect place to relax and unwind.</p>
   </section>
   
   <!-- Amenities Section -->
