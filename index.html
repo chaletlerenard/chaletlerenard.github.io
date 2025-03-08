@@ -53,7 +53,7 @@ layout: none
       justify-content: center;
       background-color: #fff;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      position: sticky;
+      position: fixed;
       top: 0;
       z-index: 1000;
       transition: transform 0.3s ease-in-out;
@@ -81,7 +81,7 @@ layout: none
 
     /* New Details Section above Gallery */
     #details {
-      font-size: 1.1rem; /* Increased font size for readability */
+      font-size: 1.5rem; /* Increased font size for readability */
       text-align: left;
       line-height: 1.5;
       padding: 0 20px; /* Added padding for desktop */
@@ -278,12 +278,6 @@ layout: none
   </style>
 </head>
 <body>
-  <!-- Header Section with Parallax -->
-  <header>
-    <h1>Chalet Le Renard</h1>
-    <p>Orford, Qc - Chalet à louer avec spa - Niché dans la nature</p>
-  </header>
-  
   <!-- Navigation Bar -->
   <nav id="navbar">
     <a href="#about">À Propos</a>
@@ -292,6 +286,12 @@ layout: none
     <a href="#pets">Animaux</a>
     <a href="#booking">Réserver</a>
   </nav>
+
+  <!-- Header Section with Parallax -->
+  <header>
+    <h1>Chalet Le Renard</h1>
+    <p>Orford, Qc - Chalet à louer avec spa - Niché dans la nature</p>
+  </header>
   
   <!-- New Details Section -->
   <section id="details">
