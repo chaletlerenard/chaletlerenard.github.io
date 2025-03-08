@@ -76,40 +76,40 @@ layout: none
 
     /* Airbnb-Style Collage Gallery */
     .photo-collage {
-      /* Set a fixed height so images match in size */
       height: 500px; /* Adjust as desired */
       display: grid;
       grid-template-columns: 2fr 1fr; /* Main image on left, 4 images on right */
       gap: 10px;
-      position: relative; /* For positioning the button */
+      position: relative;
       margin-bottom: 30px;
     }
-    .photo-collage .left {
-      position: relative;
+    .photo-collage .left,
+    .photo-collage .right img {
       overflow: hidden;
+      position: relative;
     }
-    .photo-collage .left img {
+    .photo-collage img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       border-radius: 5px;
+      transition: filter 0.3s;
+    }
+    /* Hover effect on collage images */
+    .photo-collage img:hover {
+      filter: brightness(0.8);
+      cursor: pointer;
     }
     .photo-collage .right {
       display: grid;
-      grid-template-rows: 1fr 1fr; /* Two rows for the 4 images */
+      grid-template-rows: 1fr 1fr;
       gap: 10px;
       height: 100%;
     }
     .photo-collage .right .row {
       display: grid;
-      grid-template-columns: 1fr 1fr; /* Each row has 2 columns */
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
-    }
-    .photo-collage .right img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 5px;
     }
 
     /* "Show All Photos" Button */
@@ -126,7 +126,7 @@ layout: none
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
       transition: background-color 0.2s;
-      z-index: 5; /* So it appears above images */
+      z-index: 5;
     }
     .show-all-btn:hover {
       background-color: #f1f1f1;
@@ -193,7 +193,6 @@ layout: none
     .next-btn {
       right: 20px;
     }
-
     /* Close Button in Carousel */
     .carousel-close {
       position: absolute;
@@ -207,6 +206,7 @@ layout: none
       font-size: 1.2rem;
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      z-index: 20; /* Ensure it stays on top */
     }
 
     /* Amenities Section */
@@ -264,7 +264,7 @@ layout: none
     @media (max-width: 768px) {
       .photo-collage {
         grid-template-columns: 1fr;
-        height: auto; /* Let the collage adapt to smaller screens */
+        height: auto;
       }
       .photo-collage .right {
         grid-template-rows: auto;
@@ -272,7 +272,7 @@ layout: none
       .photo-collage .row {
         grid-template-columns: 1fr 1fr;
       }
-      .left img, .right img {
+      .photo-collage img {
         height: auto;
       }
       .show-all-btn {
@@ -307,67 +307,59 @@ layout: none
   <!-- Gallery Section -->
   <section id="gallery-section">
     <h2>Galerie</h2>
-    <!-- 1) Collect only images in the 'gallery' folder -->
+    {%- comment -%}
+      1) Gather files in the 'gallery' folder, filter for images, then sort alphabetically.
+    {%- endcomment -%}
     {% assign all_files = site.static_files | where_exp:"file", "file.path contains 'gallery/'" %}
-
-    <!-- 2) Filter out non-image files -->
     {% assign images_filtered = "" | split: "" %}
     {% for file in all_files %}
       {% if file.extname == ".jpg" or file.extname == ".jpeg" or file.extname == ".png" or file.extname == ".gif" %}
         {% assign images_filtered = images_filtered | push: file %}
       {% endif %}
     {% endfor %}
-
-    <!-- 3) Sort them alphabetically by path -->
     {% assign sorted_images = images_filtered | sort: "path" %}
-
-    <!-- 4) First five images for the collage using 'limit:5' -->
     {% assign collage_images = sorted_images | limit:5 %}
-
-    <!-- 5) Remaining images for the carousel using 'offset:5' -->
-    {% assign carousel_images = sorted_images | offset:5 %}
+    {% assign carousel_images = sorted_images %}
 
     <!-- Collage layout: Big image on left and four small images on the right -->
     <div class="photo-collage">
       <!-- Left side (main image) -->
       <div class="left">
         {% if collage_images.size > 0 %}
-          <img src="{{ site.baseurl }}{{ collage_images[0].path }}" alt="Main Photo">
+          <img src="{{ site.baseurl }}{{ collage_images[0].path }}" alt="Main Photo" onclick="openCarousel(0)">
         {% else %}
           <img src="https://via.placeholder.com/800x600?text=No+images" alt="No images">
         {% endif %}
       </div>
-      <!-- Right side: 2×2 grid (4 images) -->
+      <!-- Right side: 2×2 grid -->
       <div class="right">
         <div class="row">
           {% if collage_images.size > 1 %}
-            <img src="{{ site.baseurl }}{{ collage_images[1].path }}" alt="Photo 2">
+            <img src="{{ site.baseurl }}{{ collage_images[1].path }}" alt="Photo 2" onclick="openCarousel(1)">
           {% else %}
             <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
           {% endif %}
           {% if collage_images.size > 2 %}
-            <img src="{{ site.baseurl }}{{ collage_images[2].path }}" alt="Photo 3">
+            <img src="{{ site.baseurl }}{{ collage_images[2].path }}" alt="Photo 3" onclick="openCarousel(2)">
           {% else %}
             <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
           {% endif %}
         </div>
         <div class="row">
           {% if collage_images.size > 3 %}
-            <img src="{{ site.baseurl }}{{ collage_images[3].path }}" alt="Photo 4">
+            <img src="{{ site.baseurl }}{{ collage_images[3].path }}" alt="Photo 4" onclick="openCarousel(3)">
           {% else %}
             <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
           {% endif %}
           {% if collage_images.size > 4 %}
-            <img src="{{ site.baseurl }}{{ collage_images[4].path }}" alt="Photo 5">
+            <img src="{{ site.baseurl }}{{ collage_images[4].path }}" alt="Photo 5" onclick="openCarousel(4)">
           {% else %}
             <img src="https://via.placeholder.com/400x300?text=No+images" alt="No images">
           {% endif %}
         </div>
       </div>
       <!-- "Show All Photos" Button -->
-      {% if carousel_images.size > 0 %}
-        <button class="show-all-btn" onclick="openCarousel()">Show all photos</button>
-      {% endif %}
+      <button class="show-all-btn" onclick="openCarousel(0)">Show all photos</button>
     </div>
   </section>
   
@@ -425,20 +417,18 @@ layout: none
   </div>
 
   <script>
-    // JavaScript for Fullscreen Carousel
-
     const carouselOverlay = document.getElementById("carouselOverlay");
     const carouselInner = document.getElementById("carouselInner");
     let currentIndex = 0;
     let totalSlides = 0;
 
-    function openCarousel() {
+    function openCarousel(startIndex) {
+      currentIndex = typeof startIndex !== 'undefined' ? startIndex : 0;
       // Show the overlay
       carouselOverlay.style.display = "flex";
       // Count the slides
       const slides = document.querySelectorAll(".carousel-slide");
       totalSlides = slides.length;
-      currentIndex = 0;
       updateCarousel();
     }
 
