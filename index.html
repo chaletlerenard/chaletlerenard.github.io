@@ -37,7 +37,7 @@ layout: none
 
     /* Section Styling (consistent width) */
     section {
-      padding: 15px 15px;
+      padding: 15px;
       max-width: 1200px;
       margin: 0 auto;
       width: 100%;
@@ -342,20 +342,42 @@ layout: none
       box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
     }
 
+
     /* ----------------------------------------
-       2) Amenities Limiter / "Block approach"
+       Amenities Grid + Tile Style
        ---------------------------------------- */
+
+    /* The container that holds all amenity blocks */
+    .amenity-grid {
+      display: grid;
+      grid-template-columns: 1fr; /* mobile: 1 column */
+      gap: 20px;
+    }
+    /* On tablets, two columns */
+    @media (min-width: 768px) {
+      .amenity-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    /* On desktops, three columns */
+    @media (min-width: 1200px) {
+      .amenity-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+
+    /* Each amenity tile */
     .amenity-block {
-      margin: 1rem 0;
       padding: 1rem;
       background-color: #fff;
       border-radius: 5px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       position: relative;
-      transition: background 0.3s;
+      cursor: pointer; /* entire tile is clickable */
+      transition: background-color 0.3s;
     }
     .amenity-block:hover {
-      background-color: #fafafa;
+      background-color: #f2f2f2; /* slight darkening on hover */
     }
     .amenity-block h3 {
       margin-bottom: 0.5rem;
@@ -366,20 +388,20 @@ layout: none
       margin: 0;
       padding-left: 20px;
     }
-    .amenity-block button.amenity-toggle-btn {
+    .amenity-block li.hidden-item {
+      display: none; /* hidden by default if beyond default-items limit */
+    }
+
+    /* The "Afficher plus" text link inside each tile */
+    .amenity-toggle-btn {
       border: none;
       background: none;
-      color: #5c6bc0;
-      cursor: pointer;
+      color: #888; /* light gray color */
       font-weight: 600;
       margin-top: 8px;
-    }
-    .amenity-toggle-btn:hover {
+      cursor: pointer;
       text-decoration: underline;
-    }
-    /* Optional: small fade-in transition for newly shown items */
-    .amenity-block li.hidden-item {
-      display: none;
+      display: inline-block;
     }
   </style>
 </head>
@@ -526,43 +548,55 @@ layout: none
 
     // ------------------------------------
     // 4) Amenities: partial expansions
+    //    + "click anywhere" logic
     // ------------------------------------
-    // We look for blocks with data-default-items to see
-    // how many items to display initially
     function initAmenitiesLimiter() {
       const amenityBlocks = document.querySelectorAll(".amenity-block");
       amenityBlocks.forEach(block => {
         const defaultItems = parseInt(block.getAttribute("data-default-items"), 10) || 3;
         const list = block.querySelector("ul");
         const items = list ? Array.from(list.querySelectorAll("li")) : [];
+        const toggleBtn = block.querySelector("button.amenity-toggle-btn");
+        if (!items.length) return;
+
+        // Hide items beyond default
         if (items.length > defaultItems) {
-          // Hide the items beyond the default
           for (let i = defaultItems; i < items.length; i++) {
             items[i].classList.add("hidden-item");
           }
-
-          // Show a "Afficher plus" button
-          const toggleBtn = block.querySelector("button.amenity-toggle-btn");
-          toggleBtn.style.display = "inline-block";
-          toggleBtn.addEventListener("click", function() {
-            const hidden = items.slice(defaultItems);
-            const anyHidden = hidden.some(li => li.classList.contains("hidden-item"));
-            if (anyHidden) {
-              // Show them
-              hidden.forEach(li => li.classList.remove("hidden-item"));
-              toggleBtn.textContent = "Afficher moins";
-            } else {
-              // Hide them
-              hidden.forEach(li => li.classList.add("hidden-item"));
-              toggleBtn.textContent = "Afficher plus";
-              block.scrollIntoView({behavior: "smooth", block: "start"});
-            }
-          });
+          toggleBtn.textContent = "Afficher plus";
+        } else {
+          // If there's nothing to hide, remove the button
+          toggleBtn.style.display = "none";
         }
+
+        // Make entire block clickable
+        block.addEventListener("click", function(e) {
+          // Avoid quickly re-collapsing if user clicks again
+          // We'll check if there's actually something hidden.
+          const hidden = items.slice(defaultItems);
+          const anyHidden = hidden.some(li => li.classList.contains("hidden-item"));
+          
+          if (anyHidden) {
+            // Show them
+            hidden.forEach(li => li.classList.remove("hidden-item"));
+            toggleBtn.textContent = "Afficher moins";
+          } else {
+            // Hide them
+            hidden.forEach(li => li.classList.add("hidden-item"));
+            toggleBtn.textContent = "Afficher plus";
+            block.scrollIntoView({behavior: "smooth", block: "start"});
+          }
+        });
+
+        // Prevent event from button from re-triggering block
+        // if needed, but here we let the entire tile do the same action
+        toggleBtn.addEventListener("click", function(e) {
+          e.stopPropagation(); // so it does not toggle again
+        });
       });
     }
 
-    // Initialize amenities after DOM is ready
     document.addEventListener("DOMContentLoaded", initAmenitiesLimiter);
   </script>
 </body>
