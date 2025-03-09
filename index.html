@@ -382,11 +382,13 @@ layout: none
   <!-- About Section (included via Liquid) -->
   {% include about.html %}
 
+  <!-- Animals Section (included via Liquid) -->
+  {% include pets.html %}
+
   <!-- Amenities Section (included via Liquid) -->
   {% include amenities.html %}
 
-  <!-- Animals Section (included via Liquid) -->
-  {% include pets.html %}
+
 
   <!-- Booking Section (included via Liquid) -->
   {% include booking.html %}
@@ -483,59 +485,6 @@ layout: none
         navbar.classList.toggle("nav-open");
       });
     });
-
-    // ------------------------------------
-    // 4) Amenities: partial expansions
-    //    + "click anywhere" logic
-    // ------------------------------------
-    function initAmenitiesLimiter() {
-      const amenityBlocks = document.querySelectorAll(".amenity-block");
-      amenityBlocks.forEach(block => {
-        const defaultItems = parseInt(block.getAttribute("data-default-items"), 10) || 3;
-        const list = block.querySelector("ul");
-        const items = list ? Array.from(list.querySelectorAll("li")) : [];
-        const toggleBtn = block.querySelector("button.amenity-toggle-btn");
-        if (!items.length) return;
-
-        // Hide items beyond default
-        if (items.length > defaultItems) {
-          for (let i = defaultItems; i < items.length; i++) {
-            items[i].classList.add("hidden-item");
-          }
-          toggleBtn.textContent = "Afficher plus";
-        } else {
-          // If there's nothing to hide, remove the button
-          toggleBtn.style.display = "none";
-        }
-
-        // Make entire block clickable
-        block.addEventListener("click", function(e) {
-          // Avoid quickly re-collapsing if user clicks again
-          // We'll check if there's actually something hidden.
-          const hidden = items.slice(defaultItems);
-          const anyHidden = hidden.some(li => li.classList.contains("hidden-item"));
-          
-          if (anyHidden) {
-            // Show them
-            hidden.forEach(li => li.classList.remove("hidden-item"));
-            toggleBtn.textContent = "Afficher moins";
-          } else {
-            // Hide them
-            hidden.forEach(li => li.classList.add("hidden-item"));
-            toggleBtn.textContent = "Afficher plus";
-            block.scrollIntoView({behavior: "smooth", block: "start"});
-          }
-        });
-
-        // Prevent event from button from re-triggering block
-        // if needed, but here we let the entire tile do the same action
-        toggleBtn.addEventListener("click", function(e) {
-          e.stopPropagation(); // so it does not toggle again
-        });
-      });
-    }
-
-    document.addEventListener("DOMContentLoaded", initAmenitiesLimiter);
   </script>
 </body>
 </html>
