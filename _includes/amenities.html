@@ -119,27 +119,25 @@
       margin-top: 10px;
     }
     .hidden-items {
-      display: none;
-      opacity: 0;
-      transition: opacity 0.3s ease-in-out, max-height 0.5s ease-in-out;
       max-height: 0;
       overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
     }
   </style>
   
   <script>
     function toggleItems(element) {
       const hiddenItems = element.nextElementSibling;
-      if (hiddenItems.style.display === "none" || hiddenItems.style.display === "") {
-        hiddenItems.style.display = "block";
-        setTimeout(() => hiddenItems.style.opacity = "1", 10);
-        hiddenItems.style.maxHeight = "500px";
+      if (hiddenItems.style.maxHeight === "0px" || hiddenItems.style.maxHeight === "") {
+        hiddenItems.style.maxHeight = hiddenItems.scrollHeight + "px";
+        hiddenItems.style.opacity = "1";
         element.textContent = "... voir moins";
       } else {
-        hiddenItems.style.opacity = "0";
         hiddenItems.style.maxHeight = "0";
-        setTimeout(() => hiddenItems.style.display = "none", 300);
+        hiddenItems.style.opacity = "0";
         element.textContent = "... voir plus";
       }
     }
   </script>
+  
