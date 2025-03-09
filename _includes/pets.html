@@ -4,10 +4,15 @@
       align-items: center;
       justify-content: space-between;
     }
+    /* Optional: You can also explicitly set order if needed */
     #pets .image-container {
+      order: 0;
       aspect-ratio: 1 / 1;
       height: 100%;
       overflow: hidden;
+    }
+    #pets .content {
+      order: 1;
     }
     #pets .image-container img {
       width: 100%;
@@ -33,12 +38,12 @@
     }
   </style>
   <section id="pets">
-    <div class="content">
-      <h2>Votre chien est le bienvenue</h2>
-      <p>Nous savons à quel point il est important de pouvoir voyager avec son fidèle compagnon. C'est pourquoi c'est avec plaisir que nous acceptons les voyageurs avec un chien.</p>
-    </div>
     <div class="image-container">
       <img src="boston.avif" alt="chien dans la nature">
+    </div>
+    <div class="content">
+      <h2>Toute la famille est bienvenue, votre chien aussi!</h2>
+      <p>Nous savons à quel point il est important de pouvoir voyager avec son fidèle compagnon. C'est pourquoi c'est avec plaisir que nous acceptons les voyageurs avec un chien.</p>
     </div>
   </section>
   
