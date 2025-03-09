@@ -1,4 +1,4 @@
-name: Download CSV and Upload to GitHub
+name: Download PriceLabs CSV and Upload to GitHub
 
 on:
   schedule:
@@ -25,7 +25,7 @@ jobs:
 
       - name: Download CSV from PriceLabs
         run: |
-          python download_pricelabs.py
+          python download_csv.py
         env:
           PRICELABS_USERNAME: ${{ secrets.PRICELABS_USERNAME }}
           PRICELABS_PASSWORD: ${{ secrets.PRICELABS_PASSWORD }}
@@ -38,4 +38,3 @@ jobs:
           timestamp=$(date -u)
           git commit -m "Update PriceLabs data: ${timestamp}" || exit 0
           git push
-Improve
