@@ -24,6 +24,10 @@ layout: none
       margin: 0;
       padding: 0;
     }
+    /* Ensure 1rem space between a h2 and the following p */
+    h2 + p {
+      margin-top: 1rem;
+    }
 
     /* Section Styling (consistent width) */
     section {
@@ -314,7 +318,7 @@ layout: none
   {% include about.html %}
   <!-- Amenities Section (included via Liquid) -->
   {% include amenities.html %}
-   <!-- Animals Section (included via Liquid) -->
+  <!-- Animals Section (included via Liquid) -->
   {% include pets.html %}  
   <!-- Booking Section -->
   <section id="booking">
