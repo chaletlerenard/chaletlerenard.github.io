@@ -1,7 +1,3 @@
----
-layout: none
----
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,6 +15,7 @@ layout: none
       padding: 0;
       background-color: #f4f4f4;
       color: #333;
+      overflow-x: hidden; /* Prevent horizontal scroll */
     }
     h1, h2, h3, h4, h5, h6, p {
       margin: 0;
@@ -49,7 +46,7 @@ layout: none
       align-items: center;
       text-align: center;
       color: #fff;
-      width: 100vw;
+      width: 100%;
     }
     header h1 {
       font-size: 3.5em;
@@ -57,6 +54,12 @@ layout: none
     header p {
       font-size: 1.2em;
       margin-top: 10px;
+    }
+    /* Fix for mobile background parallax */
+    @media (max-width: 768px) {
+      header {
+        background-attachment: scroll;
+      }
     }
 
     /* Navigation Bar (full width) */
@@ -71,10 +74,26 @@ layout: none
       z-index: 1000;
       transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
       opacity: 1;
+      padding: 0 15px;
     }
     nav.nav-hidden {
       transform: translateY(-100%);
       opacity: 0;
+    }
+    /* Mobile Nav Toggle Button */
+    .mobile-nav-toggle {
+      display: none;
+      cursor: pointer;
+      padding: 15px 20px;
+    }
+    .mobile-nav-toggle i {
+      font-size: 1.5rem;
+    }
+    /* Nav Links */
+    .nav-links {
+      display: flex;
+      flex-grow: 1;
+      justify-content: center;
     }
     nav a {
       padding: 15px 20px;
@@ -86,6 +105,33 @@ layout: none
     nav a:hover {
       color: #000;
       border-bottom: 2px solid #5c6bc0;
+    }
+    /* Responsive Adjustments for Mobile Navigation */
+    @media (max-width: 768px) {
+      nav {
+        justify-content: space-between;
+      }
+      .mobile-nav-toggle {
+        display: block;
+      }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #fff;
+        position: absolute;
+        top: 60px; /* Adjust based on nav height */
+        left: 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      nav.nav-open .nav-links {
+        display: flex;
+      }
+      .nav-links a {
+        border-top: 1px solid #ccc;
+        width: 100%;
+        text-align: center;
+      }
     }
 
     /* New Details Section above Gallery */
@@ -239,8 +285,10 @@ layout: none
       width: 40px;
       height: 40px;
       font-size: 1.2rem;
-      line-height: 40px;
-      text-align: center;
+      /* Center the "X" using flexbox */
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
       z-index: 20;
@@ -276,31 +324,33 @@ layout: none
         width: 30px;
         height: 30px;
         font-size: 1rem;
-        line-height: 30px;
       }
     }
     footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-  }
+      text-align: center;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
   <!-- Navigation Bar -->
   <nav id="navbar">
-    <a href="#about">À Propos</a>
-    <a href="#gallery-section">Galerie</a>
-    <a href="#amenities">Commodités</a>
-    <a href="#pets">Animaux</a>
-    <a href="#booking">Réserver</a>
+    <div class="mobile-nav-toggle"><i class="fas fa-bars"></i></div>
+    <div class="nav-links">
+      <a href="#about">À Propos</a>
+      <a href="#gallery-section">Galerie</a>
+      <a href="#amenities">Commodités</a>
+      <a href="#pets">Animaux</a>
+      <a href="#booking">Réserver</a>
+    </div>
   </nav>
 
   <!-- Header Section with Parallax -->
   <header>
     <h1>Chalet Le Renard</h1>
-    <h3>Chalet à louer avec spa privé - En pleine nature</p>
+    <h3>Chalet à louer avec spa privé - En pleine nature</h3>
   </header>
   
   <!-- New Details Section -->
@@ -314,7 +364,6 @@ layout: none
       <span class="info"><strong></strong></span>
     </p>
     <p>Chiens acceptés</p>
-    </p>
     <p>Orford, Québec</p>
   </section>
   
@@ -326,10 +375,8 @@ layout: none
   {% include amenities.html %}
   <!-- Animals Section (included via Liquid) -->
   {% include pets.html %}  
-  <!-- Animals Section (included via Liquid) -->
-  {% include booking.html %} 
-  <!-- Booking Section -->
-  
+  <!-- Booking Section (included via Liquid) -->
+  {% include booking.html %}
   
   <!-- Footer Section -->
   <footer>
@@ -356,6 +403,7 @@ layout: none
   </div>
 
   <script>
+    // Carousel functionality
     const carouselOverlay = document.getElementById("carouselOverlay");
     const carouselInner = document.getElementById("carouselInner");
     let currentIndex = 0;
@@ -406,6 +454,27 @@ layout: none
       } else {
         navbar.classList.remove("nav-hidden");
       }
+    });
+
+    // Mobile navigation toggle
+    document.addEventListener("DOMContentLoaded", function() {
+      const mobileToggle = document.querySelector(".mobile-nav-toggle");
+      mobileToggle.addEventListener("click", function() {
+        navbar.classList.toggle("nav-open");
+      });
+    });
+
+    // Amenities section toggle (if using accordions)
+    document.addEventListener("DOMContentLoaded", function() {
+      const amenityHeaders = document.querySelectorAll("#amenities .amenity-header");
+      amenityHeaders.forEach(header => {
+        header.addEventListener("click", function() {
+          const content = this.nextElementSibling;
+          if (content) {
+            content.style.display = content.style.display === "block" ? "none" : "block";
+          }
+        });
+      });
     });
   </script>
 </body>
