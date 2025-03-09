@@ -411,4 +411,74 @@ layout: none
       <div class="carousel-inner" id="carouselInner">
         {% for file in carousel_images %}
           <div class="carousel-slide">
-            <img src="{{ site.baseurl }}{{ file.path }}" alt="
+            <img src="{{ site.baseurl }}{{ file.path }}" alt="Full image">
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Carousel functionality
+    const carouselOverlay = document.getElementById("carouselOverlay");
+    const carouselInner = document.getElementById("carouselInner");
+    let currentIndex = 0;
+    let totalSlides = 0;
+
+    function openCarousel(startIndex) {
+      currentIndex = typeof startIndex !== "undefined" ? startIndex : 0;
+      carouselOverlay.style.display = "flex";
+      const slides = document.querySelectorAll(".carousel-slide");
+      totalSlides = slides.length;
+      updateCarousel();
+    }
+
+    function closeCarousel() {
+      carouselOverlay.style.display = "none";
+    }
+
+    function nextSlide() {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      updateCarousel();
+    }
+
+    function prevSlide() {
+      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+      updateCarousel();
+    }
+
+    function updateCarousel() {
+      const offset = currentIndex * 100;
+      carouselInner.style.transform = "translateX(-" + offset + "%)";
+    }
+
+    // Close carousel if clicking outside the container
+    window.addEventListener("click", function(e) {
+      if (e.target === carouselOverlay) {
+        closeCarousel();
+      }
+    });
+
+    // Hide/show navigation bar after header is fully scrolled
+    const navbar = document.getElementById("navbar");
+    const header = document.querySelector("header");
+
+    window.addEventListener("scroll", function() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      if (scrollTop >= header.offsetHeight) {
+        navbar.classList.add("nav-hidden");
+      } else {
+        navbar.classList.remove("nav-hidden");
+      }
+    });
+
+    // Mobile navigation toggle
+    document.addEventListener("DOMContentLoaded", function() {
+      const mobileToggle = document.querySelector(".mobile-nav-toggle");
+      mobileToggle.addEventListener("click", function() {
+        navbar.classList.toggle("nav-open");
+      });
+    });
+  </script>
+</body>
+</html>
