@@ -341,68 +341,6 @@ layout: none
       background-color: #fff;
       box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
     }
-
-
-    /* ----------------------------------------
-       Amenities Grid + Tile Style
-       ---------------------------------------- */
-
-    /* The container that holds all amenity blocks */
-    .amenity-grid {
-      display: grid;
-      grid-template-columns: 1fr; /* mobile: 1 column */
-      gap: 20px;
-    }
-    /* On tablets, two columns */
-    @media (min-width: 768px) {
-      .amenity-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-    /* On desktops, three columns */
-    @media (min-width: 1200px) {
-      .amenity-grid {
-        grid-template-columns: 1fr 1fr 1fr;
-      }
-    }
-
-    /* Each amenity tile */
-    .amenity-block {
-      padding: 1rem;
-      background-color: #fff;
-      border-radius: 5px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      position: relative;
-      cursor: pointer; /* entire tile is clickable */
-      transition: background-color 0.3s;
-    }
-    .amenity-block:hover {
-      background-color: #f2f2f2; /* slight darkening on hover */
-    }
-    .amenity-block h3 {
-      margin-bottom: 0.5rem;
-      font-size: 1.2rem;
-    }
-    .amenity-block ul {
-      list-style: disc;
-      margin: 0;
-      padding-left: 20px;
-    }
-    .amenity-block li.hidden-item {
-      display: none; /* hidden by default if beyond default-items limit */
-    }
-
-    /* The "Afficher plus" text link inside each tile */
-    .amenity-toggle-btn {
-      border: none;
-      background: none;
-      color: #888; /* light gray color */
-      font-weight: 600;
-      margin-top: 8px;
-      cursor: pointer;
-      text-decoration: underline;
-      display: inline-block;
-    }
   </style>
 </head>
 <body>
