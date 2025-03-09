@@ -6,14 +6,24 @@
           <h3>Cuisine et salle à manger</h3>
           <ul>
             <li>Cuisine entièrement équipée</li>
-            <li>Réfrigérateur en acier inoxydable</li>
-            <li>Four Samsung à induction et convection</li>
-            <li>Cafetière à filtre et Nespresso</li>
+            <li>Réfrigérateur en acier inoxydable avec congélateur</li>
+            <li>Four Samsung à technologie à induction et à convection</li>
+            <li>Cafetière à filtre et Nespresso (petites capsules)</li>
+            <li class="more-items">... voir plus</li>
+          </ul>
+          <ul class="hidden-items">
             <li>Micro-ondes</li>
             <li>Lave-vaisselle</li>
-            <li>Vaisselle et couverts complets</li>
-            <li>Barbecue au gaz (1er avril à fin septembre)</li>
-            <li>Four à raclette et four à fondue électriques</li>
+            <li>Bouilloire électrique</li>
+            <li>Verres à vin</li>
+            <li>Grille-pain</li>
+            <li>Mélangeur électrique</li>
+            <li>Ustensiles et accessoires de cuisine : casseroles, poêles, huile, sel et poivre</li>
+            <li>Vaisselle et couverts complets : assiettes, bols, verres, tasses, baguettes</li>
+            <li>Barbecue au gaz (disponible du 1er avril à la fin septembre)</li>
+            <li>Grande table à manger</li>
+            <li>Four à raclette électrique</li>
+            <li>Four à fondue électrique</li>
           </ul>
         </div>
   
@@ -22,9 +32,11 @@
           <ul>
             <li>1 salle de bain complète et 1 salle d'eau</li>
             <li>Baignoire</li>
-            <li>Gel douche</li>
-            <li>Shampooing, revitalisant et savon pour le corps</li>
-            <li>Sèche-cheveux</li>
+            <li>Gel douche, shampooing, revitalisant et savon pour le corps</li>
+            <li>Sèche-cheveux et serviettes de bain incluses</li>
+            <li class="more-items">... voir plus</li>
+          </ul>
+          <ul class="hidden-items">
             <li>Produits de nettoyage</li>
             <li>Serviettes de bain, savon et papier toilette inclus</li>
           </ul>
@@ -33,57 +45,35 @@
         <div class="category">
           <h3>Extérieur et équipements de plein air</h3>
           <ul>
-            <li>Spa privé accessible toute l’année</li>
-            <li>Grande terrasse avec vue sur le mont Orford</li>
+            <li>Spa privé accessible toute l’année, 24 h/24</li>
+            <li>Grande terrasse avec vue sur la nature et le parc du Mont-Orford</li>
+            <li class="more-items">... voir plus</li>
+          </ul>
+          <ul class="hidden-items">
             <li>Cour arrière privée</li>
             <li>Foyer extérieur</li>
-            <li>Mobilier de jardin et espace repas extérieur</li>
+            <li>Mobilier de jardin</li>
+            <li>Espace repas extérieur</li>
+          </ul>
+        </div>
+  
+        <div class="category">
+          <h3>Chambres</h3>
+          <ul>
+            <li>2 chambres avec lit queen</li>
+            <li>1 chambre avec lit pleine grandeur</li>
+            <li class="more-items">... voir plus</li>
+          </ul>
+          <ul class="hidden-items">
+            <li>Literie complète fournie : draps, oreillers et couvertures confortables</li>
+            <li>Stores opaques dans chaque chambre</li>
+            <li>Cintres et meubles avec tiroirs dans chaque chambre</li>
+            <li>Oreillers et couvertures supplémentaires</li>
           </ul>
         </div>
       </div>
   
       <button class="toggle-more">Voir plus</button>
-      <div class="hidden-categories">
-        <div class="grid-layout">
-          <div class="category">
-            <h3>Chambres</h3>
-            <ul>
-              <li>2 chambres avec lit queen</li>
-              <li>1 chambre avec lit pleine grandeur</li>
-              <li>Literie complète fournie : draps, oreillers et couvertures confortables</li>
-              <li>Stores opaques dans chaque chambre</li>
-              <li>Cintres et meubles avec tiroirs</li>
-              <li>Oreillers et couvertures supplémentaires</li>
-            </ul>
-          </div>
-  
-          <div class="category">
-            <h3>Divertissement et technologie</h3>
-            <ul>
-              <li>Téléviseur HD 55 pouces avec Chromecast et Apple TV</li>
-              <li>Système audio Sonos</li>
-              <li>Sélection de livres et magazines</li>
-              <li>Jeux de société</li>
-            </ul>
-          </div>
-  
-          <div class="category">
-            <h3>Internet et espace de travail dédié</h3>
-            <ul>
-              <li>Wi-Fi ultra-rapide (fibre 1.5 giga)</li>
-              <li>Bureau de travail privé avec chaise ergonomique</li>
-            </ul>
-          </div>
-  
-          <div class="category">
-            <h3>Stationnement et véhicules électriques</h3>
-            <ul>
-              <li>3 places de stationnement</li>
-              <li>Borne de recharge pour véhicule électrique (niveau 2)</li>
-            </ul>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
   
@@ -95,12 +85,12 @@
     }
     .grid-layout {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 20px;
     }
-    @media (min-width: 768px) {
+    @media (min-width: 1024px) {
       .grid-layout {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
       }
     }
     .category {
@@ -112,32 +102,40 @@
     .category h3 {
       margin-bottom: 10px;
     }
-    .hidden-categories {
+    .more-items {
+      font-style: italic;
+      color: grey;
+      cursor: pointer;
+    }
+    .hidden-items {
       display: none;
     }
     .toggle-more {
-      margin-top: 20px;
+      display: block;
+      margin: 20px auto 0;
       padding: 10px 15px;
-      border: none;
-      background: #007bff;
-      color: white;
+      border: 1px solid grey;
+      background: white;
+      color: black;
       font-size: 16px;
       cursor: pointer;
       border-radius: 5px;
     }
     .toggle-more:hover {
-      background: #0056b3;
+      background: #f0f0f0;
     }
   </style>
   
   <script>
     document.querySelector(".toggle-more").addEventListener("click", function() {
-      const hiddenCategories = document.querySelector(".hidden-categories");
-      if (hiddenCategories.style.display === "none" || hiddenCategories.style.display === "") {
-        hiddenCategories.style.display = "block";
+      const hiddenItems = document.querySelectorAll(".hidden-items");
+      if (hiddenItems[0].style.display === "none" || hiddenItems[0].style.display === "") {
+        hiddenItems.forEach(item => item.style.display = "block");
+        document.querySelectorAll(".more-items").forEach(item => item.style.display = "none");
         this.textContent = "Voir moins";
       } else {
-        hiddenCategories.style.display = "none";
+        hiddenItems.forEach(item => item.style.display = "none");
+        document.querySelectorAll(".more-items").forEach(item => item.style.display = "inline");
         this.textContent = "Voir plus";
       }
     });
