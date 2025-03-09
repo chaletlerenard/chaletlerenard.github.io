@@ -1,484 +1,141 @@
----
-layout: none
----
+<section id="amenities">
+  <h2>Commodités</h2>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"> 
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Chalet Le Renard</title>
-  <!-- Fonts & Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <style>
-    /* Global Styles */
-    body {
-      font-family: "Montserrat", sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-      color: #333;
-      overflow-x: hidden; /* Prevent horizontal scroll */
-    }
-    h1, h2, h3, h4, h5, h6, p {
-      margin: 0;
-      padding: 0;
-    }
-    /* Ensure 1rem space between a h2 and the following p */
-    h2 + p {
-      margin-top: 1rem;
-    }
-
-    /* Section Styling (consistent width) */
-    section {
-      padding: 15px 15px;
-      max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    /* Header Section with Parallax */
-    header {
-      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("exterieur.jpeg") no-repeat center center;
-      background-size: cover;
-      background-attachment: fixed;
-      height: 70vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      color: #fff;
-      width: 100vw;
-      margin-left: calc(50% - 50vw);
-    }
-    header h1 {
-      font-size: 3.5em;
-    }
-    header p {
-      font-size: 1.2em;
-      margin-top: 10px;
-    }
-    /* Fix for mobile background parallax */
-    @media (max-width: 768px) {
-      header {
-        background-attachment: scroll;
-      }
-    }
-
-    /* Navigation Bar (full width) */
-    nav {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      background-color: #fff;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      position: fixed;
-      top: 0;
-      z-index: 1000;
-      transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-      opacity: 1;
-      padding: 0 15px;
-    }
-    nav.nav-hidden {
-      transform: translateY(-100%);
-      opacity: 0;
-    }
-    /* Mobile Nav Toggle Button */
-    .mobile-nav-toggle {
-      display: none;
-      cursor: pointer;
-      padding: 15px 20px;
-    }
-    .mobile-nav-toggle i {
-      font-size: 1.5rem;
-    }
-    /* Nav Links */
-    .nav-links {
-      display: flex;
-      flex-grow: 1;
-      justify-content: center;
-    }
-    nav a {
-      padding: 15px 20px;
-      text-decoration: none;
-      color: #333;
-      font-weight: 500;
-      transition: color 0.3s, border-bottom 0.3s;
-    }
-    nav a:hover {
-      color: #000;
-      border-bottom: 2px solid #5c6bc0;
-    }
-    /* Responsive Adjustments for Mobile Navigation */
-    @media (max-width: 768px) {
-      nav {
-        justify-content: space-between;
-      }
-      .mobile-nav-toggle {
-        display: block;
-      }
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        background-color: #fff;
-        position: absolute;
-        top: 60px; /* Adjust based on nav height */
-        left: 0;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      }
-      nav.nav-open .nav-links {
-        display: flex;
-      }
-      .nav-links a {
-        border-top: 1px solid #ccc;
-        width: 100%;
-        text-align: center;
-      }
-    }
-
-    /* New Details Section above Gallery */
-    #details {
-      font-size: 1.2rem;
-      text-align: left;
-      line-height: 1.5;
-      padding: 15px 15px; /* Adjusted padding for equal spacing */
-    }
-    #details p {
-      margin: 0;
-      padding-left: 20px;
-    }
-    #details .info::after {
-      content: " · ";
-      margin: 0 8px;
-    }
-    #details .info:last-child::after {
-      content: "";
-      margin: 0;
-    }
-
-    /* Airbnb-Style Collage Gallery for Desktop */
-    .photo-collage {
-      height: 500px;
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 10px;
-      position: relative;
-      margin-bottom: 0px;
-    }
-    .photo-collage .left,
-    .photo-collage .right img {
-      overflow: hidden;
-      position: relative;
-    }
-    .photo-collage img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 5px;
-      transition: filter 0.3s;
-    }
-    .photo-collage img:hover {
-      filter: brightness(0.8);
-      cursor: pointer;
-    }
-    .photo-collage .right {
-      display: grid;
-      grid-template-rows: 1fr 1fr;
-      gap: 10px;
-      height: 100%;
-    }
-    .photo-collage .right .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .photo-collage .right .row img {
-      aspect-ratio: 1 / 1;
-    }
-
-    /* "Show All Photos" Button */
-    .show-all-btn {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      background-color: #fff;
-      color: #000;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 5px;
-      font-size: 1rem;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      transition: background-color 0.2s;
-      z-index: 5;
-    }
-    .show-all-btn:hover {
-      background-color: #f1f1f1;
-    }
-
-    /* Carousel Fullscreen Overlay */
-    .carousel-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.9);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-    }
-    .carousel-container {
-      position: relative;
-      width: 90%;
-      max-width: 1200px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-    }
-    .carousel-inner {
-      display: flex;
-      transition: transform 0.5s ease;
-      will-change: transform;
-    }
-    .carousel-slide {
-      flex: 0 0 100%;
-      text-align: center;
-    }
-    .carousel-slide img {
-      max-width: 100%;
-      max-height: 80vh;
-      border-radius: 5px;
-    }
-
-    /* Carousel Buttons */
-    .carousel-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(255,255,255,0.8);
-      border: none;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      font-size: 1.5rem;
-      cursor: pointer;
-      z-index: 10;
-      transition: background 0.2s;
-    }
-    .carousel-btn:hover {
-      background: rgba(255,255,255,1);
-    }
-    .prev-btn {
-      left: 20px;
-    }
-    .next-btn {
-      right: 20px;
-    }
-    .carousel-close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 1.2rem;
-      /* Center the "X" using flexbox */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      z-index: 20;
-    }
-
-    /* Responsive Adjustments for Mobile/Tablet */
-    @media (max-width: 768px) {
-      .photo-collage {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto;
-        height: auto;
-      }
-      .photo-collage .left {
-        grid-column: 1 / -1;
-        grid-row: 1;
-      }
-      .photo-collage .right {
-        grid-column: 1 / -1;
-        grid-row: 2;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-      .photo-collage .right .row {
-        display: contents;
-      }
-      .photo-collage img {
-        height: auto;
-      }
-      .carousel-close {
-        top: 10px;
-        right: 10px;
-        width: 30px;
-        height: 30px;
-        font-size: 1rem;
-      }
-    }
-    footer {
-      text-align: center;
-      padding: 20px;
-      background-color: #fff;
-      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-    }
-  </style>
-</head>
-<body>
-  <!-- Navigation Bar -->
-  <nav id="navbar">
-    <div class="mobile-nav-toggle"><i class="fas fa-bars"></i></div>
-    <div class="nav-links">
-      <a href="#about">À Propos</a>
-      <a href="#gallery-section">Galerie</a>
-      <a href="#amenities">Commodités</a>
-      <a href="#pets">Animaux</a>
-      <a href="#booking">Réserver</a>
-    </div>
-  </nav>
-
-  <!-- Header Section with Parallax -->
-  <header>
-    <h1>Chalet Le Renard</h1>
-    <h3>Chalet à louer avec spa privé - En pleine nature</h3>
-  </header>
-  
-  <!-- New Details Section -->
-  <section id="details">
-    <p>
-      <span class="info"><strong>6 voyageurs</strong></span>
-      <span class="info"><strong>3 chambres</strong></span>
-      <span class="info"><strong>3 lits</strong></span>
-      <span class="info"><strong>1.5 salles de bains</strong></span>
-      <span class="info"><strong>Spa privé</strong></span>
-      <span class="info"><strong></strong></span>
-    </p>
-    <p>Chiens acceptés</p>
-    <p>Orford, Québec</p>
-  </section>
-  
-  <!-- Gallery Section (included via Liquid) -->
-  {% include gallery.html %}
-  <!-- About Section (included via Liquid) -->
-  {% include about.html %}
-  
-  <!-- Amenities Section using details/summary -->
-  <section id="amenities">
-    <details>
-      <summary>Équipement et commodités</summary>
-      <ul>
-        <li>Équipement 1</li>
-        <li>Équipement 2</li>
-        <li>Équipement 3</li>
-      </ul>
-    </details>
-  </section>
-  
-  <!-- Animals Section (included via Liquid) -->
-  {% include pets.html %}  
-  <!-- Booking Section (included via Liquid) -->
-  {% include booking.html %}
-  
-  <!-- Footer Section -->
-  <footer>
-    <p>Numéro CITQ : 252803</p>
-    <p>© 2025 Chalet Le Renard. Tous droits réservés.</p>
-  </footer>
-
-  <!-- FULLSCREEN CAROUSEL OVERLAY -->
-  <div id="carouselOverlay" class="carousel-overlay">
-    <div class="carousel-container" id="carouselContainer">
-      <button class="carousel-btn prev-btn" onclick="prevSlide()">&#10094;</button>
-      <button class="carousel-btn next-btn" onclick="nextSlide()">&#10095;</button>
-      <button class="carousel-close" onclick="closeCarousel()">&#10006;</button>
-      
-      <!-- Carousel Inner -->
-      <div class="carousel-inner" id="carouselInner">
-        {% for file in carousel_images %}
-          <div class="carousel-slide">
-            <img src="{{ site.baseurl }}{{ file.path }}" alt="Full image">
-          </div>
-        {% endfor %}
-      </div>
-    </div>
+  <!-- 1) Salle de bain -->
+  <div class="amenity-block" data-default-items="3">
+    <h3>Salle de bain</h3>
+    <ul>
+      <li>1 salle de bain complète et 1 salle d'eau</li>
+      <li>Baignoire</li>
+      <li>Gel douche</li>
+      <li>Shampooing, revitalisant et savon pour le corps</li>
+      <li>Sèche-cheveux</li>
+      <li>Produits de nettoyage</li>
+      <li>Serviettes de bain, savon et papier toilette inclus</li>
+    </ul>
+    <button class="amenity-toggle-btn" style="display:none">Afficher plus</button>
   </div>
 
-  <script>
-    // Carousel functionality
-    const carouselOverlay = document.getElementById("carouselOverlay");
-    const carouselInner = document.getElementById("carouselInner");
-    let currentIndex = 0;
-    let totalSlides = 0;
+  <!-- 2) Chambres -->
+  <div class="amenity-block" data-default-items="4">
+    <h3>Chambres</h3>
+    <ul>
+      <li>2 chambres avec lit queen</li>
+      <li>1 chambre avec lit pleine grandeur</li>
+      <li>Literie complète fournie : draps, oreillers et couvertures confortables</li>
+      <li>Stores opaques dans chaque chambre, pour un sommeil réparateur</li>
+      <li>Cintres et meubles avec tiroirs dans chaque chambre</li>
+      <li>Oreillers et couvertures supplémentaires</li>
+    </ul>
+    <button class="amenity-toggle-btn" style="display:none">Afficher plus</button>
+  </div>
 
-    function openCarousel(startIndex) {
-      currentIndex = typeof startIndex !== "undefined" ? startIndex : 0;
-      carouselOverlay.style.display = "flex";
-      const slides = document.querySelectorAll(".carousel-slide");
-      totalSlides = slides.length;
-      updateCarousel();
-    }
+  <!-- 3) Divertissement et technologie -->
+  <div class="amenity-block" data-default-items="3">
+    <h3>Divertissement et technologie</h3>
+    <ul>
+      <li>Téléviseur HD 55 pouces avec Chromecast et Apple TV</li>
+      <li>Système audio Sonos</li>
+      <li>Sélection de livres et magazines</li>
+      <li>Jeux de société</li>
+    </ul>
+    <button class="amenity-toggle-btn" style="display:none">Afficher plus</button>
+  </div>
 
-    function closeCarousel() {
-      carouselOverlay.style.display = "none";
-    }
+  <!-- 4) Internet et espace de travail dédié -->
+  <div class="amenity-block" data-default-items="2">
+    <h3>Internet et espace de travail dédié</h3>
+    <ul>
+      <li>Wi-Fi ultra-rapide (fibre 1.5 giga), idéal pour le streaming en 4K et les appels vidéo</li>
+      <li>Bureau de travail privé avec chaise ergonomique</li>
+    </ul>
+    <button class="amenity-toggle-btn" style="display:none">Afficher plus</button>
+  </div>
 
-    function nextSlide() {
-      currentIndex = (currentIndex + 1) % totalSlides;
-      updateCarousel();
-    }
+  <!-- 5) Équipements pour bébés et enfants -->
+  <div class="amenity-block" data-default-items="3">
+    <h3>Équipements pour bébés et enfants</h3>
+    <ul>
+      <li>Parc pour bébé / lit de voyage</li>
+      <li>Chaise haute pliable avec harnais et plateau-repas</li>
+      <li>Vaisselle pour enfants</li>
+      <li>Collection de livres et de jouets pour différents âges : 0 à 2 ans, 2 à 5 ans, 5 à 10 ans et plus</li>
+    </ul>
+    <button class="amenity-toggle-btn" style="display:none">Afficher plus</button>
+  </div>
 
-    function prevSlide() {
-      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-      updateCarousel();
-    }
+  <!-- 6) Confort et sécurité -->
+  <div class="amenity-block" data-default-items="4">
+    <h3>Confort et sécurité</h3>
+    <ul>
+      <li>Pour votre confort, le chalet est chauffé et climatisé</li>
+      <li>Ventilateur de plafond</li>
+      <li>Foyer intérieur au bois</li>
+      <li>Détecteurs de fumée et de monoxyde de carbone</li>
+      <li>Extincteur d’incendie</li>
+      <li>Trousse de premiers soins</li>
+    </ul>
+    <button class="amenity-toggle-btn" style="display:none">Afficher plus</button>
+  </div>
 
-    function updateCarousel() {
-      const offset = currentIndex * 100;
-      carouselInner.style.transform = "translateX(-" + offset + "%)";
-    }
+  <!-- 7) Buanderie -->
+  <div class="amenity-block" data-default-items="3">
+    <h3>Buanderie</h3>
+    <ul>
+      <li>Laveuse et sécheuse gratuites dans le chalet</li>
+      <li>Savon à lessive inclus</li>
+      <li>Fer à repasser</li>
+      <li>Planche à repasser</li>
+    </ul>
+    <button class="amenity-toggle-btn" style="display:none">Afficher plus</button>
+  </div>
 
-    // Close carousel if clicking outside the container
-    window.addEventListener("click", function(e) {
-      if (e.target === carouselOverlay) {
-        closeCarousel();
-      }
-    });
+  <!-- 8) Cuisine et salle à manger -->
+  <div class="amenity-block" data-default-items="4">
+    <h3>Cuisine et salle à manger</h3>
+    <ul>
+      <li>Cuisine entièrement équipée</li>
+      <li>Réfrigérateur en acier inoxydable avec congélateur</li>
+      <li>Four Samsung à technologie à induction et à convection</li>
+      <li>Cafetière à filtre</li>
+      <li>Cafetière Nespresso (petites capsules)</li>
+      <li>Micro-ondes</li>
+      <li>Lave-vaisselle</li>
+      <li>Bouilloire électrique</li>
+      <li>Verres à vin</li>
+      <li>Grille-pain</li>
+      <li>Mélangeur électrique</li>
+      <li>Ustensiles et accessoires de cuisine : casseroles, poêles, huile, sel et poivre</li>
+      <li>Vaisselle et couverts complets : assiettes, bols, verres, tasses, baguettes</li>
+      <li>Barbecue au gaz (disponible du 1er avril à la fin septembre)</li>
+      <li>Grande table à manger</li>
+      <li>Four à raclette électrique</li>
+      <li>Four à fondue électrique</li>
+    </ul>
+    <button class="amenity-toggle-btn" style="display:none">Afficher plus</button>
+  </div>
 
-    // Hide/show navigation bar after header is fully scrolled
-    const navbar = document.getElementById("navbar");
-    const header = document.querySelector("header");
+  <!-- 9) Extérieur et équipements de plein air -->
+  <div class="amenity-block" data-default-items="3">
+    <h3>Extérieur et équipements de plein air</h3>
+    <ul>
+      <li>Spa privé accessible toute l’année, 24 h/24</li>
+      <li>Grande terrasse avec vue sur la nature et le parc du Mont-Orford</li>
+      <li>Cour arrière privée</li>
+      <li>Foyer extérieur</li>
+      <li>Mobilier de jardin</li>
+      <li>Espace repas extérieur</li>
+    </ul>
+    <button class="amenity-toggle-btn" style="display:none">Afficher plus</button>
+  </div>
 
-    window.addEventListener("scroll", function() {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      if (scrollTop >= header.offsetHeight) {
-        navbar.classList.add("nav-hidden");
-      } else {
-        navbar.classList.remove("nav-hidden");
-      }
-    });
-
-    // Mobile navigation toggle
-    document.addEventListener("DOMContentLoaded", function() {
-      const mobileToggle = document.querySelector(".mobile-nav-toggle");
-      mobileToggle.addEventListener("click", function() {
-        navbar.classList.toggle("nav-open");
-      });
-    });
-  </script>
-</body>
-</html>
+  <!-- 10) Stationnement et véhicules électriques -->
+  <div class="amenity-block" data-default-items="2">
+    <h3>Stationnement et véhicules électriques</h3>
+    <ul>
+      <li>3 places de stationnement</li>
+      <li>Borne de recharge pour véhicule électrique (niveau 2)</li>
+    </ul>
+    <button class="amenity-toggle-btn" style="display:none">Afficher plus</button>
+  </div>
+</section>
