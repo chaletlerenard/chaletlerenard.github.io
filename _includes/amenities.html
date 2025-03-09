@@ -9,7 +9,7 @@
             <li>Réfrigérateur en acier inoxydable avec congélateur</li>
             <li>Four Samsung à technologie à induction et à convection</li>
             <li>Cafetière à filtre et Nespresso (petites capsules)</li>
-            <li class="more-items">... voir plus</li>
+            <li class="more-items" onclick="toggleItems(this)">... voir plus</li>
           </ul>
           <ul class="hidden-items">
             <li>Micro-ondes</li>
@@ -34,7 +34,7 @@
             <li>Baignoire</li>
             <li>Gel douche, shampooing, revitalisant et savon pour le corps</li>
             <li>Sèche-cheveux et serviettes de bain incluses</li>
-            <li class="more-items">... voir plus</li>
+            <li class="more-items" onclick="toggleItems(this)">... voir plus</li>
           </ul>
           <ul class="hidden-items">
             <li>Produits de nettoyage</li>
@@ -47,7 +47,7 @@
           <ul>
             <li>Spa privé accessible toute l’année, 24 h/24</li>
             <li>Grande terrasse avec vue sur la nature et le parc du Mont-Orford</li>
-            <li class="more-items">... voir plus</li>
+            <li class="more-items" onclick="toggleItems(this)">... voir plus</li>
           </ul>
           <ul class="hidden-items">
             <li>Cour arrière privée</li>
@@ -62,7 +62,7 @@
           <ul>
             <li>2 chambres avec lit queen</li>
             <li>1 chambre avec lit pleine grandeur</li>
-            <li class="more-items">... voir plus</li>
+            <li class="more-items" onclick="toggleItems(this)">... voir plus</li>
           </ul>
           <ul class="hidden-items">
             <li>Literie complète fournie : draps, oreillers et couvertures confortables</li>
@@ -72,8 +72,6 @@
           </ul>
         </div>
       </div>
-  
-      <button class="toggle-more">Voir plus</button>
     </div>
   </section>
   
@@ -85,8 +83,13 @@
     }
     .grid-layout {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 20px;
+    }
+    @media (min-width: 768px) {
+      .grid-layout {
+        grid-template-columns: 1fr 1fr;
+      }
     }
     @media (min-width: 1024px) {
       .grid-layout {
@@ -95,49 +98,48 @@
     }
     .category {
       background: #f9f9f9;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease-in-out;
+    }
+    .category:hover {
+      transform: scale(1.02);
     }
     .category h3 {
       margin-bottom: 10px;
+      font-size: 18px;
+      font-weight: bold;
     }
     .more-items {
       font-style: italic;
       color: grey;
       cursor: pointer;
+      display: block;
+      margin-top: 10px;
     }
     .hidden-items {
       display: none;
-    }
-    .toggle-more {
-      display: block;
-      margin: 20px auto 0;
-      padding: 10px 15px;
-      border: 1px solid grey;
-      background: white;
-      color: black;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    .toggle-more:hover {
-      background: #f0f0f0;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out, max-height 0.5s ease-in-out;
+      max-height: 0;
+      overflow: hidden;
     }
   </style>
   
   <script>
-    document.querySelector(".toggle-more").addEventListener("click", function() {
-      const hiddenItems = document.querySelectorAll(".hidden-items");
-      if (hiddenItems[0].style.display === "none" || hiddenItems[0].style.display === "") {
-        hiddenItems.forEach(item => item.style.display = "block");
-        document.querySelectorAll(".more-items").forEach(item => item.style.display = "none");
-        this.textContent = "Voir moins";
+    function toggleItems(element) {
+      const hiddenItems = element.nextElementSibling;
+      if (hiddenItems.style.display === "none" || hiddenItems.style.display === "") {
+        hiddenItems.style.display = "block";
+        setTimeout(() => hiddenItems.style.opacity = "1", 10);
+        hiddenItems.style.maxHeight = "500px";
+        element.textContent = "... voir moins";
       } else {
-        hiddenItems.forEach(item => item.style.display = "none");
-        document.querySelectorAll(".more-items").forEach(item => item.style.display = "inline");
-        this.textContent = "Voir plus";
+        hiddenItems.style.opacity = "0";
+        hiddenItems.style.maxHeight = "0";
+        setTimeout(() => hiddenItems.style.display = "none", 300);
+        element.textContent = "... voir plus";
       }
-    });
+    }
   </script>
-  
