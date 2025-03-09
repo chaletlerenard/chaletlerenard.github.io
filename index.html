@@ -312,28 +312,10 @@ layout: none
   {% include gallery.html %}
   <!-- About Section (included via Liquid) -->
   {% include about.html %}
-  <!-- Amenities Section -->
-  <section id="amenities">
-    <h2>Commodités</h2>
-    <ul class="amenities-list">
-      <li><i class="fa-solid fa-hot-tub-person"></i> Spa Privé</li>
-      <li><i class="fa-solid fa-wifi"></i> Wi-Fi Ultra Rapide</li>
-      <li><i class="fa-solid fa-fire"></i> Foyer Intérieur à Bois</li>
-      <li><i class="fa-solid fa-temperature-arrow-up"></i> Chauffage Central</li>
-      <li><i class="fa-solid fa-snowflake"></i> Climatisation Centrale</li>
-      <li><i class="fa-solid fa-kitchen-set"></i> Cuisine Entièrement Équipée</li>
-      <li><i class="fa-solid fa-car"></i> Stationnement Privé</li>
-      <li><i class="fa-solid fa-plug-circle-bolt"></i> Borne pour Véhicule Électrique</li>
-    </ul>
-  </section>
-  
-  <!-- Animals Section -->
-  <section id="pets">
-    <h2>Animaux Acceptés</h2>
-    <p>We welcome small to medium-sized adult dogs by reservation. Please contact us for confirmation.</p>
-    <img src="{{ site.baseurl }}/animal.jpeg" alt="Animal">
-  </section>
-  
+  <!-- Amenities Section (included via Liquid) -->
+  {% include amenities.html %}
+   <!-- Animals Section (included via Liquid) -->
+  {% include pets.html %}  
   <!-- Booking Section -->
   <section id="booking">
     <h2>Réservez Votre Séjour</h2>
