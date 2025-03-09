@@ -1,6 +1,44 @@
-<!-- Animals Section -->
-<section id="pets">
-    <h2>Votre chien est le bienvenue</h2>
-    <p>Nous savons à quel point il est important de pouvoir voyager avec son fidèle compagnon. C'est pourquoi c'est avec plaisir que nous acceptons les voyageurs avec un chien.</p>
-    <img src="{{ site.baseurl }}/animal.jpeg" alt="Animal">
-</section>
+<style>
+    #pets {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #pets .image-container {
+      aspect-ratio: 1 / 1;
+      height: 100%;
+      overflow: hidden;
+    }
+    #pets .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    /* Mobile alternative */
+    @media (max-width: 768px) {
+      #pets {
+        display: block;
+      }
+      #pets .image-container {
+        width: 100%;
+        aspect-ratio: auto;
+        margin-bottom: 1rem;
+      }
+      #pets .image-container img {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+    }
+  </style>
+  <section id="pets">
+    <div class="content">
+      <h2>Votre chien est le bienvenue</h2>
+      <p>Nous savons à quel point il est important de pouvoir voyager avec son fidèle compagnon. C'est pourquoi c'est avec plaisir que nous acceptons les voyageurs avec un chien.</p>
+    </div>
+    <div class="image-container">
+      <img src="boston.png" alt="chien dans la nature">
+    </div>
+  </section>
+  
