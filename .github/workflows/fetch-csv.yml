@@ -32,10 +32,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
       
-      - name: Run CSV fetcher script
-        env:
-          PRICALABS_USERNAME: ${{ secrets.PRICALABS_USERNAME }}
-          PRICALABS_PASSWORD: ${{ secrets.PRICALABS_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+- name: Check Secrets Availability
+  run: |
+    if [ -z "${PRICALABS_USERNAME}" ]; then echo "PRICALABS_USERNAME is EMPTY"; else echo "PRICALABS_USERNAME is SET"; fi
+    if [ -z "${PRICALABS_PASSWORD}" ]; then echo "PRICALABS_PASSWORD is EMPTY"; else echo "PRICALABS_PASSWORD is SET"; fi
+    if [ -z "${GITHUB_TOKEN}" ]; then echo "GITHUB_TOKEN is EMPTY"; else echo "GITHUB_TOKEN is SET"; fi
+  env:
+    PRICALABS_USERNAME: ${{ secrets.PRICALABS_USERNAME }}
+    PRICALABS_PASSWORD: ${{ secrets.PRICALABS_PASSWORD }}
+    GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python fetch_csv.py
