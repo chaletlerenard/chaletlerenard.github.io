@@ -2,28 +2,27 @@ name: Daily CSV Fetch from Pricalabs.io
 
 on:
   schedule:
-    # Runs at 6:00 AM UTC every day
-    - cron: '0 6 * * *'
+    - cron: '0 2 * * *'
   workflow_dispatch:
 
 jobs:
   fetch-and-update:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-          
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests selenium pandas PyGithub webdriver-manager
-      
+
       - name: Install Chrome
         run: |
           sudo apt-get update
@@ -32,23 +31,23 @@ jobs:
           echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable --no-install-recommends
-      
-      - name: Run CSV fetcher script
+
+      - name: Run CSV fetcher script (fetch_csv.py)
         env:
           PRICALABS_USERNAME: ${{ secrets.PRICALABS_USERNAME }}
           PRICALABS_PASSWORD: ${{ secrets.PRICALABS_PASSWORD }}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python fetch_csv.py
-      
+
       - name: Upload error screenshot (if it exists)
         uses: actions/upload-artifact@v4
         with:
           name: error-screenshot
           path: /tmp/error_screenshot.png
         continue-on-error: true
-      
-      - name: Upload log file
+
+      - name: Upload log file (if it exists)
         uses: actions/upload-artifact@v4
         with:
           name: pricelabs-script-log
