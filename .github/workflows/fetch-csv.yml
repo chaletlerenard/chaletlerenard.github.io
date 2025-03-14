@@ -39,3 +39,10 @@ jobs:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python fetch_csv.py
+      
+      - name: Upload error screenshot (if it exists)
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-screenshot
+          path: /tmp/error_screenshot.png
+        continue-on-error: true
