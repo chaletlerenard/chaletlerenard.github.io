@@ -18,7 +18,7 @@ def fetch_csv_from_pricelabs():
     os.makedirs(download_dir, exist_ok=True)
 
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Comment out for debugging
+    chrome_options.add_argument("--headless")  # Comment out for debugging (optional)
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
@@ -32,6 +32,10 @@ def fetch_csv_from_pricelabs():
 
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
+
+    # ✅ Set browser window size to ensure UI is fully visible
+    driver.set_window_size(1920, 1080)
+    print(f"[{datetime.now()}] Set browser window size to 1920x1080")
 
     try:
         # Step 1: Login
@@ -53,7 +57,7 @@ def fetch_csv_from_pricelabs():
         print(f"[{datetime.now()}] Submitted login form")
         time.sleep(7)
 
-        # Step 2: Wait for dashboard to fully load
+        # Step 2: Wait for dashboard listings table to load
         print(f"[{datetime.now()}] Waiting for dashboard listings table to load...")
         WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//table[contains(@class,'chakra-table')]"))
@@ -87,6 +91,7 @@ def fetch_csv_from_pricelabs():
             EC.element_to_be_clickable((By.XPATH, "//button[@qa-id='rp-ellipses-button']"))
         )
         menu_button.click()
+        print(f"[{datetime.now()}] Clicked the gear/menu button")
         time.sleep(7)
 
         # Step 6: Click on 'Download Prices'
