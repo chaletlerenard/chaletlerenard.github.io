@@ -14,7 +14,7 @@ from github import Github
 def fetch_csv_from_pricelabs():
     """
     Fetch CSV data from PriceLabs by navigating through the website
-    using browser automation with the specific XPaths provided
+    using browser automation with the specific XPaths provided.
     """
     print(f"[{datetime.now()}] Starting CSV fetch from PriceLabs")
     
@@ -43,7 +43,7 @@ def fetch_csv_from_pricelabs():
     
     try:
         # Navigate to PriceLabs login page
-        driver.get("https://app.pricelabs.co/login")
+        driver.get("https://pricelabs.co/signin")
         
         # Login to PriceLabs
         print(f"[{datetime.now()}] Logging in to PriceLabs")
@@ -52,11 +52,11 @@ def fetch_csv_from_pricelabs():
         
         # Wait for username field and enter credentials
         WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "email"))
+            EC.presence_of_element_located((By.ID, "user_email"))
         )
         driver.find_element(By.ID, "user_email").send_keys(username)
         driver.find_element(By.ID, "password-field").send_keys(password)
-        driver.find_element(By.XPATH, "//button[@type='submit']").click()
+        driver.find_element(By.XPATH, "//input[@type='submit' and @name='commit']").click()
         
         # Wait for successful login
         WebDriverWait(driver, 20).until(
@@ -64,8 +64,6 @@ def fetch_csv_from_pricelabs():
         )
         
         print(f"[{datetime.now()}] Successfully logged in")
-        
-        # Using the exact XPaths you provided
         
         # Step 1: Click on the first element after login
         print(f"[{datetime.now()}] Clicking on first element")
@@ -122,7 +120,7 @@ def fetch_csv_from_pricelabs():
         driver.quit()
 
 def update_github_repo(csv_data):
-    """Update the GitHub repository with the CSV data"""
+    """Update the GitHub repository with the CSV data."""
     if not csv_data:
         print(f"[{datetime.now()}] No CSV data to commit")
         return
@@ -140,7 +138,7 @@ def update_github_repo(csv_data):
         g = Github(github_token)
         repo = g.get_repo(github_repo)
         
-        # Create data directory if it doesn't exist
+        # Create data directory if it does not exist
         try:
             repo.get_contents("data")
             print(f"[{datetime.now()}] Data directory exists")
