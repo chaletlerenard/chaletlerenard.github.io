@@ -36,6 +36,6 @@ jobs:
         env:
           PRICALABS_USERNAME: ${{ secrets.PRICALABS_USERNAME }}
           PRICALABS_PASSWORD: ${{ secrets.PRICALABS_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python fetch_csv.py
