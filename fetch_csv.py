@@ -1,6 +1,8 @@
 import os
 import time
 import glob
+import csv
+import json
 import logging
 from datetime import datetime
 from selenium import webdriver
@@ -84,10 +86,32 @@ def validate_csv_file(file_path):
 
     with open(file_path, 'r', encoding='utf-8') as f:
         first_line = f.readline()
-        if "Price" not in first_line and "price" not in first_line:
-            raise Exception(f"Unexpected CSV content in first line: {first_line.strip()}")
+        if "Date" not in first_line:
+            raise Exception(f"Unexpected CSV header: {first_line.strip()}")
 
     log_info(f"CSV file passed validation: {file_path}")
+
+# ✅ Convert CSV to JSON and return JSON string
+def convert_csv_to_json(csv_file_path, json_file_path):
+    log_info(f"Converting CSV {csv_file_path} to JSON {json_file_path}")
+    try:
+        with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            rows = list(reader)
+
+        with open(json_file_path, 'w', encoding='utf-8') as jsonfile:
+            json.dump(rows, jsonfile, ensure_ascii=False, indent=2)
+
+        log_info("Successfully converted CSV to JSON")
+
+        with open(json_file_path, 'r', encoding='utf-8') as file:
+            json_content = file.read()
+
+        return json_content
+
+    except Exception as e:
+        log_error(f"Failed to convert CSV to JSON: {e}")
+        return None
 
 def fetch_csv_from_pricelabs():
     log_info("Starting CSV fetch from PriceLabs")
@@ -160,7 +184,7 @@ def fetch_csv_from_pricelabs():
             csv_content = file.read()
 
         log_info("Successfully read CSV data")
-        return csv_content
+        return csv_content, csv_file_path
 
     except Exception as e:
         log_error(f"Error fetching CSV: {e}")
@@ -169,13 +193,13 @@ def fetch_csv_from_pricelabs():
             log_info("Saved error screenshot")
         except Exception as screenshot_error:
             log_error(f"Screenshot capture failed: {screenshot_error}")
-        return None
+        return None, None
 
     finally:
         driver.quit()
         log_info("Closed browser session")
 
-def update_github_repo(csv_data):
+def update_github_repo(csv_data, csv_file_path):
     if not csv_data:
         log_warning("No CSV data to commit")
         return
@@ -183,7 +207,7 @@ def update_github_repo(csv_data):
     log_info("Updating GitHub repository")
 
     try:
-        github_token = os.environ.get("PAT_TOKEN")  # Ensure PAT_TOKEN is set
+        github_token = os.environ.get("PAT_TOKEN")
         github_repo = os.environ.get("GITHUB_REPOSITORY")
 
         g = Github(github_token)
@@ -193,6 +217,7 @@ def update_github_repo(csv_data):
 
         branch_name = 'main'
 
+        # Ensure data directory exists
         try:
             repo.get_contents("data", ref=branch_name)
             log_info(f"'data' directory exists in branch {branch_name}")
@@ -206,35 +231,37 @@ def update_github_repo(csv_data):
             )
 
         today = datetime.now().strftime("%Y-%m-%d")
-        filename = f"data/pricelabs-{today}.csv"
+        csv_filename = f"data/pricelabs-{today}.csv"
 
+        # Upload CSV file
         try:
-            contents = repo.get_contents(filename, ref=branch_name)
-            log_info(f"File {filename} exists. Updating...")
+            contents = repo.get_contents(csv_filename, ref=branch_name)
+            log_info(f"File {csv_filename} exists. Updating...")
             repo.update_file(
-                path=filename,
+                path=csv_filename,
                 message=f"Update CSV data from PriceLabs - {today}",
                 content=csv_data,
                 sha=contents.sha,
                 branch=branch_name
             )
         except:
-            log_info(f"File {filename} does not exist. Creating it...")
+            log_info(f"File {csv_filename} does not exist. Creating it...")
             repo.create_file(
-                path=filename,
+                path=csv_filename,
                 message=f"Add CSV data from PriceLabs - {today}",
                 content=csv_data,
                 branch=branch_name
             )
 
+        # Upload latest.csv
         try:
-            latest = repo.get_contents("data/latest.csv", ref=branch_name)
+            latest_csv = repo.get_contents("data/latest.csv", ref=branch_name)
             log_info("latest.csv exists. Updating...")
             repo.update_file(
                 path="data/latest.csv",
                 message=f"Update latest CSV data - {today}",
                 content=csv_data,
-                sha=latest.sha,
+                sha=latest_csv.sha,
                 branch=branch_name
             )
         except:
@@ -245,6 +272,30 @@ def update_github_repo(csv_data):
                 content=csv_data,
                 branch=branch_name
             )
+
+        # Convert CSV to JSON and upload
+        json_file_path = "/tmp/latest.json"
+        json_data = convert_csv_to_json(csv_file_path, json_file_path)
+
+        if json_data:
+            try:
+                latest_json = repo.get_contents("data/latest.json", ref=branch_name)
+                log_info("latest.json exists. Updating...")
+                repo.update_file(
+                    path="data/latest.json",
+                    message=f"Update latest JSON data - {today}",
+                    content=json_data,
+                    sha=latest_json.sha,
+                    branch=branch_name
+                )
+            except:
+                log_info("latest.json does not exist. Creating it...")
+                repo.create_file(
+                    path="data/latest.json",
+                    message=f"Add latest JSON data - {today}",
+                    content=json_data,
+                    branch=branch_name
+                )
 
         log_info("GitHub update process completed successfully")
 
@@ -263,10 +314,10 @@ if __name__ == "__main__":
         ])
         log_info("Environment variables validated")
 
-        csv_data = fetch_csv_from_pricelabs()
+        csv_data, csv_file_path = fetch_csv_from_pricelabs()
 
-        if csv_data:
-            update_github_repo(csv_data)
+        if csv_data and csv_file_path:
+            update_github_repo(csv_data, csv_file_path)
         else:
             log_warning("CSV data is empty, skipping GitHub update")
 
