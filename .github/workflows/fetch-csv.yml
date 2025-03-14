@@ -1,51 +1,145 @@
-name: Daily CSV Fetch from Pricalabs.io
+import os
+import time
+import glob
+from datetime import datetime
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+from github import Github
 
-on:
-  schedule:
-    # Runs at 2:00 AM UTC every day
-    - cron: '0 2 * * *'
-  # Allow manual trigger from GitHub Actions tab
-  workflow_dispatch:
+def fetch_csv_from_pricelabs():
+    """
+    Fetch CSV data from PriceLabs by navigating through the website
+    using browser automation
+    """
+    print(f"[{datetime.now()}] Starting CSV fetch from PriceLabs")
+    
+    download_dir = "/tmp/pricelabs_downloads"
+    os.makedirs(download_dir, exist_ok=True)
 
-jobs:
-  fetch-and-update:
-    runs-on: ubuntu-latest
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_experimental_option("prefs", {
+        "download.default_directory": download_dir,
+        "download.prompt_for_download": False,
+        "download.directory_upgrade": True,
+        "safebrowsing.enabled": False
+    })
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    try:
+        driver.get("https://app.pricelabs.co/login")
+        print(f"[{datetime.now()}] Logging in to PriceLabs")
+        username = os.environ.get("PRICALABS_USERNAME")
+        password = os.environ.get("PRICALABS_PASSWORD")
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests selenium pandas PyGithub webdriver-manager
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "user_email"))
+        )
+        driver.find_element(By.ID, "user_email").send_keys(username)
+        driver.find_element(By.ID, "password-field").send_keys(password)
+        driver.find_element(By.XPATH, "//input[@type='submit' and @value='Sign in']").click()
 
-      - name: Install Chrome
-        run: |
-          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
+        WebDriverWait(driver, 20).until(EC.url_contains("dashboard"))
+        print(f"[{datetime.now()}] Successfully logged in")
 
-      - name: Check Secrets Availability
-        run: |
-          if [ -z "${PRICALABS_USERNAME}" ]; then echo "PRICALABS_USERNAME is EMPTY"; else echo "PRICALABS_USERNAME is SET"; fi
-          if [ -z "${PRICALABS_PASSWORD}" ]; then echo "PRICALABS_PASSWORD is EMPTY"; else echo "PRICALABS_PASSWORD is SET"; fi
-          if [ -z "${GITHUB_TOKEN}" ]; then echo "GITHUB_TOKEN is EMPTY"; else echo "GITHUB_TOKEN is SET"; fi
-        env:
-          PRICALABS_USERNAME: ${{ secrets.PRICALABS_USERNAME }}
-          PRICALABS_PASSWORD: ${{ secrets.PRICALABS_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        print(f"[{datetime.now()}] Looking for Chalet Le Renard property")
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable((By.XPATH, "//p[contains(text(), 'Chalet Le Renard')]")
+        )).click()
 
-      - name: Run CSV fetcher script
-        env:
-          PRICALABS_USERNAME: ${{ secrets.PRICALABS_USERNAME }}
-          PRICALABS_PASSWORD: ${{ secrets.PRICALABS_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-        run: python fetch_csv.py
+        WebDriverWait(driver, 15).until(EC.url_contains("pricing"))
+        print(f"[{datetime.now()}] Navigated to property page")
+
+        print(f"[{datetime.now()}] Clicking export button")
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Export')]")
+        )).click()
+
+        print(f"[{datetime.now()}] Clicking CSV download button")
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'CSV')]"))
+        ).click()
+
+        print(f"[{datetime.now()}] Waiting for download to complete...")
+        time.sleep(15)
+
+        download_dir = "/tmp/pricelabs_downloads"
+        csv_files = glob.glob(os.path.join(download_dir, "*.csv"))
+        if not csv_files:
+            raise Exception("No CSV file was downloaded")
+
+        most_recent_csv = max(csv_files, key=os.path.getctime)
+        with open(most_recent_csv, 'r', encoding='utf-8') as file:
+            csv_content = file.read()
+
+        return csv_content
+
+    except Exception as e:
+        print(f"[{datetime.now()}] Error fetching CSV: {str(e)}")
+        driver.save_screenshot("/tmp/error_screenshot.png")
+        return None
+
+    finally:
+        driver.quit()
+
+def update_github_repo(csv_data):
+    if not csv_data:
+        print(f"[{datetime.now()}] No CSV data to commit")
+        return
+
+    github_token = os.environ.get("PAT_TOKEN")
+    github_repo = os.environ.get("GITHUB_REPOSITORY")
+
+    print(f"[{datetime.now()}] Connecting to GitHub repository: {github_repo}")
+    g = Github(github_token)
+    repo = g.get_repo(github_repo)
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    filename = f"data/pricelabs-{today}.csv"
+
+    try:
+        contents = repo.get_contents(filename)
+        repo.update_file(
+            path=filename,
+            message=f"Update CSV data from PriceLabs - {today}",
+            content=csv_data,
+            sha=contents.sha
+        )
+        print(f"[{datetime.now()}] Updated {filename}")
+    except:
+        repo.create_file(
+            path=filename,
+            message=f"Add CSV data from PriceLabs - {today}",
+            content=csv_data
+        )
+        print(f"[{datetime.now()}] Created {filename}")
+
+    try:
+        latest = repo.get_contents("data/latest.csv")
+        repo.update_file(
+            path="data/latest.csv",
+            message=f"Update latest CSV data - {today}",
+            content=csv_data,
+            sha=latest.sha
+        )
+        print(f"[{datetime.now()}] Updated latest.csv")
+    except:
+        repo.create_file(
+            path="data/latest.csv",
+            message=f"Add latest CSV data - {today}",
+            content=csv_data
+        )
+        print(f"[{datetime.now()}] Created latest.csv")
+
+    except Exception as e:
+        print(f"[{datetime.now()}] Error updating GitHub: {str(e)}")
