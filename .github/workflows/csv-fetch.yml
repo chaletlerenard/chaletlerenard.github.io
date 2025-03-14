@@ -1,0 +1,40 @@
+name: Download PriceLabs CSV and Upload to GitHub
+
+on:
+  schedule:
+    # Run once per day at 2:00 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  fetch-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Download CSV from PriceLabs
+        run: |
+          python download_csv.py
+        env:
+          PRICELABS_USERNAME: ${{ secrets.PRICELABS_USERNAME }}
+          PRICELABS_PASSWORD: ${{ secrets.PRICELABS_PASSWORD }}
+          
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name 'GitHub Actions Bot'
+          git config --global user.email 'actions@github.com'
+          git add pricelabs_data.csv
+          timestamp=$(date -u)
+          git commit -m "Update PriceLabs data: ${timestamp}" || exit 0
+          git push
