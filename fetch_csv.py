@@ -152,7 +152,7 @@ def update_github_repo(csv_data):
     print(f"[{datetime.now()}] Updating GitHub repository")
 
     try:
-        github_token = os.environ.get("GITHUB_TOKEN")
+        github_token = os.environ.get("PAT_TOKEN")
         github_repo = os.environ.get("GITHUB_REPOSITORY")
 
         print(f"[{datetime.now()}] Connecting to GitHub repository: {github_repo}")
