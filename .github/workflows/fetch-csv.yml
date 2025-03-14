@@ -2,8 +2,8 @@ name: Daily CSV Fetch from Pricalabs.io
 
 on:
   schedule:
-    # Runs at 2:00 AM UTC every day
-    - cron: '0 2 * * *'
+    # Runs at 6:00 AM UTC every day
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 jobs:
