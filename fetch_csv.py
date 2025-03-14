@@ -14,7 +14,7 @@ from github import Github
 def fetch_csv_from_pricelabs():
     """
     Fetch CSV data from PriceLabs by navigating through the website
-    using browser automation with the specific XPaths provided.
+    and downloading the pricing CSV file.
     """
     print(f"[{datetime.now()}] Starting CSV fetch from PriceLabs")
 
@@ -24,7 +24,7 @@ def fetch_csv_from_pricelabs():
 
     # Setup headless Chrome browser
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Comment out this line if you want to see the browser during debugging
+    chrome_options.add_argument("--headless")  # Comment out for visual debugging
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
@@ -37,20 +37,18 @@ def fetch_csv_from_pricelabs():
         "safebrowsing.enabled": False
     })
 
-    # Use webdriver-manager to handle driver installation
+    # Initialize WebDriver
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
     try:
-        # Navigate to PriceLabs login page
+        # Step 1: Login
         driver.get("https://pricelabs.co/signin")
 
-        # Login to PriceLabs
         print(f"[{datetime.now()}] Logging in to PriceLabs")
         username = os.environ.get("PRICALABS_USERNAME")
         password = os.environ.get("PRICALABS_PASSWORD")
 
-        # Wait for username field and enter credentials
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "user_email"))
         )
@@ -58,58 +56,61 @@ def fetch_csv_from_pricelabs():
         driver.find_element(By.ID, "password-field").send_keys(password)
         driver.find_element(By.XPATH, "//input[@type='submit' and @name='commit']").click()
 
-        # Wait for successful login (URL contains dashboard)
         WebDriverWait(driver, 20).until(
             EC.url_contains("dashboard")
         )
-
         print(f"[{datetime.now()}] Successfully logged in")
 
-        # Click on 'Chalet Le Renard' listing
-        print(f"[{datetime.now()}] Clicking on 'Chalet Le Renard' listing")
+        # Step 2: Navigate directly to the Chalet Le Renard pricing page
+        target_url = "https://app.pricelabs.co/pricing?listings=1007176969711247110&pms_name=airbnb&open_calendar=true"
+        print(f"[{datetime.now()}] Navigating directly to Chalet Le Renard page: {target_url}")
+        driver.get(target_url)
 
-        WebDriverWait(driver, 15).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[p[contains(text(), 'Chalet Le Renard')]]"))
-        ).click()
+        # Step 3: Wait for page content (Optional sanity check)
+        print(f"[{datetime.now()}] Waiting for page content to load...")
+        WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.XPATH, "//button[@qa-id='rp-ellipses-button']"))
+        )
+        print(f"[{datetime.now()}] Chalet Le Renard page is ready")
 
-        print(f"[{datetime.now()}] Successfully clicked 'Chalet Le Renard'")
+        # Step 4: Click the gear/menu button
+        print(f"[{datetime.now()}] Clicking the gear/menu button...")
+        menu_button = WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[@qa-id='rp-ellipses-button']"))
+        )
+        menu_button.click()
 
-        # If it opens a new tab, switch to it
-        driver.switch_to.window(driver.window_handles[-1])
+        # Step 5: Click on 'Download Prices'
+        print(f"[{datetime.now()}] Waiting for 'Download Prices' option...")
+        download_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//p[contains(text(), 'Download Prices')]"))
+        )
+        download_button.click()
+        print(f"[{datetime.now()}] Clicked 'Download Prices'")
 
-        # Optional: Wait for the new page content to load
-        time.sleep(3)
+        # Step 6: Wait for download completion (up to 60 seconds)
+        print(f"[{datetime.now()}] Waiting for CSV download to complete...")
+        timeout = 60  # seconds
+        poll_interval = 2  # seconds
+        elapsed = 0
 
-        # Click on the menu button (adjust the XPath if necessary)
-        print(f"[{datetime.now()}] Clicking on menu button")
+        csv_file_path = None
 
-        WebDriverWait(driver, 15).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(@id,'menu-button')]"))
-        ).click()
+        while elapsed < timeout:
+            csv_files = glob.glob(os.path.join(download_dir, "*.csv"))
+            if csv_files:
+                csv_file_path = max(csv_files, key=os.path.getctime)
+                print(f"[{datetime.now()}] CSV file downloaded: {csv_file_path}")
+                break
+            time.sleep(poll_interval)
+            elapsed += poll_interval
 
-        # Click on the download CSV option (adjust the XPath if necessary)
-        print(f"[{datetime.now()}] Clicking on download CSV option")
+        if not csv_file_path:
+            print(f"[{datetime.now()}] No CSV file downloaded after {timeout} seconds!")
+            raise Exception("CSV download failed")
 
-        WebDriverWait(driver, 15).until(
-            EC.element_to_be_clickable((By.XPATH, "//div[contains(@id,'menu-list')]//div[contains(text(), 'Download CSV')]"))
-        ).click()
-
-        # Wait for the CSV to be generated/downloaded
-        print(f"[{datetime.now()}] Waiting for download to complete...")
-        time.sleep(15)  # Allow time for the download
-
-        # Find the most recently downloaded CSV file
-        csv_files = glob.glob(os.path.join(download_dir, "*.csv"))
-        if not csv_files:
-            print(f"[{datetime.now()}] No CSV files found in {download_dir}. Directory contents:")
-            print(os.listdir(download_dir))
-            raise Exception("No CSV file was downloaded")
-
-        most_recent_csv = max(csv_files, key=os.path.getctime)
-        print(f"[{datetime.now()}] Found CSV file: {most_recent_csv}")
-
-        # Read the CSV file
-        with open(most_recent_csv, 'r', encoding='utf-8') as file:
+        # Step 7: Read CSV content
+        with open(csv_file_path, 'r', encoding='utf-8') as file:
             csv_content = file.read()
 
         print(f"[{datetime.now()}] Successfully read CSV data")
@@ -117,15 +118,15 @@ def fetch_csv_from_pricelabs():
 
     except Exception as e:
         print(f"[{datetime.now()}] Error fetching CSV: {str(e)}")
-        # Take a screenshot for debugging
         try:
             driver.save_screenshot("/tmp/error_screenshot.png")
             print(f"[{datetime.now()}] Saved error screenshot to /tmp/error_screenshot.png")
             print(f"[{datetime.now()}] Current page source:")
             print(driver.page_source[:2000] + "... (truncated)")
-        except:
-            pass
+        except Exception as screenshot_error:
+            print(f"Screenshot capture failed: {screenshot_error}")
         return None
+
     finally:
         driver.quit()
 
@@ -138,33 +139,30 @@ def update_github_repo(csv_data):
     print(f"[{datetime.now()}] Updating GitHub repository")
 
     try:
-        # Get repository information from environment
-        github_token = os.environ.get("GITHUB_TOKEN")  # Set from secrets.PAT_TOKEN
-        github_repo = os.environ.get("GITHUB_REPOSITORY")
+        github_token = os.environ.get("GITHUB_TOKEN")  # PAT_TOKEN in your GitHub Secrets
+        github_repo = os.environ.get("GITHUB_REPOSITORY")  # e.g. user/repo
 
         print(f"[{datetime.now()}] Connecting to GitHub repository: {github_repo}")
 
-        # Connect to GitHub
         g = Github(github_token)
         repo = g.get_repo(github_repo)
 
-        # Create data directory if it does not exist
+        # Ensure 'data' folder exists
         try:
             repo.get_contents("data")
-            print(f"[{datetime.now()}] Data directory exists")
+            print(f"[{datetime.now()}] Data directory exists in repo")
         except:
             repo.create_file(
                 "data/README.md",
                 "Create data directory",
                 "# CSV Data from PriceLabs\n\nThis directory contains automatically fetched CSV data."
             )
-            print(f"[{datetime.now()}] Created data directory")
+            print(f"[{datetime.now()}] Created data directory in repo")
 
-        # Format filenames
         today = datetime.now().strftime("%Y-%m-%d")
         filename = f"data/pricelabs-{today}.csv"
 
-        # Create or update the daily file
+        # Create or update the daily CSV file
         try:
             contents = repo.get_contents(filename)
             repo.update_file(
@@ -173,16 +171,16 @@ def update_github_repo(csv_data):
                 content=csv_data,
                 sha=contents.sha
             )
-            print(f"[{datetime.now()}] Updated {filename}")
+            print(f"[{datetime.now()}] Updated file: {filename}")
         except:
             repo.create_file(
                 path=filename,
                 message=f"Add CSV data from PriceLabs - {today}",
                 content=csv_data
             )
-            print(f"[{datetime.now()}] Created {filename}")
+            print(f"[{datetime.now()}] Created file: {filename}")
 
-        # Also update latest.csv
+        # Also update latest.csv for convenience
         try:
             latest = repo.get_contents("data/latest.csv")
             repo.update_file(
@@ -203,7 +201,6 @@ def update_github_repo(csv_data):
     except Exception as e:
         print(f"[{datetime.now()}] Error updating GitHub: {str(e)}")
 
-# Run the process
 if __name__ == "__main__":
     print(f"[{datetime.now()}] Starting CSV fetch and GitHub update process")
     csv_data = fetch_csv_from_pricelabs()
