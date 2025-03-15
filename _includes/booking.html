@@ -29,7 +29,18 @@
   </div>
 </section>
 
+<!-- Custom CSS to style disabled dates -->
+<style>
+  .flatpickr-day.flatpickr-disabled {
+    text-decoration: line-through;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+  }
+</style>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<!-- Include French locale for flatpickr -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <script>
@@ -37,6 +48,8 @@
   const searchButton = document.getElementById("searchButton");
   let latestJsonData = [];
   let unavailableDates = [];
+  // Global variable to store the current total pre-tax price for use during checkout
+  let currentTotalPreTax = 0;
 
   // Fetch JSON data for pricing and minimum stay conditions
   fetch("https://chaletlerenard.github.io/data/latest.json")
@@ -81,11 +94,12 @@
     return unavailable;
   }
 
-  // Initialize the flatpickr date pickers
+  // Initialize the flatpickr date pickers with French locale and custom disabled styles
   function initDatePickers() {
     const disabledDates = [...unavailableDates];
 
     flatpickr("#checkin", {
+      locale: "fr",
       dateFormat: "Y-m-d",
       disable: [
         date => date.getDay() === 6,  // Disable Saturdays
@@ -95,6 +109,7 @@
     });
 
     flatpickr("#checkout", {
+      locale: "fr",
       dateFormat: "Y-m-d",
       disable: [
         date => date.getDay() === 6,  // Disable Saturdays
@@ -140,43 +155,52 @@
       searchButton.classList.remove("active");
       searchButton.style.backgroundColor = "#ccc";
       searchButton.style.cursor = "not-allowed";
-      searchButton.innerText = `Minimum ${maxMinStay} nuits`;
+      searchButton.innerText = `Minimum ${maxMinStay} nuits pour ces dates`;
       return;
     }
 
     // Calculate the total nightly rate
     const totalNightlyRate = stayPrices.reduce((total, day) => total + parseInt(day["Final Price"]), 0);
     const cleaningFee = nights >= 3 ? 150 : 140;
+    // Apply extra 20 dollars per night if there is a 6th guest
     const sixthGuestFee = parseInt(guests) === 6 ? 20 * nights : 0;
     const totalPreTax = totalNightlyRate + cleaningFee + sixthGuestFee;
+    // Store in a global variable for use in checkout
+    currentTotalPreTax = totalPreTax;
 
     searchButton.disabled = false;
     searchButton.classList.add("active");
     searchButton.style.backgroundColor = "#d2691e";
     searchButton.style.cursor = "pointer";
     searchButton.innerText = `Réserver pour ${totalPreTax.toFixed(2)} $`;
+  }
 
-    // Attach the click event handler to create a Stripe checkout session
-    searchButton.onclick = () => {
-      fetch("https://chalet-checkout-backend.onrender.com/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          amount: totalPreTax,
-          guests: guests,
-          dates: `${checkin} - ${checkout}`
-        })
+  // Recalculate pricing when the number of guests changes
+  document.getElementById("guests").addEventListener("change", checkDates);
+
+  // Attach the click event handler to create a Stripe checkout session
+  searchButton.addEventListener("click", () => {
+    const checkin = document.getElementById("checkin").value;
+    const checkout = document.getElementById("checkout").value;
+    const guests = document.getElementById("guests").value;
+    fetch("https://chalet-checkout-backend.onrender.com/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        amount: currentTotalPreTax,
+        guests: guests,
+        dates: `${checkin} - ${checkout}`
       })
+    })
       .then(response => response.json())
       .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
       .catch(error => {
         console.error("Error during checkout:", error);
         alert("Une erreur est survenue. Veuillez réessayer.");
       });
-    };
-  }
+  });
 
   // Helper function to calculate the difference in days between two dates
   function dateDiff(start, end) {
