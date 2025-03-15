@@ -1,5 +1,180 @@
-<section id="booking">
-    <h2>Réservez Votre Séjour</h2>
-    <p>Contactez-nous pour réserver. Nous avons hâte de vous acceuillir</p>
-    <a class="cta-btn" href="mailto:votre-email@example.com">Réserver Maintenant</a>
-  </section>
+<!-- Start of Chalet Le Renard Booking Section -->
+<section id="booking" style="padding: 20px; background-color: #f9f9f9;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <h2 style="font-family: Arial, sans-serif; font-size: 24px; margin-bottom: 20px;">Réservez votre séjour au Chalet Le Renard</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+      <div style="flex: 1 1 300px;">
+        <label for="checkin" style="display: block; margin-bottom: 5px; font-weight: bold;">Date d'arrivée</label>
+        <input type="text" id="checkin" placeholder="Choisissez une date" readonly style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+      </div>
+      <div style="flex: 1 1 300px;">
+        <label for="checkout" style="display: block; margin-bottom: 5px; font-weight: bold;">Date de départ</label>
+        <input type="text" id="checkout" placeholder="Choisissez une date" readonly style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+      </div>
+      <div style="flex: 1 1 300px;">
+        <label for="guests" style="display: block; margin-bottom: 5px; font-weight: bold;">Nombre de personnes</label>
+        <select id="guests" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+          <option value="1">1 personne</option>
+          <option value="2">2 personnes</option>
+          <option value="3">3 personnes</option>
+          <option value="4">4 personnes</option>
+          <option value="5">5 personnes</option>
+          <option value="6">6 personnes</option>
+        </select>
+      </div>
+      <div style="flex: 1 1 300px; align-self: flex-end;">
+        <button id="searchButton" disabled style="width: 100%; padding: 10px; background-color: #ccc; color: #fff; border: none; border-radius: 5px; cursor: not-allowed; transition: background-color 0.3s;">Réserver</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  const stripe = Stripe('pk_live_51OxskHLiPCVDYAuQlkZnBtv5TfdLNUlUU4AvFIdNKZ25Ogc7cj25R2oIwyKHOVl9DM5Zb11GkA32IH4LagpoKfCr00yR2kV7Wl');
+  const searchButton = document.getElementById("searchButton");
+  let latestJsonData = [];
+  let unavailableDates = [];
+
+  fetch('https://chaletlerenard.github.io/data/latest.json')
+    .then(response => response.json())
+    .then(data => {
+      latestJsonData = data;
+      console.log('Données JSON chargées');
+    });
+
+  fetch('https://www.airbnb.ca/calendar/ical/1007176969711247110.ics?s=bd2f78f8639ccafc0dc156caff1d26d2')
+    .then(response => response.text())
+    .then(icalData => {
+      unavailableDates = parseICal(icalData);
+      console.log("Dates indisponibles :", unavailableDates);
+      initDatePickers();
+    });
+
+  function parseICal(data) {
+    const lines = data.split(/\r?\n/);
+    const unavailable = [];
+    lines.forEach(line => {
+      if (line.startsWith("DTSTART")) {
+        const date = line.split(":")[1];
+        if (date) {
+          const formattedDate = date.slice(0, 4) + "-" + date.slice(4, 6) + "-" + date.slice(6, 8);
+          unavailable.push(formattedDate);
+        }
+      }
+    });
+    return unavailable;
+  }
+
+  function initDatePickers() {
+    const disabledDates = [...unavailableDates];
+
+    flatpickr("#checkin", {
+      dateFormat: "Y-m-d",
+      disable: [
+        date => date.getDay() === 6,
+        ...disabledDates
+      ],
+      onChange: checkDates
+    });
+
+    flatpickr("#checkout", {
+      dateFormat: "Y-m-d",
+      disable: [
+        date => date.getDay() === 6,
+        ...disabledDates
+      ],
+      onChange: checkDates
+    });
+  }
+
+  function checkDates() {
+    const checkin = document.getElementById("checkin").value;
+    const checkout = document.getElementById("checkout").value;
+    const guests = document.getElementById("guests").value;
+
+    if (!checkin || !checkout) {
+      searchButton.disabled = true;
+      searchButton.classList.remove("active");
+      searchButton.style.backgroundColor = "#ccc";
+      searchButton.style.cursor = "not-allowed";
+      searchButton.innerText = "Réserver";
+      return;
+    }
+
+    const nights = dateDiff(checkin, checkout);
+    const stayDates = getStayDates(checkin, checkout);
+    const stayPrices = latestJsonData.filter(day => stayDates.includes(day.Date) && day.Available === "True");
+
+    if (stayPrices.length !== nights) {
+      searchButton.disabled = true;
+      searchButton.classList.remove("active");
+      searchButton.style.backgroundColor = "#ccc";
+      searchButton.style.cursor = "not-allowed";
+      searchButton.innerText = "Dates non disponibles";
+      return;
+    }
+
+    const maxMinStay = Math.max(...stayPrices.map(day => parseInt(day['Min Stay'])));
+    if (nights < maxMinStay) {
+      searchButton.disabled = true;
+      searchButton.classList.remove("active");
+      searchButton.style.backgroundColor = "#ccc";
+      searchButton.style.cursor = "not-allowed";
+      searchButton.innerText = `Minimum ${maxMinStay} nuits`;
+      return;
+    }
+
+    const totalNightlyRate = stayPrices.reduce((total, day) => total + parseInt(day['Final Price']), 0);
+    const cleaningFee = nights >= 3 ? 150 : 140;
+    const sixthGuestFee = guests == 6 ? 20 * nights : 0;
+    const totalPreTax = totalNightlyRate + cleaningFee + sixthGuestFee;
+
+    searchButton.disabled = false;
+    searchButton.classList.add("active");
+    searchButton.style.backgroundColor = "#d2691e";
+    searchButton.style.cursor = "pointer";
+    searchButton.innerText = `Réserver pour ${totalPreTax.toFixed(2)} $`;
+
+    searchButton.onclick = () => {
+      fetch('https://chalet-checkout-backend.onrender.com/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          amount: totalPreTax,
+          guests: guests,
+          dates: `${checkin} - ${checkout}`
+        })
+      })
+      .then(response => response.json())
+      .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
+      .catch(error => {
+        console.error('Erreur:', error);
+        alert("Une erreur est survenue. Veuillez réessayer.");
+      });
+    };
+  }
+
+  function dateDiff(start, end) {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const diffTime = Math.abs(endDate - startDate);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  function getStayDates(start, end) {
+    const dates = [];
+    let current = new Date(start);
+    const endDate = new Date(end);
+    while (current < endDate) {
+      dates.push(current.toISOString().split('T')[0]);
+      current.setDate(current.getDate() + 1);
+    }
+    return dates;
+  }
+</script>
+<!-- End of Chalet Le Renard Booking Section -->
