@@ -33,26 +33,38 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-  const stripe = Stripe('pk_live_51OxskHLiPCVDYAuQlkZnBtv5TfdLNUlUU4AvFIdNKZ25Ogc7cj25R2oIwyKHOVl9DM5Zb11GkA32IH4LagpoKfCr00yR2kV7Wl');
+  const stripe = Stripe("pk_live_51OxskHLiPCVDYAuQlkZnBtv5TfdLNUlUU4AvFIdNKZ25Ogc7cj25R2oIwyKHOVl9DM5Zb11GkA32IH4LagpoKfCr00yR2kV7Wl");
   const searchButton = document.getElementById("searchButton");
   let latestJsonData = [];
   let unavailableDates = [];
 
-  fetch('https://chaletlerenard.github.io/data/latest.json')
+  // Fetch JSON data for pricing and minimum stay conditions
+  fetch("https://chaletlerenard.github.io/data/latest.json")
     .then(response => response.json())
     .then(data => {
       latestJsonData = data;
-      console.log('Données JSON chargées');
-    });
+      console.log("JSON data loaded successfully");
+    })
+    .catch(error => console.error("Error loading JSON data: ", error));
 
-  fetch('https://www.airbnb.ca/calendar/ical/1007176969711247110.ics?s=bd2f78f8639ccafc0dc156caff1d26d2')
-    .then(response => response.text())
-    .then(icalData => {
+  // Use AllOrigins proxy to fetch the Airbnb ICS file to bypass CORS restrictions
+  const icsUrl = "https://www.airbnb.ca/calendar/ical/1007176969711247110.ics?s=bd2f78f8639ccafc0dc156caff1d26d2";
+  const proxyUrl = "https://api.allorigins.hexocode.repl.co/get?disableCache=true&url=" + encodeURIComponent(icsUrl);
+  fetch(proxyUrl)
+    .then(response => response.json())
+    .then(data => {
+      const icalData = data.contents;
       unavailableDates = parseICal(icalData);
-      console.log("Dates indisponibles :", unavailableDates);
+      console.log("Unavailable dates:", unavailableDates);
+      initDatePickers();
+    })
+    .catch(error => {
+      console.error("Error fetching ICS data: ", error);
+      // Initialize date pickers without unavailable dates if the fetch fails
       initDatePickers();
     });
 
+  // Function to parse the ICS data and extract unavailable dates
   function parseICal(data) {
     const lines = data.split(/\r?\n/);
     const unavailable = [];
@@ -60,6 +72,7 @@
       if (line.startsWith("DTSTART")) {
         const date = line.split(":")[1];
         if (date) {
+          // Format date as YYYY-MM-DD
           const formattedDate = date.slice(0, 4) + "-" + date.slice(4, 6) + "-" + date.slice(6, 8);
           unavailable.push(formattedDate);
         }
@@ -68,13 +81,14 @@
     return unavailable;
   }
 
+  // Initialize the flatpickr date pickers
   function initDatePickers() {
     const disabledDates = [...unavailableDates];
 
     flatpickr("#checkin", {
       dateFormat: "Y-m-d",
       disable: [
-        date => date.getDay() === 6,
+        date => date.getDay() === 6,  // Disable Saturdays
         ...disabledDates
       ],
       onChange: checkDates
@@ -83,13 +97,14 @@
     flatpickr("#checkout", {
       dateFormat: "Y-m-d",
       disable: [
-        date => date.getDay() === 6,
+        date => date.getDay() === 6,  // Disable Saturdays
         ...disabledDates
       ],
       onChange: checkDates
     });
   }
 
+  // Check the selected dates against availability and pricing conditions
   function checkDates() {
     const checkin = document.getElementById("checkin").value;
     const checkout = document.getElementById("checkout").value;
@@ -106,75 +121,7 @@
 
     const nights = dateDiff(checkin, checkout);
     const stayDates = getStayDates(checkin, checkout);
+    // Filter the JSON data for the selected stay dates that are available
     const stayPrices = latestJsonData.filter(day => stayDates.includes(day.Date) && day.Available === "True");
 
-    if (stayPrices.length !== nights) {
-      searchButton.disabled = true;
-      searchButton.classList.remove("active");
-      searchButton.style.backgroundColor = "#ccc";
-      searchButton.style.cursor = "not-allowed";
-      searchButton.innerText = "Dates non disponibles";
-      return;
-    }
-
-    const maxMinStay = Math.max(...stayPrices.map(day => parseInt(day['Min Stay'])));
-    if (nights < maxMinStay) {
-      searchButton.disabled = true;
-      searchButton.classList.remove("active");
-      searchButton.style.backgroundColor = "#ccc";
-      searchButton.style.cursor = "not-allowed";
-      searchButton.innerText = `Minimum ${maxMinStay} nuits`;
-      return;
-    }
-
-    const totalNightlyRate = stayPrices.reduce((total, day) => total + parseInt(day['Final Price']), 0);
-    const cleaningFee = nights >= 3 ? 150 : 140;
-    const sixthGuestFee = guests == 6 ? 20 * nights : 0;
-    const totalPreTax = totalNightlyRate + cleaningFee + sixthGuestFee;
-
-    searchButton.disabled = false;
-    searchButton.classList.add("active");
-    searchButton.style.backgroundColor = "#d2691e";
-    searchButton.style.cursor = "pointer";
-    searchButton.innerText = `Réserver pour ${totalPreTax.toFixed(2)} $`;
-
-    searchButton.onclick = () => {
-      fetch('https://chalet-checkout-backend.onrender.com/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          amount: totalPreTax,
-          guests: guests,
-          dates: `${checkin} - ${checkout}`
-        })
-      })
-      .then(response => response.json())
-      .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
-      .catch(error => {
-        console.error('Erreur:', error);
-        alert("Une erreur est survenue. Veuillez réessayer.");
-      });
-    };
-  }
-
-  function dateDiff(start, end) {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const diffTime = Math.abs(endDate - startDate);
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }
-
-  function getStayDates(start, end) {
-    const dates = [];
-    let current = new Date(start);
-    const endDate = new Date(end);
-    while (current < endDate) {
-      dates.push(current.toISOString().split('T')[0]);
-      current.setDate(current.getDate() + 1);
-    }
-    return dates;
-  }
-</script>
-<!-- End of Chalet Le Renard Booking Section -->
+    if (stayP
