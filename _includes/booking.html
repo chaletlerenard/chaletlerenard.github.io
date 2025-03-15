@@ -1,7 +1,7 @@
 <!-- Start of Chalet Le Renard Booking Section -->
 <section id="booking" style="padding: 20px; background-color: #f9f9f9;">
   <div style="max-width: 1200px; margin: 0 auto;">
-    <h2 style="font-family: Arial, sans-serif; font-size: 24px; margin-bottom: 20px;">Réservez votre séjour au Chalet Le Renard</h2>
+    <h2 style="font-size: 24px; margin-bottom: 20px;">Réservez votre séjour au Chalet Le Renard</h2>
     <div style="display: flex; flex-wrap: wrap; gap: 20px; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
       <div style="flex: 1 1 300px;">
         <label for="checkin" style="display: block; margin-bottom: 5px; font-weight: bold;">Date d'arrivée</label>
@@ -22,6 +22,13 @@
           <option value="6">6 personnes</option>
         </select>
       </div>
+      <div style="flex: 1 1 300px;">
+        <label for="dog" style="display: block; margin-bottom: 5px; font-weight: bold;">J'amènerai mon chien</label>
+        <div style="display: flex; align-items: center;">
+          <input type="checkbox" id="dog" style="margin-right: 5px;">
+          <span style="font-size: 14px; color: #666;">(+75 $)</span>
+        </div>
+      </div>
       <div style="flex: 1 1 300px; align-self: flex-end;">
         <button id="searchButton" disabled style="width: 100%; padding: 10px; background-color: #ccc; color: #fff; border: none; border-radius: 5px; cursor: not-allowed; transition: background-color 0.3s;">Réserver</button>
       </div>
@@ -29,41 +36,26 @@
   </div>
 </section>
 
-<!-- Custom CSS to style disabled dates -->
-<style>
-  .flatpickr-day.flatpickr-disabled {
-    text-decoration: line-through;
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-  }
-</style>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<!-- Include French locale for flatpickr -->
+<link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/flatpickr.min.css">
 <script src="https://npmcdn.com/flatpickr/dist/flatpickr.min.js"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
+
 <script>
   const stripe = Stripe("pk_live_51OxskHLiPCVDYAuQlkZnBtv5TfdLNUlUU4AvFIdNKZ25Ogc7cj25R2oIwyKHOVl9DM5Zb11GkA32IH4LagpoKfCr00yR2kV7Wl");
   const searchButton = document.getElementById("searchButton");
   let latestJsonData = [];
   let unavailableDates = [];
-  // Global variable to store the current total pre-tax price for use during checkout
   let currentTotalPreTax = 0;
   
-  // Function to combine disable criteria: disable Saturdays and dates in the unavailableDates array
+  // Global variables to store flatpickr instances
+  let checkinPicker, checkoutPicker;
+
   function isDateDisabled(date) {
-    // Disable Saturdays
-    if (date.getDay() === 6) {
-      return true;
-    }
-    // Format the date as "YYYY-MM-DD"
     const formattedDate = date.toISOString().split("T")[0];
-    // Return true if the date is unavailable
     return unavailableDates.includes(formattedDate);
   }
 
-  // Fetch JSON data for pricing and minimum stay conditions
   fetch("https://chaletlerenard.github.io/data/latest.json")
     .then(response => response.json())
     .then(data => {
@@ -72,24 +64,25 @@
     })
     .catch(error => console.error("Error loading JSON data: ", error));
 
-  // Use thingproxy.freeboard.io proxy to fetch the Airbnb ICS file and bypass CORS restrictions
-  const icsUrl = "https://www.airbnb.ca/calendar/ical/1007176969711247110.ics?s=bd2f78f8639ccafc0dc156caff1d26d2";
-  const proxyUrl = "https://thingproxy.freeboard.io/fetch/" + icsUrl;
-  fetch(proxyUrl)
-    .then(response => response.text())
+  const proxyIcsUrl = "https://calendar.8zwxr4hbwn.workers.dev/";
+  fetch(proxyIcsUrl)
+    .then(response => {
+      if (response.ok) {
+        return response.text();
+      } else {
+        throw new Error("Network response was not ok.");
+      }
+    })
     .then(data => {
-      const icalData = data;
-      unavailableDates = parseICal(icalData);
+      unavailableDates = parseICal(data);
       console.log("Unavailable dates:", unavailableDates);
       initDatePickers();
     })
     .catch(error => {
       console.error("Error fetching ICS data: ", error);
-      // Initialize date pickers without unavailable dates if the fetch fails
       initDatePickers();
     });
 
-  // Function to parse the ICS data and extract unavailable dates
   function parseICal(data) {
     const lines = data.split(/\r?\n/);
     const unavailable = [];
@@ -97,7 +90,6 @@
       if (line.startsWith("DTSTART")) {
         const date = line.split(":")[1];
         if (date) {
-          // Format date as YYYY-MM-DD
           const formattedDate = date.slice(0, 4) + "-" + date.slice(4, 6) + "-" + date.slice(6, 8);
           unavailable.push(formattedDate);
         }
@@ -106,89 +98,146 @@
     return unavailable;
   }
 
-  // Initialize the flatpickr date pickers with French locale, minDate, and custom disabled rules
   function initDatePickers() {
-    flatpickr("#checkin", {
+    checkinPicker = flatpickr("#checkin", {
       locale: flatpickr.l10ns.fr,
       dateFormat: "Y-m-d",
       minDate: "today",
-      disable: [ isDateDisabled ],
-      onChange: checkDates
+      disable: [isDateDisabled],
+      // Display two months when screen is big enough
+      showMonths: window.innerWidth >= 768 ? 2 : 1,
+      onChange: function(selectedDates, dateStr, instance) {
+        checkDates();
+        if (selectedDates.length > 0) {
+          const checkinDate = selectedDates[0];
+          // Determine the minimum stay requirement for the checkin day (default to 1 day)
+          let minStay = 1;
+          const record = latestJsonData.find(day => day.Date === checkinDate.toISOString().split("T")[0]);
+          if (record && record["Min Stay"]) {
+            minStay = parseInt(record["Min Stay"]);
+          }
+          const minCheckoutDate = new Date(checkinDate);
+          minCheckoutDate.setDate(minCheckoutDate.getDate() + minStay);
+          checkoutPicker.set("minDate", minCheckoutDate);
+          // Jump to the first available checkout date
+          checkoutPicker.jumpToDate(minCheckoutDate);
+        }
+      },
+      onDayCreate: function(dObj, dStr, fp, dayElem) {
+        const date = dayElem.dateObj;
+        const formattedDate = date.toISOString().split("T")[0];
+        if (unavailableDates.includes(formattedDate)) {
+          dayElem.style.backgroundColor = "#e0e0e0";
+          dayElem.style.color = "#999";
+          dayElem.style.pointerEvents = "none";
+        }
+      }
     });
 
-    flatpickr("#checkout", {
+    checkoutPicker = flatpickr("#checkout", {
       locale: flatpickr.l10ns.fr,
       dateFormat: "Y-m-d",
       minDate: "today",
-      disable: [ isDateDisabled ],
-      onChange: checkDates
+      disable: [isDateDisabled],
+      // Display two months when screen is big enough
+      showMonths: window.innerWidth >= 768 ? 2 : 1,
+      onChange: function(selectedDates, dateStr, instance) {
+        checkDates();
+      },
+      onDayCreate: function(dObj, dStr, fp, dayElem) {
+        const date = dayElem.dateObj;
+        const formattedDate = date.toISOString().split("T")[0];
+        if (unavailableDates.includes(formattedDate)) {
+          dayElem.style.backgroundColor = "#e0e0e0";
+          dayElem.style.color = "#999";
+          dayElem.style.pointerEvents = "none";
+        }
+      }
     });
   }
 
-  // Check the selected dates against availability and pricing conditions
   function checkDates() {
     const checkin = document.getElementById("checkin").value;
     const checkout = document.getElementById("checkout").value;
     const guests = document.getElementById("guests").value;
+    const dogChecked = document.getElementById("dog").checked;
 
     if (!checkin || !checkout) {
-      searchButton.disabled = true;
-      searchButton.classList.remove("active");
-      searchButton.style.backgroundColor = "#ccc";
-      searchButton.style.cursor = "not-allowed";
-      searchButton.innerText = "Réserver";
+      resetButton("Réserver");
+      return;
+    }
+
+    // Ensure correct UTC parsing
+    const checkinDate = new Date(checkin + "T00:00:00");
+    const checkoutDate = new Date(checkout + "T00:00:00");
+
+    // Saturday check first
+    if (checkinDate.getDay() === 6) {
+      disableButton("Le jour d'arrivée ne peut être le samedi");
+      return;
+    }
+
+    if (checkoutDate.getDay() === 6) {
+      disableButton("Le jour de départ ne peut être le samedi");
       return;
     }
 
     const nights = dateDiff(checkin, checkout);
     const stayDates = getStayDates(checkin, checkout);
-    // Filter the JSON data for the selected stay dates that are available
+
     const stayPrices = latestJsonData.filter(day => stayDates.includes(day.Date) && day.Available === "True");
 
     if (stayPrices.length !== nights) {
-      searchButton.disabled = true;
-      searchButton.classList.remove("active");
-      searchButton.style.backgroundColor = "#ccc";
-      searchButton.style.cursor = "not-allowed";
-      searchButton.innerText = "Dates non disponibles";
+      disableButton("Dates non disponibles");
       return;
     }
 
-    // Check for minimum stay requirement from the JSON data
     const maxMinStay = Math.max(...stayPrices.map(day => parseInt(day["Min Stay"])));
     if (nights < maxMinStay) {
-      searchButton.disabled = true;
-      searchButton.classList.remove("active");
-      searchButton.style.backgroundColor = "#ccc";
-      searchButton.style.cursor = "not-allowed";
-      searchButton.innerText = `Minimum ${maxMinStay} nuits`;
+      disableButton(`Minimum ${maxMinStay} nuits`);
       return;
     }
 
-    // Calculate the total nightly rate
     const totalNightlyRate = stayPrices.reduce((total, day) => total + parseInt(day["Final Price"]), 0);
     const cleaningFee = nights >= 3 ? 150 : 140;
-    // Apply extra 20 dollars per night if there is a 6th guest
     const sixthGuestFee = parseInt(guests) === 6 ? 20 * nights : 0;
-    const totalPreTax = totalNightlyRate + cleaningFee + sixthGuestFee;
-    // Store in a global variable for use in checkout
+    const dogFee = dogChecked ? 75 : 0;
+    const totalPreTax = totalNightlyRate + cleaningFee + sixthGuestFee + dogFee;
+
     currentTotalPreTax = totalPreTax;
 
     searchButton.disabled = false;
     searchButton.classList.add("active");
-    searchButton.style.backgroundColor = "#d2691e";
+    searchButton.style.backgroundColor = "#28a745"; // nice green
     searchButton.style.cursor = "pointer";
     searchButton.innerText = `Réserver pour ${totalPreTax.toFixed(2)} $`;
   }
 
-  // Recalculate pricing when the number of guests changes
-  document.getElementById("guests").addEventListener("change", checkDates);
+  function disableButton(message) {
+    searchButton.disabled = true;
+    searchButton.classList.remove("active");
+    searchButton.style.backgroundColor = "#ccc";
+    searchButton.style.cursor = "not-allowed";
+    searchButton.innerText = message;
+  }
 
-  // Attach the click event handler to create a Stripe checkout session
+  function resetButton(message) {
+    searchButton.disabled = true;
+    searchButton.classList.remove("active");
+    searchButton.style.backgroundColor = "#ccc";
+    searchButton.style.cursor = "not-allowed";
+    searchButton.innerText = message;
+  }
+
+  document.getElementById("guests").addEventListener("change", checkDates);
+  document.getElementById("dog").addEventListener("change", checkDates);
+
   searchButton.addEventListener("click", () => {
     const checkin = document.getElementById("checkin").value;
     const checkout = document.getElementById("checkout").value;
     const guests = document.getElementById("guests").value;
+    const dogChecked = document.getElementById("dog").checked;
+
     fetch("https://chalet-checkout-backend.onrender.com/create-checkout-session", {
       method: "POST",
       headers: {
@@ -197,18 +246,18 @@
       body: JSON.stringify({
         amount: currentTotalPreTax,
         guests: guests,
-        dates: `${checkin} - ${checkout}`
+        dates: `${checkin} - ${checkout}`,
+        hasDog: dogChecked
       })
     })
-      .then(response => response.json())
-      .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
-      .catch(error => {
-        console.error("Error during checkout:", error);
-        alert("Une erreur est survenue. Veuillez réessayer.");
-      });
+    .then(response => response.json())
+    .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
+    .catch(error => {
+      console.error("Error during checkout:", error);
+      alert("Une erreur est survenue. Veuillez réessayer.");
+    });
   });
 
-  // Helper function to calculate the difference in days between two dates
   function dateDiff(start, end) {
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -216,7 +265,6 @@
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
-  // Helper function to get all dates in the stay period
   function getStayDates(start, end) {
     const dates = [];
     let current = new Date(start);
