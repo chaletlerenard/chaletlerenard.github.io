@@ -38,10 +38,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.4.0/ical.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Replace this URL with your actual Airbnb iCal feed URL.
         const icalUrl = "https://www.airbnb.com/calendar/ical/your_calendar.ics";
         
-        // Function to fetch and parse the iCal feed.
         async function fetchICal() {
             try {
                 const response = await fetch(icalUrl);
@@ -53,28 +51,31 @@
                 const comp = new ICAL.Component(jcalData);
                 const events = comp.getAllSubcomponents("vevent");
                 let fullCalendarEvents = [];
-                
+
                 events.forEach(event => {
                     let vevent = new ICAL.Event(event);
-                    // Convert start and end times to JavaScript Date objects.
                     let start = vevent.startDate.toJSDate();
                     let end = vevent.endDate.toJSDate();
-                    
-                    // For demonstration, attempt to extract price information from the description.
-                    let priceMatch = vevent.description ? vevent.description.match(/Price:\s*\$?(\d+(?:\.\d+)?)/i) : null;
-                    let price = priceMatch ? parseFloat(priceMatch[1]) : null;
-                    
-                    fullCalendarEvents.push({
-                        title: price ? "$" + price : "Booked",
-                        start: start,
-                        end: end,
-                        allDay: true,
-                        extendedProps: {
-                            price: price
-                        }
-                    });
+
+                    // Airbnb iCal DTEND is exclusive, subtract one day for actual last unavailable night
+                    let adjustedEnd = new Date(end);
+                    adjustedEnd.setDate(adjustedEnd.getDate() - 1);
+
+                    let currentDate = new Date(start);
+                    while (currentDate <= adjustedEnd) {
+                        let day = new Date(currentDate);
+                        fullCalendarEvents.push({
+                            title: "Unavailable",
+                            start: day,
+                            end: day,
+                            display: "background",
+                            allDay: true,
+                            backgroundColor: "#d3d3d3" // greyed out
+                        });
+                        currentDate.setDate(currentDate.getDate() + 1);
+                    }
                 });
-                
+
                 return fullCalendarEvents;
             } catch (error) {
                 console.error("Error fetching or parsing iCal feed:", error);
@@ -82,27 +83,31 @@
             }
         }
         
-        // Initialize FullCalendar.
         async function initCalendar() {
             let events = await fetchICal();
             let calendarEl = document.getElementById("calendar");
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: "dayGridMonth",
                 selectable: true,
+                selectOverlap: false, // prevents selecting booked dates
                 events: events,
                 select: function(info) {
-                    // Simulated pricing: assume a base price of 100 per day.
-                    let selectedDays = (info.end - info.start) / (1000 * 60 * 60 * 24);
+                    let selectedStart = info.start;
+                    let selectedEnd = new Date(info.end);
+                    selectedEnd.setDate(selectedEnd.getDate() - 1); // Make end inclusive
+
+                    let selectedDays = (selectedEnd - selectedStart) / (1000 * 60 * 60 * 24) + 1;
                     let basePrice = 100;
                     let totalPrice = selectedDays * basePrice;
-                    
-                    // Check if any day in the selected range overlaps with a booked event.
+
                     let booked = events.some(event => {
-                        let eventStart = new Date(event.start);
-                        let eventEnd = new Date(event.end);
-                        return (eventStart < info.end && eventEnd > info.start);
+                        if (event.display !== "background") {
+                            return false; // skip non-background events (precaution)
+                        }
+                        let eventDate = new Date(event.start);
+                        return eventDate >= selectedStart && eventDate <= selectedEnd;
                     });
-                    
+
                     let pricingEl = document.getElementById("pricing");
                     if (booked) {
                         pricingEl.textContent = "Selected dates include unavailable days.";
