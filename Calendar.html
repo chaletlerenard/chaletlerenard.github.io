@@ -28,20 +28,40 @@
           box-shadow: 0 2px 8px rgba(0,0,0,0.1);
           font-size: 18px;
       }
+      #reserveButton {
+          display: block;
+          margin: 20px auto;
+          padding: 15px 30px;
+          font-size: 18px;
+          border: none;
+          border-radius: 8px;
+          background-color: grey;
+          color: white;
+          cursor: pointer;
+          transition: all 0.3s ease;
+      }
+      .button-error {
+          background-color: black !important;
+          color: white !important;
+          cursor: not-allowed !important;
+          pointer-events: none !important;
+      }
     </style>
 </head>
 <body>
   <div id="calendar"></div>
   <div id="pricing">Select a date range to see pricing</div>
+  <button id="reserveButton" class="button-error">Dates non disponibles</button>
 
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.4.0/ical.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Replace this URL with your actual Airbnb iCal feed URL.
         const icalUrl = "https://www.airbnb.com/calendar/ical/your_calendar.ics";
-        
-        // Function to fetch and parse the iCal feed.
+
+        // Will hold dates that are unavailable (YYYY-MM-DD strings)
+        let unavailableDates = new Set();
+
         async function fetchICal() {
             try {
                 const response = await fetch(icalUrl);
@@ -53,71 +73,132 @@
                 const comp = new ICAL.Component(jcalData);
                 const events = comp.getAllSubcomponents("vevent");
                 let fullCalendarEvents = [];
-                
+
                 events.forEach(event => {
                     let vevent = new ICAL.Event(event);
-                    // Convert start and end times to JavaScript Date objects.
                     let start = vevent.startDate.toJSDate();
                     let end = vevent.endDate.toJSDate();
-                    
-                    // For demonstration, attempt to extract price information from the description.
-                    let priceMatch = vevent.description ? vevent.description.match(/Price:\s*\$?(\d+(?:\.\d+)?)/i) : null;
-                    let price = priceMatch ? parseFloat(priceMatch[1]) : null;
-                    
-                    fullCalendarEvents.push({
-                        title: price ? "$" + price : "Booked",
-                        start: start,
-                        end: end,
-                        allDay: true,
-                        extendedProps: {
-                            price: price
-                        }
-                    });
+
+                    let adjustedEnd = new Date(end);
+                    adjustedEnd.setDate(adjustedEnd.getDate() - 1);
+
+                    let currentDate = new Date(start);
+                    while (currentDate <= adjustedEnd) {
+                        let day = new Date(currentDate);
+                        let isoDate = day.toISOString().split("T")[0]; // 'YYYY-MM-DD'
+                        unavailableDates.add(isoDate);
+
+                        fullCalendarEvents.push({
+                            title: "Unavailable",
+                            start: day,
+                            display: "background",
+                            allDay: true,
+                            backgroundColor: "#d3d3d3"
+                        });
+
+                        currentDate.setDate(currentDate.getDate() + 1);
+                    }
                 });
-                
+
                 return fullCalendarEvents;
             } catch (error) {
                 console.error("Error fetching or parsing iCal feed:", error);
                 return [];
             }
         }
-        
-        // Initialize FullCalendar.
+
         async function initCalendar() {
             let events = await fetchICal();
+
             let calendarEl = document.getElementById("calendar");
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: "dayGridMonth",
                 selectable: true,
-                events: events,
-                select: function(info) {
-                    // Simulated pricing: assume a base price of 100 per day.
-                    let selectedDays = (info.end - info.start) / (1000 * 60 * 60 * 24);
-                    let basePrice = 100;
-                    let totalPrice = selectedDays * basePrice;
-                    
-                    // Check if any day in the selected range overlaps with a booked event.
-                    let booked = events.some(event => {
-                        let eventStart = new Date(event.start);
-                        let eventEnd = new Date(event.end);
-                        return (eventStart < info.end && eventEnd > info.start);
-                    });
-                    
-                    let pricingEl = document.getElementById("pricing");
-                    if (booked) {
-                        pricingEl.textContent = "Selected dates include unavailable days.";
-                    } else {
-                        pricingEl.textContent = "Total price for " + selectedDays + " days is $" + totalPrice.toFixed(2);
+                selectOverlap: false,
+
+                // THIS BLOCK PREVENTS SELECTING UNAVAILABLE DATES
+                selectAllow: function(selectInfo) {
+                    let selectedStart = selectInfo.start;
+                    let selectedEnd = new Date(selectInfo.end);
+                    selectedEnd.setDate(selectedEnd.getDate() - 1);
+
+                    let current = new Date(selectedStart);
+                    while (current <= selectedEnd) {
+                        let isoDate = current.toISOString().split("T")[0];
+                        if (unavailableDates.has(isoDate)) {
+                            return false;
+                        }
+                        current.setDate(current.getDate() + 1);
+                    }
+                    return true;
+                },
+
+                // PREVENT CLICKS ON INDIVIDUAL UNAVAILABLE DAYS
+                dayCellDidMount: function(info) {
+                    let isoDate = info.date.toISOString().split("T")[0];
+                    if (unavailableDates.has(isoDate)) {
+                        info.el.classList.add("fc-day-disabled");
+                        info.el.style.pointerEvents = "none";
+                        info.el.style.backgroundColor = "#d3d3d3";
                     }
                 },
+
+                events: events,
+
+                select: function(info) {
+                    let selectedStart = info.start;
+                    let selectedEnd = new Date(info.end);
+                    selectedEnd.setDate(selectedEnd.getDate() - 1);
+
+                    let selectedDays = (selectedEnd - selectedStart) / (1000 * 60 * 60 * 24) + 1;
+                    let basePrice = 100;
+                    let totalPrice = selectedDays * basePrice;
+
+                    let pricingEl = document.getElementById("pricing");
+                    let reserveButton = document.getElementById("reserveButton");
+
+                    // Validate booked days
+                    let current = new Date(selectedStart);
+                    let booked = false;
+                    while (current <= selectedEnd) {
+                        let isoDate = current.toISOString().split("T")[0];
+                        if (unavailableDates.has(isoDate)) {
+                            booked = true;
+                            break;
+                        }
+                        current.setDate(current.getDate() + 1);
+                    }
+
+                    let invalidDepartureDay = selectedEnd.getDay() === 6;
+
+                    if (booked) {
+                        pricingEl.textContent = "Selected dates include unavailable days.";
+                        reserveButton.textContent = "Dates non disponibles";
+                        reserveButton.classList.add("button-error");
+                    } else if (invalidDepartureDay) {
+                        pricingEl.textContent = "Départ le samedi n'est pas permis.";
+                        reserveButton.textContent = "Départ non permis";
+                        reserveButton.classList.add("button-error");
+                    } else {
+                        pricingEl.textContent = "Total price for " + selectedDays + " days is $" + totalPrice.toFixed(2);
+                        reserveButton.textContent = "Réserver pour $" + totalPrice.toFixed(2);
+                        reserveButton.classList.remove("button-error");
+                    }
+                },
+
                 unselect: function() {
-                    document.getElementById("pricing").textContent = "Select a date range to see pricing";
+                    let pricingEl = document.getElementById("pricing");
+                    let reserveButton = document.getElementById("reserveButton");
+
+                    pricingEl.textContent = "Select a date range to see pricing";
+                    reserveButton.textContent = "Dates non disponibles";
+                    reserveButton.classList.add("button-error");
                 }
             });
-            
+
             calendar.render();
         }
-        
+
         initCalendar();
     });
   </script>
