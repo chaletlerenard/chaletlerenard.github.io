@@ -123,7 +123,7 @@
       dateFormat: "Y-m-d",
       minDate: "today",
       disable: [isDateDisabled],
-      disableMobile: false, // ✅ Ensures consistency on mobile/tablet/desktop
+      disableMobile: false,
       showMonths: window.innerWidth >= 768 ? 2 : 1,
       onChange: function(selectedDates) {
         checkDates();
@@ -154,7 +154,7 @@
       dateFormat: "Y-m-d",
       minDate: "today",
       disable: [isDateDisabled],
-      disableMobile: false, // ✅ Same here for consistency
+      disableMobile: false,
       showMonths: window.innerWidth >= 768 ? 2 : 1,
       onChange: function() {
         checkDates();
@@ -220,7 +220,7 @@
 
     searchButton.disabled = false;
     searchButton.classList.add("active");
-    searchButton.style.backgroundColor = "#28a745"; // Green
+    searchButton.style.backgroundColor = "#28a745";
     searchButton.style.color = "#fff";
     searchButton.style.cursor = "pointer";
     searchButton.innerText = `Réserver pour ${currentTotalPreTax.toFixed(2)} $`;
@@ -229,7 +229,7 @@
   function disableButton(message) {
     searchButton.disabled = true;
     searchButton.classList.remove("active");
-    searchButton.style.backgroundColor = "#000"; // Black for errors
+    searchButton.style.backgroundColor = "#000";
     searchButton.style.color = "#fff";
     searchButton.style.cursor = "not-allowed";
     searchButton.innerText = message;
@@ -238,7 +238,7 @@
   function resetButton(message) {
     searchButton.disabled = true;
     searchButton.classList.remove("active");
-    searchButton.style.backgroundColor = "#ccc"; // Grey neutral
+    searchButton.style.backgroundColor = "#ccc";
     searchButton.style.color = "#fff";
     searchButton.style.cursor = "not-allowed";
     searchButton.innerText = message;
@@ -247,6 +247,7 @@
   document.getElementById("guests").addEventListener("change", checkDates);
   document.getElementById("dog").addEventListener("change", checkDates);
 
+  // ✅ MINIMAL NECESSARY CHANGE HERE:
   searchButton.addEventListener("click", () => {
     const checkin = document.getElementById("checkin").value;
     const checkout = document.getElementById("checkout").value;
@@ -264,10 +265,17 @@
       })
     })
     .then(response => response.json())
-    .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
+    .then(data => {
+      if (data.url) {
+        window.location.href = data.url;  // ✅ Redirect to Stripe Checkout page
+      } else {
+        console.error("No URL returned from backend:", data);
+        alert("Une erreur est survenue. Veuillez réessayer.");
+      }
+    })
     .catch(error => {
       console.error("Error during checkout:", error);
-      alert("Une erreur est survenue. Veuillez réessayer.");
+      alert("Une erreur est survenue lors du processus de paiement.");
     });
   });
 
