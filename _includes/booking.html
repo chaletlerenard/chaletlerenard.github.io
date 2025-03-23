@@ -1,67 +1,292 @@
-function checkDates() {
-  const checkin = document.getElementById("checkin").value;
-  const checkout = document.getElementById("checkout").value;
-  const guests = document.getElementById("guests").value;
-  const dogSelect = document.getElementById("dog");
-  const dogError = document.getElementById("dogError");
-  const dogValue = dogSelect.value;
+<!-- Start of Chalet Le Renard Booking Section -->
+<section id="booking" style="padding: 20px; background-color: #f9f9f9;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <h2 style="font-size: 24px; margin-bottom: 20px;">Réservez votre séjour au Chalet Le Renard</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+      
+      <!-- Check-in date -->
+      <div style="flex: 1 1 300px;">
+        <label for="checkin" style="display: block; margin-bottom: 5px; font-weight: bold;">Date d'arrivée</label>
+        <input type="text" id="checkin" placeholder="Choisissez une date" readonly style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+      </div>
 
-  dogError.style.display = "none";
+      <!-- Check-out date -->
+      <div style="flex: 1 1 300px;">
+        <label for="checkout" style="display: block; margin-bottom: 5px; font-weight: bold;">Date de départ</label>
+        <input type="text" id="checkout" placeholder="Choisissez une date" readonly style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+      </div>
 
-  if (!checkin || !checkout) {
-    resetButton("Réserver");
-    return;
+      <!-- Guests -->
+      <div style="flex: 1 1 300px;">
+        <label for="guests" style="display: block; margin-bottom: 5px; font-weight: bold;">Nombre de personnes</label>
+        <select id="guests" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+          <option value="1">1 personne</option>
+          <option value="2">2 personnes</option>
+          <option value="3">3 personnes</option>
+          <option value="4">4 personnes</option>
+          <option value="5">5 personnes</option>
+          <option value="6">6 personnes</option>
+        </select>
+      </div>
+
+      <!-- Dog -->
+      <div style="flex: 1 1 300px;">
+        <label for="dog" style="display: block; margin-bottom: 5px; font-weight: bold;">J'amènerai mon chien</label>
+        <div style="display: flex; align-items: center;">
+          <input type="checkbox" id="dog" style="margin-right: 5px;">
+          <span style="font-size: 14px; color: #666;">(+75 $)</span>
+        </div>
+      </div>
+
+      <!-- Reserve button -->
+      <div style="flex: 1 1 300px; align-self: flex-end;">
+        <button id="searchButton" disabled style="width: 100%; padding: 10px; background-color: #ccc; color: #fff; border: none; border-radius: 5px; cursor: not-allowed; transition: background-color 0.3s;">Réserver</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dependencies -->
+<link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/flatpickr.min.css">
+<script src="https://npmcdn.com/flatpickr/dist/flatpickr.min.js"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+  const stripe = Stripe("pk_live_51OxskHLiPCVDYAuQlkZnBtv5TfdLNUlUU4AvFIdNKZ25Ogc7cj25R2oIwyKHOVl9DM5Zb11GkA32IH4LagpoKfCr00yR2kV7Wl");
+  const searchButton = document.getElementById("searchButton");
+
+  let latestJsonData = [];
+  let unavailableDates = [];
+  let currentTotalPreTax = 0;
+
+  let checkinPicker, checkoutPicker;
+
+  function isDateDisabled(date) {
+    const formattedDate = date.toISOString().split("T")[0];
+    return unavailableDates.includes(formattedDate);
   }
 
-  if (!dogValue) {
-    disableButton("Sélection requise pour l'option chien");
-    dogError.style.display = "block";
-    return;
+  fetch("https://chaletlerenard.github.io/data/latest.json")
+    .then(response => response.json())
+    .then(data => {
+      latestJsonData = data;
+    })
+    .catch(error => console.error("Error loading JSON data:", error));
+
+  const proxyIcsUrl = "https://calendar.8zwxr4hbwn.workers.dev/";
+  fetch(proxyIcsUrl)
+    .then(response => response.ok ? response.text() : Promise.reject("Network response was not ok."))
+    .then(data => {
+      unavailableDates = parseICal(data);
+      initDatePickers();
+    })
+    .catch(error => {
+      console.error("Error fetching ICS data:", error);
+      initDatePickers();
+    });
+
+  function parseICal(data) {
+    const lines = data.split(/\r?\n/);
+    const unavailable = [];
+
+    let currentStart = null;
+    let currentEnd = null;
+
+    lines.forEach(line => {
+      if (line.startsWith("DTSTART")) {
+        const date = line.split(":")[1];
+        if (date) {
+          currentStart = date.slice(0, 4) + "-" + date.slice(4, 6) + "-" + date.slice(6, 8);
+        }
+      }
+      if (line.startsWith("DTEND")) {
+        const date = line.split(":")[1];
+        if (date) {
+          currentEnd = date.slice(0, 4) + "-" + date.slice(4, 6) + "-" + date.slice(6, 8);
+          let currentDate = new Date(currentStart + "T00:00:00");
+          const endDate = new Date(currentEnd + "T00:00:00");
+          while (currentDate < endDate) {
+            const formattedDate = currentDate.toISOString().split("T")[0];
+            unavailable.push(formattedDate);
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+        }
+      }
+    });
+    return unavailable;
   }
 
-  const dogChecked = (dogValue === "oui");
+  function initDatePickers() {
+    checkinPicker = flatpickr("#checkin", {
+      locale: flatpickr.l10ns.fr,
+      dateFormat: "Y-m-d",
+      minDate: "today",
+      disable: [isDateDisabled],
+      disableMobile: true, // ✅ Ensures consistency on mobile/tablet/desktop
+      showMonths: window.innerWidth >= 768 ? 2 : 1,
+      onChange: function(selectedDates) {
+        checkDates();
+        if (selectedDates.length > 0) {
+          const checkinDate = selectedDates[0];
+          let minStay = 1;
+          const record = latestJsonData.find(day => day.Date === checkinDate.toISOString().split("T")[0]);
+          if (record && record["Min Stay"]) minStay = parseInt(record["Min Stay"]);
+          const minCheckoutDate = new Date(checkinDate);
+          minCheckoutDate.setDate(minCheckoutDate.getDate() + minStay);
+          checkoutPicker.set("minDate", minCheckoutDate);
+          checkoutPicker.jumpToDate(minCheckoutDate);
+        }
+      },
+      onDayCreate: function(dObj, dStr, fp, dayElem) {
+        const date = dayElem.dateObj;
+        const formattedDate = date.toISOString().split("T")[0];
+        if (unavailableDates.includes(formattedDate)) {
+          dayElem.style.backgroundColor = "#e0e0e0";
+          dayElem.style.color = "#999";
+          dayElem.style.pointerEvents = "none";
+        }
+      }
+    });
 
-  const checkinDate = new Date(checkin + "T00:00:00");
-  const checkoutDate = new Date(checkout + "T00:00:00");
-
-  if (checkinDate.getDay() === 6) {
-    disableButton("Le jour d'arrivée ne peut être le samedi");
-    return;
+    checkoutPicker = flatpickr("#checkout", {
+      locale: flatpickr.l10ns.fr,
+      dateFormat: "Y-m-d",
+      minDate: "today",
+      disable: [isDateDisabled],
+      disableMobile: true, // ✅ Same here for consistency
+      showMonths: window.innerWidth >= 768 ? 2 : 1,
+      onChange: function() {
+        checkDates();
+      },
+      onDayCreate: function(dObj, dStr, fp, dayElem) {
+        const date = dayElem.dateObj;
+        const formattedDate = date.toISOString().split("T")[0];
+        if (unavailableDates.includes(formattedDate)) {
+          dayElem.style.backgroundColor = "#e0e0e0";
+          dayElem.style.color = "#999";
+          dayElem.style.pointerEvents = "none";
+        }
+      }
+    });
   }
 
-  if (checkoutDate.getDay() === 6) {
-    disableButton("Le jour de départ ne peut être le samedi");
-    return;
+  function checkDates() {
+    const checkin = document.getElementById("checkin").value;
+    const checkout = document.getElementById("checkout").value;
+    const guests = document.getElementById("guests").value;
+    const dogChecked = document.getElementById("dog").checked;
+
+    if (!checkin || !checkout) {
+      resetButton("Réserver");
+      return;
+    }
+
+    const checkinDate = new Date(checkin + "T00:00:00");
+    const checkoutDate = new Date(checkout + "T00:00:00");
+
+    if (checkinDate.getDay() === 6) {
+      disableButton("Le jour d'arrivée ne peut être le samedi");
+      return;
+    }
+
+    if (checkoutDate.getDay() === 6) {
+      disableButton("Le jour de départ ne peut être le samedi");
+      return;
+    }
+
+    const nights = dateDiff(checkin, checkout);
+    const stayDates = getStayDates(checkin, checkout);
+
+    const stayPrices = latestJsonData.filter(day => stayDates.includes(day.Date) && day.Available === "True");
+
+    if (stayPrices.length !== nights) {
+      disableButton("Dates non disponibles");
+      return;
+    }
+
+    const maxMinStay = Math.max(...stayPrices.map(day => parseInt(day["Min Stay"])));
+    if (nights < maxMinStay) {
+      disableButton(`Minimum ${maxMinStay} nuits`);
+      return;
+    }
+
+    const totalNightlyRate = stayPrices.reduce((total, day) => total + parseInt(day["Final Price"]), 0);
+    const cleaningFee = nights >= 3 ? 150 : 140;
+    const sixthGuestFee = parseInt(guests) === 6 ? 20 * nights : 0;
+    const dogFee = dogChecked ? 75 : 0;
+
+    currentTotalPreTax = totalNightlyRate + cleaningFee + sixthGuestFee + dogFee;
+
+    searchButton.disabled = false;
+    searchButton.classList.add("active");
+    searchButton.style.backgroundColor = "#28a745"; // Green
+    searchButton.style.color = "#fff";
+    searchButton.style.cursor = "pointer";
+    searchButton.innerText = `Réserver pour ${currentTotalPreTax.toFixed(2)} $`;
   }
 
-  const nights = dateDiff(checkin, checkout);
-  const stayDates = getStayDates(checkin, checkout);
-
-  const stayPrices = latestJsonData.filter(day => stayDates.includes(day.Date) && day.Available === "True");
-
-  if (stayPrices.length !== nights) {
-    disableButton("Dates non disponibles");
-    return;
+  function disableButton(message) {
+    searchButton.disabled = true;
+    searchButton.classList.remove("active");
+    searchButton.style.backgroundColor = "#000"; // Black for errors
+    searchButton.style.color = "#fff";
+    searchButton.style.cursor = "not-allowed";
+    searchButton.innerText = message;
   }
 
-  const maxMinStay = Math.max(...stayPrices.map(day => parseInt(day["Min Stay"])));
-  if (nights < maxMinStay) {
-    disableButton(`Minimum ${maxMinStay} nuits`);
-    return;
+  function resetButton(message) {
+    searchButton.disabled = true;
+    searchButton.classList.remove("active");
+    searchButton.style.backgroundColor = "#ccc"; // Grey neutral
+    searchButton.style.color = "#fff";
+    searchButton.style.cursor = "not-allowed";
+    searchButton.innerText = message;
   }
 
-  const totalNightlyRate = stayPrices.reduce((total, day) => total + parseInt(day["Final Price"]), 0);
-  const cleaningFee = nights >= 3 ? 150 : 140;
-  const sixthGuestFee = parseInt(guests) === 6 ? 20 * nights : 0;
-  const dogFee = dogChecked ? 75 : 0;
-  const totalPreTax = totalNightlyRate + cleaningFee + sixthGuestFee + dogFee;
+  document.getElementById("guests").addEventListener("change", checkDates);
+  document.getElementById("dog").addEventListener("change", checkDates);
 
-  currentTotalPreTax = totalPreTax;
+  searchButton.addEventListener("click", () => {
+    const checkin = document.getElementById("checkin").value;
+    const checkout = document.getElementById("checkout").value;
+    const guests = document.getElementById("guests").value;
+    const dogChecked = document.getElementById("dog").checked;
 
-  searchButton.disabled = false;
-  searchButton.classList.add("active");
-  searchButton.style.backgroundColor = "#28a745";
-  searchButton.style.color = "#fff";
-  searchButton.style.cursor = "pointer";
-  searchButton.innerText = `Réserver pour ${totalPreTax.toFixed(2)} $`;
-}
+    fetch("https://chalet-checkout-backend.fly.dev/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: currentTotalPreTax,
+        guests: guests,
+        dates: `${checkin} - ${checkout}`,
+        hasDog: dogChecked
+      })
+    })
+    .then(response => response.json())
+    .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
+    .catch(error => {
+      console.error("Error during checkout:", error);
+      alert("Une erreur est survenue. Veuillez réessayer.");
+    });
+  });
+
+  function dateDiff(start, end) {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const diffTime = Math.abs(endDate - startDate);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  function getStayDates(start, end) {
+    const dates = [];
+    let current = new Date(start);
+    const endDate = new Date(end);
+    while (current < endDate) {
+      dates.push(current.toISOString().split("T")[0]);
+      current.setDate(current.getDate() + 1);
+    }
+    return dates;
+  }
+</script>
+<!-- End of Chalet Le Renard Booking Section -->
