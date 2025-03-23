@@ -123,7 +123,7 @@
       dateFormat: "Y-m-d",
       minDate: "today",
       disable: [isDateDisabled],
-      disableMobile: true, // ✅ Ensures consistency on mobile/tablet/desktop
+      disableMobile: false, // ✅ Ensures consistency on mobile/tablet/desktop
       showMonths: window.innerWidth >= 768 ? 2 : 1,
       onChange: function(selectedDates) {
         checkDates();
@@ -154,7 +154,7 @@
       dateFormat: "Y-m-d",
       minDate: "today",
       disable: [isDateDisabled],
-      disableMobile: true, // ✅ Same here for consistency
+      disableMobile: false, // ✅ Same here for consistency
       showMonths: window.innerWidth >= 768 ? 2 : 1,
       onChange: function() {
         checkDates();
