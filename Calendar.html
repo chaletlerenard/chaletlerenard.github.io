@@ -28,18 +28,36 @@
           box-shadow: 0 2px 8px rgba(0,0,0,0.1);
           font-size: 18px;
       }
+      #reserveButton {
+          display: block;
+          margin: 20px auto;
+          padding: 15px 30px;
+          font-size: 18px;
+          border: none;
+          border-radius: 8px;
+          background-color: grey;
+          color: white;
+          cursor: pointer;
+      }
+      .button-error {
+          background-color: black !important;
+          color: white !important;
+          cursor: not-allowed !important;
+          pointer-events: none;
+      }
     </style>
 </head>
 <body>
   <div id="calendar"></div>
   <div id="pricing">Select a date range to see pricing</div>
+  <button id="reserveButton" class="button-error">Dates non disponibles</button>
 
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.4.0/ical.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
         const icalUrl = "https://www.airbnb.com/calendar/ical/your_calendar.ics";
-        
+
         async function fetchICal() {
             try {
                 const response = await fetch(icalUrl);
@@ -57,7 +75,6 @@
                     let start = vevent.startDate.toJSDate();
                     let end = vevent.endDate.toJSDate();
 
-                    // Airbnb iCal DTEND is exclusive, subtract one day for actual last unavailable night
                     let adjustedEnd = new Date(end);
                     adjustedEnd.setDate(adjustedEnd.getDate() - 1);
 
@@ -70,7 +87,7 @@
                             end: day,
                             display: "background",
                             allDay: true,
-                            backgroundColor: "#d3d3d3" // greyed out
+                            backgroundColor: "#d3d3d3"
                         });
                         currentDate.setDate(currentDate.getDate() + 1);
                     }
@@ -82,47 +99,73 @@
                 return [];
             }
         }
-        
+
         async function initCalendar() {
             let events = await fetchICal();
             let calendarEl = document.getElementById("calendar");
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: "dayGridMonth",
                 selectable: true,
-                selectOverlap: false, // prevents selecting booked dates
+                selectOverlap: false,
+                selectAllow: function(selectInfo) {
+                    let selectedStart = selectInfo.start;
+                    let selectedEnd = new Date(selectInfo.end);
+                    selectedEnd.setDate(selectedEnd.getDate() - 1);
+
+                    let isUnavailable = events.some(event => {
+                        if (event.display !== "background") return false;
+                        let eventDate = new Date(event.start);
+                        return eventDate >= selectedStart && eventDate <= selectedEnd;
+                    });
+
+                    return !isUnavailable;
+                },
                 events: events,
                 select: function(info) {
                     let selectedStart = info.start;
                     let selectedEnd = new Date(info.end);
-                    selectedEnd.setDate(selectedEnd.getDate() - 1); // Make end inclusive
+                    selectedEnd.setDate(selectedEnd.getDate() - 1);
 
                     let selectedDays = (selectedEnd - selectedStart) / (1000 * 60 * 60 * 24) + 1;
                     let basePrice = 100;
                     let totalPrice = selectedDays * basePrice;
 
+                    let pricingEl = document.getElementById("pricing");
+                    let reserveButton = document.getElementById("reserveButton");
+
                     let booked = events.some(event => {
-                        if (event.display !== "background") {
-                            return false; // skip non-background events (precaution)
-                        }
+                        if (event.display !== "background") return false;
                         let eventDate = new Date(event.start);
                         return eventDate >= selectedStart && eventDate <= selectedEnd;
                     });
 
-                    let pricingEl = document.getElementById("pricing");
+                    let invalidDepartureDay = selectedEnd.getDay() === 6;
+
                     if (booked) {
                         pricingEl.textContent = "Selected dates include unavailable days.";
+                        reserveButton.textContent = "Dates non disponibles";
+                        reserveButton.classList.add("button-error");
+                    } else if (invalidDepartureDay) {
+                        pricingEl.textContent = "Départ le samedi n'est pas permis.";
+                        reserveButton.textContent = "Départ non permis";
+                        reserveButton.classList.add("button-error");
                     } else {
                         pricingEl.textContent = "Total price for " + selectedDays + " days is $" + totalPrice.toFixed(2);
+                        reserveButton.textContent = "Réserver pour $" + totalPrice.toFixed(2);
+                        reserveButton.classList.remove("button-error");
                     }
                 },
                 unselect: function() {
                     document.getElementById("pricing").textContent = "Select a date range to see pricing";
+                    let reserveButton = document.getElementById("reserveButton");
+                    reserveButton.textContent = "Dates non disponibles";
+                    reserveButton.classList.add("button-error");
                 }
             });
-            
+
             calendar.render();
         }
-        
+
         initCalendar();
     });
   </script>
