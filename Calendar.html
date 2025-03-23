@@ -38,12 +38,13 @@
           background-color: grey;
           color: white;
           cursor: pointer;
+          transition: all 0.3s ease;
       }
       .button-error {
           background-color: black !important;
           color: white !important;
           cursor: not-allowed !important;
-          pointer-events: none;
+          pointer-events: none !important;
       }
     </style>
 </head>
@@ -57,6 +58,9 @@
   <script>
     document.addEventListener("DOMContentLoaded", function() {
         const icalUrl = "https://www.airbnb.com/calendar/ical/your_calendar.ics";
+
+        // Will hold dates that are unavailable (YYYY-MM-DD strings)
+        let unavailableDates = new Set();
 
         async function fetchICal() {
             try {
@@ -81,14 +85,17 @@
                     let currentDate = new Date(start);
                     while (currentDate <= adjustedEnd) {
                         let day = new Date(currentDate);
+                        let isoDate = day.toISOString().split("T")[0]; // 'YYYY-MM-DD'
+                        unavailableDates.add(isoDate);
+
                         fullCalendarEvents.push({
                             title: "Unavailable",
                             start: day,
-                            end: day,
                             display: "background",
                             allDay: true,
                             backgroundColor: "#d3d3d3"
                         });
+
                         currentDate.setDate(currentDate.getDate() + 1);
                     }
                 });
@@ -102,25 +109,42 @@
 
         async function initCalendar() {
             let events = await fetchICal();
+
             let calendarEl = document.getElementById("calendar");
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: "dayGridMonth",
                 selectable: true,
                 selectOverlap: false,
+
+                // THIS BLOCK PREVENTS SELECTING UNAVAILABLE DATES
                 selectAllow: function(selectInfo) {
                     let selectedStart = selectInfo.start;
                     let selectedEnd = new Date(selectInfo.end);
                     selectedEnd.setDate(selectedEnd.getDate() - 1);
 
-                    let isUnavailable = events.some(event => {
-                        if (event.display !== "background") return false;
-                        let eventDate = new Date(event.start);
-                        return eventDate >= selectedStart && eventDate <= selectedEnd;
-                    });
-
-                    return !isUnavailable;
+                    let current = new Date(selectedStart);
+                    while (current <= selectedEnd) {
+                        let isoDate = current.toISOString().split("T")[0];
+                        if (unavailableDates.has(isoDate)) {
+                            return false;
+                        }
+                        current.setDate(current.getDate() + 1);
+                    }
+                    return true;
                 },
+
+                // PREVENT CLICKS ON INDIVIDUAL UNAVAILABLE DAYS
+                dayCellDidMount: function(info) {
+                    let isoDate = info.date.toISOString().split("T")[0];
+                    if (unavailableDates.has(isoDate)) {
+                        info.el.classList.add("fc-day-disabled");
+                        info.el.style.pointerEvents = "none";
+                        info.el.style.backgroundColor = "#d3d3d3";
+                    }
+                },
+
                 events: events,
+
                 select: function(info) {
                     let selectedStart = info.start;
                     let selectedEnd = new Date(info.end);
@@ -133,11 +157,17 @@
                     let pricingEl = document.getElementById("pricing");
                     let reserveButton = document.getElementById("reserveButton");
 
-                    let booked = events.some(event => {
-                        if (event.display !== "background") return false;
-                        let eventDate = new Date(event.start);
-                        return eventDate >= selectedStart && eventDate <= selectedEnd;
-                    });
+                    // Validate booked days
+                    let current = new Date(selectedStart);
+                    let booked = false;
+                    while (current <= selectedEnd) {
+                        let isoDate = current.toISOString().split("T")[0];
+                        if (unavailableDates.has(isoDate)) {
+                            booked = true;
+                            break;
+                        }
+                        current.setDate(current.getDate() + 1);
+                    }
 
                     let invalidDepartureDay = selectedEnd.getDay() === 6;
 
@@ -155,9 +185,12 @@
                         reserveButton.classList.remove("button-error");
                     }
                 },
+
                 unselect: function() {
-                    document.getElementById("pricing").textContent = "Select a date range to see pricing";
+                    let pricingEl = document.getElementById("pricing");
                     let reserveButton = document.getElementById("reserveButton");
+
+                    pricingEl.textContent = "Select a date range to see pricing";
                     reserveButton.textContent = "Dates non disponibles";
                     reserveButton.classList.add("button-error");
                 }
