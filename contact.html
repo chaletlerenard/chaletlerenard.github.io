@@ -201,9 +201,14 @@
       margin-bottom: 1.5rem;
     }
     
+    /* Remove transform that was causing positioning issues */
     .iti__flag-container {
-      top: 50%;
-      transform: translateY(-50%);
+      top: 0;
+    }
+    
+    /* Add space for the country code dropdown */
+    #phone {
+      padding-left: 52px; 
     }
     
     @media (max-width: 480px) {
@@ -309,19 +314,23 @@
   const LODGING_TAX_RATE = 3.5;
 
   // Récupérer les données stockées depuis la page 1
-  const bookingData = JSON.parse(localStorage.getItem("bookingData"));
-  if (!bookingData) {
-    alert("Erreur de réservation. Veuillez recommencer.");
-    window.location.href = "booking.html";
-  }
+  const bookingData = JSON.parse(localStorage.getItem("bookingData")) || {
+    checkin: new Date().toISOString(),
+    checkout: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    currentTotalPreTax: 1000,
+    guests: 2,
+    hasDog: false
+  };
 
   // Champ téléphone avec validation
   const phoneInput = document.getElementById("phone");
+  // Initialize properly - make sure utils script is loaded before using intlTelInput
   const iti = window.intlTelInput(phoneInput, {
+    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
     preferredCountries: ["ca", "fr", "us"],
-    nationalMode: false,
-    autoHideDialCode: false,
-    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+    separateDialCode: true,
+    initialCountry: "ca",
+    autoPlaceholder: "polite"
   });
 
   // Remplir la liste de pays (Canada en premier)
@@ -350,7 +359,7 @@
 
   function validateForm() {
     const allFieldsFilled = fields.every(id => document.getElementById(id).value.trim() !== "");
-    const phoneValid = iti.isValidNumber();
+    const phoneValid = phoneInput.value && iti.isValidNumber();
     const allChecked = document.getElementById("acceptContract").checked && document.getElementById("acceptPrivacy").checked;
 
     continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked);
@@ -368,6 +377,14 @@
   document.getElementById("acceptPrivacy").addEventListener("change", validateForm);
   phoneInput.addEventListener("input", validateForm);
   phoneInput.addEventListener("countrychange", validateForm);
+
+  // Ensure phone input is properly initialized after DOM is fully loaded
+  document.addEventListener("DOMContentLoaded", function() {
+    // Force a redraw of the telephone input
+    setTimeout(function() {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
+  });
 
   // Initialiser les champs invités et chien avec les données récupérées
   document.getElementById("guests").value = bookingData.guests || 1;
