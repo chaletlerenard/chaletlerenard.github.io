@@ -341,7 +341,7 @@
     <input type="text" id="lastName" required>
     
     <!-- New dropdown for number of guests -->
-    <label for="guests">Nombre de personnes</label>
+    <label for="guests">Nombre de voyageurs</label>
     <select id="guests" required>
       <option value="1" selected>1</option>
       <option value="2">2</option>
@@ -504,7 +504,7 @@
       payment2Date.setDate(payment2Date.getDate() - 14);
     }
     
-    // Récupérer le nombre de personnes
+    // Récupérer le nombre de voyageurs
     const guests = document.getElementById("guests").value;
     
     // Formatage des montants en dollars (français canadien)
@@ -524,8 +524,10 @@
     const summaryContent = document.getElementById("summaryContent");
     summaryContent.innerHTML = `
       <p><strong>Date d'arrivée :</strong> ${checkinFormatted}</p>
+	<p>Heure d'arrivée : à partir de 16 h</p>
       <p><strong>Date de départ :</strong> ${checkoutFormatted}</p>
-      <p><strong>Nombre de personnes :</strong> ${guests}</p>
+	<p>Heure de départ : au plus tard 11 h</p>
+      <p><strong>Nombre de voyageurs :</strong> ${guests}</p>
       <p><strong>Nombre de jours :</strong> ${nights}</p>
       <p><strong>Prix par nuit :</strong> ${pricePerNightFormatted}</p>
       <p><strong>Chien :</strong> ${bookingData.hasDog ? "Oui" : "Non"}</p>
