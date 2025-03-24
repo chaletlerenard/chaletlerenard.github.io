@@ -238,10 +238,88 @@
       }
     }
     
-    /* Info icon styling */
+    /* Remove the old info-icon styling */
     .info-icon {
-      font-size: 0.8rem;
+      display: none;
+    }
+    
+    /* New tooltip container */
+    .tooltip-container {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      margin-left: 5px;
+    }
+    
+    /* Styled info icon */
+    .info-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: var(--secondary-color);
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
       cursor: help;
+      border: none;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    
+    .info-button:hover, .info-button:focus {
+      background-color: var(--primary-color);
+      transform: scale(1.1);
+    }
+    
+    /* Modern tooltip */
+    .tooltip {
+      visibility: hidden;
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: white;
+      color: var(--text-color);
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: var(--border-radius);
+      width: max-content;
+      max-width: 200px;
+      font-size: 0.85rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+      opacity: 0;
+      transition: opacity 0.3s, visibility 0.3s;
+      z-index: 10;
+    }
+    
+    /* Arrow for tooltip */
+    .tooltip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -6px;
+      border-width: 6px;
+      border-style: solid;
+      border-color: white transparent transparent transparent;
+    }
+    
+    /* Show tooltip on hover/focus */
+    .tooltip-container:hover .tooltip,
+    .tooltip-container:focus-within .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    /* Make sure tooltip does not get cut off on mobile */
+    @media (max-width: 480px) {
+      .tooltip {
+        max-width: 80vw;
+      }
     }
   </style>
 </head>
@@ -461,7 +539,11 @@
       <p><strong>Échéancier de paiement :</strong></p>
       <ul>
         <li>Paiement 1 (aujourd'hui) : ${payment1Formatted}</li>
-        ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2DateFormatted}) : ${payment2Formatted} <sup><span class="info-icon" title="14 jours avant votre arrivée">&#9432;</span></sup></li>` : ''}
+        ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2DateFormatted}) : ${payment2Formatted} 
+          <div class="tooltip-container">
+            <button type="button" class="info-button" aria-label="Plus d'informations">i</button>
+            <div class="tooltip">14 jours avant votre arrivée</div>
+          </div></li>` : ''}
       </ul>
     `;
   }
