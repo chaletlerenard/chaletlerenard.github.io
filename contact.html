@@ -1,4 +1,4 @@
-<!DOCTYPE html>  
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -321,7 +321,6 @@
         max-width: 80vw;
       }
     }
-
   </style>
 </head>
 <body>
@@ -480,15 +479,15 @@
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
     const pricePerNight = (bookingData.currentTotalPreTax - 150) / nights;
     
+    // Frais chien (75 $ ajoutés si applicable)
+    const dogFee = bookingData.hasDog ? 75 : 0;
+    
     // Calcul du sous-total et taxes sur le tarif de base (sans le chien)
     const subtotal = bookingData.currentTotalPreTax;
     const gstAmount = subtotal * (GST_RATE / 100);
     const qstAmount = subtotal * (QST_RATE / 100);
     const lodgingTaxAmount = (subtotal - 150 - dogFee) * (LODGING_TAX_RATE / 100);
     const totalWithoutDog = subtotal + gstAmount + qstAmount + lodgingTaxAmount;
-    
-    // Frais chien (75 $ ajoutés si applicable)
-    const dogFee = bookingData.hasDog ? 75 : 0;
     const effectiveTotal = totalWithoutDog + dogFee;
     
     // Échéancier de paiement
@@ -524,9 +523,9 @@
     const summaryContent = document.getElementById("summaryContent");
     summaryContent.innerHTML = `
       <p><strong>Date d'arrivée :</strong> ${checkinFormatted}</p>
-	<p><i>Heure d'arrivée : à partir de 16 h</i></p>
+      <p><i>Heure d'arrivée : à partir de 16 h</i></p>
       <p><strong>Date de départ :</strong> ${checkoutFormatted}</p>
-	<p></i>Heure de départ : au plus tard 11 h</i></p>
+      <p><i>Heure de départ : au plus tard 11 h</i></p>
       <p><strong>Nombre de voyageurs :</strong> ${guests}</p>
       <p><strong>Durée du séjour :</strong> ${nights} nuits</p>
       <p><strong>Chien :</strong> ${bookingData.hasDog ? "Oui" : "Non"}</p>
