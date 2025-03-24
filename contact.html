@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -438,14 +438,16 @@
     const checkoutFormatted = checkout.toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
     const payment2DateFormatted = payment2Date ? payment2Date.toLocaleDateString('fr-CA') : "";
     
-    // Mettre à jour le contenu du résumé
+    // Mettre à jour le contenu du résumé avec les nouveaux éléments
     const summaryContent = document.getElementById("summaryContent");
     summaryContent.innerHTML = `
       <p><strong>Date d'arrivée :</strong> ${checkinFormatted}</p>
       <p><strong>Date de départ :</strong> ${checkoutFormatted}</p>
       <p><strong>Nombre de personnes :</strong> ${guests}</p>
+      <p><strong>Nombre de jours :</strong> ${nights}</p>
       <p><strong>Prix par nuit :</strong> ${pricePerNightFormatted}</p>
       <p><strong>Chien :</strong> ${document.getElementById("hasDog").checked ? "Oui (+75,00 $)" : "Non"}</p>
+      <p><strong>Frais de ménage :</strong> 150 $</p>
       <hr>
       <p><strong>Sous-total :</strong> ${subtotalFormatted}</p>
       <ul>
