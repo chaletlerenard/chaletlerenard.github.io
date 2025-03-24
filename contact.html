@@ -185,28 +185,16 @@
       border-top: 1px solid var(--border-color);
     }
     
-    #summaryContent ul {
-      list-style-type: none;
-      padding-left: 1rem;
-      margin-bottom: 0.75rem;
-    }
-    
-    #summaryContent ul li {
-      margin-bottom: 0.5rem;
-    }
-    
     /* Intl Tel Input Customization */
     .iti {
       width: 100%;
       margin-bottom: 1.5rem;
     }
     
-    /* Remove transform that was causing positioning issues */
     .iti__flag-container {
       top: 0;
     }
     
-    /* Add space for the country code dropdown */
     #phone {
       padding-left: 52px; 
     }
@@ -231,19 +219,16 @@
       content: "";
     }
     
-    /* Responsive summary section */
     @media (max-width: 767px) {
       .summary-section {
         order: -1;
       }
     }
     
-    /* Remove the old info-icon styling */
     .info-icon {
       display: none;
     }
     
-    /* New tooltip container */
     .tooltip-container {
       position: relative;
       display: inline-flex;
@@ -251,7 +236,6 @@
       margin-left: 5px;
     }
     
-    /* Styled info icon */
     .info-button {
       display: inline-flex;
       align-items: center;
@@ -274,7 +258,6 @@
       transform: scale(1.1);
     }
     
-    /* Modern tooltip */
     .tooltip {
       visibility: hidden;
       position: absolute;
@@ -296,7 +279,6 @@
       z-index: 10;
     }
     
-    /* Arrow for tooltip */
     .tooltip::after {
       content: "";
       position: absolute;
@@ -308,14 +290,12 @@
       border-color: white transparent transparent transparent;
     }
     
-    /* Show tooltip on hover/focus */
     .tooltip-container:hover .tooltip,
     .tooltip-container:focus-within .tooltip {
       visibility: visible;
       opacity: 1;
     }
     
-    /* Make sure tooltip does not get cut off on mobile */
     @media (max-width: 480px) {
       .tooltip {
         max-width: 80vw;
@@ -403,9 +383,11 @@
     hasDog: false
   };
 
+  // Conserver le nombre de voyageurs initial pour le calcul d'ajustement
+  const initialGuests = bookingData.guests;
+
   // Champ téléphone avec validation
   const phoneInput = document.getElementById("phone");
-  // Initialize properly - make sure utils script is loaded before using intlTelInput
   const iti = window.intlTelInput(phoneInput, {
     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
     preferredCountries: ["ca", "fr", "us"],
@@ -445,7 +427,6 @@
 
     continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked);
     
-    // Visual feedback for phone validation
     if (phoneInput.value) {
       phoneInput.style.borderColor = phoneValid ? "var(--success-color)" : "var(--error-color)";
     } else {
@@ -459,9 +440,7 @@
   phoneInput.addEventListener("input", validateForm);
   phoneInput.addEventListener("countrychange", validateForm);
 
-  // Ensure phone input is properly initialized after DOM is fully loaded
   document.addEventListener("DOMContentLoaded", function() {
-    // Force a redraw of the telephone input
     setTimeout(function() {
       window.dispatchEvent(new Event('resize'));
     }, 100);
@@ -469,7 +448,6 @@
 
   // Initialiser le champ invités avec les données récupérées
   document.getElementById("guests").value = bookingData.guests || 1;
-  // La valeur "hasDog" est désormais déterminée par bookingData et non modifiable dans "vos coordonnées"
 
   // Mise à jour dynamique du résumé
   function updateSummary() {
@@ -477,19 +455,38 @@
     const checkin = new Date(bookingData.checkin);
     const checkout = new Date(bookingData.checkout);
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
-    const pricePerNight = (bookingData.currentTotalPreTax - 150) / nights;
     
+    // Obtenir le nombre de voyageurs actuel et calculer l'ajustement
+    const currentGuests = parseInt(document.getElementById("guests").value);
+    let adjustment = 0;
+    if (initialGuests === 6 && currentGuests !== 6) {
+      adjustment = -20 * nights;
+    } else if (initialGuests !== 6 && currentGuests === 6) {
+      adjustment = 20 * nights;
+    }
+    const adjustedSubtotal = bookingData.currentTotalPreTax + adjustment;
+
     // Frais chien (75 $ ajoutés si applicable)
     const dogFee = bookingData.hasDog ? 75 : 0;
     
-    // Calcul du sous-total et taxes sur le tarif de base (sans le chien)
-    const subtotal = bookingData.currentTotalPreTax;
-    const gstAmount = subtotal * (GST_RATE / 100);
-    const qstAmount = subtotal * (QST_RATE / 100);
-    const lodgingTaxAmount = (subtotal - 150 - dogFee) * (LODGING_TAX_RATE / 100);
-    const totalWithoutDog = subtotal + gstAmount + qstAmount + lodgingTaxAmount;
-    const effectiveTotal = totalWithoutDog + dogFee;
+    // Calcul des taxes basées sur le sous-total ajusté
+    const gstAmount = adjustedSubtotal * (GST_RATE / 100);
+    const qstAmount = adjustedSubtotal * (QST_RATE / 100);
+    const lodgingTaxAmount = (adjustedSubtotal - 150 - dogFee) * (LODGING_TAX_RATE / 100);
+    const totalTaxAmount = gstAmount + qstAmount + lodgingTaxAmount;
+    const effectiveTotal = adjustedSubtotal + totalTaxAmount + dogFee;
     
+    // Calcul du prix par nuit basé sur le sous-total ajusté (moins les frais de ménage)
+    const pricePerNight = (adjustedSubtotal - 150) / nights;
+    
+    // Formatage des montants en dollars (français canadien)
+    const adjustedSubtotalFormatted = adjustedSubtotal.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
+    const totalTaxFormatted = totalTaxAmount.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
+    const effectiveTotalFormatted = effectiveTotal.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
+    const pricePerNightFormatted = pricePerNight.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
+    const checkinFormatted = checkin.toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+    const checkoutFormatted = checkout.toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+
     // Échéancier de paiement
     const today = new Date();
     const diffDays = Math.ceil((checkin - today) / (1000 * 60 * 60 * 24));
@@ -502,24 +499,12 @@
       payment2Date = new Date(checkin);
       payment2Date.setDate(payment2Date.getDate() - 14);
     }
-    
-    // Récupérer le nombre de voyageurs
-    const guests = document.getElementById("guests").value;
-    
-    // Formatage des montants en dollars (français canadien)
-    const subtotalFormatted = subtotal.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
-    const gstFormatted = gstAmount.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
-    const qstFormatted = qstAmount.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
-    const lodgingTaxFormatted = lodgingTaxAmount.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
-    const effectiveTotalFormatted = effectiveTotal.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
     const payment1Formatted = payment1.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
     const payment2Formatted = payment2.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
-    const pricePerNightFormatted = pricePerNight.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
-    const checkinFormatted = checkin.toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
-    const checkoutFormatted = checkout.toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
     const payment2DateFormatted = payment2Date ? payment2Date.toLocaleDateString('fr-CA') : "";
     
-    // Mettre à jour le contenu du résumé avec les nouveaux éléments
+    // Mettre à jour le contenu du résumé
+    const guests = document.getElementById("guests").value;
     const summaryContent = document.getElementById("summaryContent");
     summaryContent.innerHTML = `
       <p><strong>Date d'arrivée :</strong> ${checkinFormatted}</p>
@@ -532,12 +517,8 @@
       <p><strong>Prix par nuit :</strong> ${pricePerNightFormatted}</p>
       <p><strong>Frais de ménage :</strong> 150 $</p>
       <hr>
-      <p><strong>Sous-total (avant taxes) :</strong> ${subtotalFormatted}</p>
-      <ul>
-        <li>TPS (${GST_RATE}%): ${gstFormatted}</li>
-        <li>TVQ (${QST_RATE}%): ${qstFormatted}</li>
-        <li>Taxe sur l'hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxFormatted}</li>
-      </ul>
+      <p><strong>Sous-total (avant taxes) :</strong> ${adjustedSubtotalFormatted}</p>
+      <p><strong>Taxes :</strong> ${totalTaxFormatted}</p>
       <hr>
       <p><strong>Total à payer :</strong> ${effectiveTotalFormatted}</p>
       <hr>
@@ -553,13 +534,30 @@
     `;
   }
   
-  // Appeler updateSummary initialement et lors des changements des nouveaux champs
+  // Appeler updateSummary initialement et lors des changements du nombre de voyageurs
   updateSummary();
   document.getElementById("guests").addEventListener("input", updateSummary);
-  // L'option chien n'est plus modifiable dans cette section, donc pas d'écouteur d'événement pour "hasDog"
   
   // Envoi du formulaire
   continueButton.addEventListener("click", () => {
+    const checkin = new Date(bookingData.checkin);
+    const checkout = new Date(bookingData.checkout);
+    const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
+    const dogFee = bookingData.hasDog ? 75 : 0;
+    const currentGuests = parseInt(document.getElementById("guests").value);
+    let adjustment = 0;
+    if (initialGuests === 6 && currentGuests !== 6) {
+      adjustment = -20 * nights;
+    } else if (initialGuests !== 6 && currentGuests === 6) {
+      adjustment = 20 * nights;
+    }
+    const adjustedSubtotal = bookingData.currentTotalPreTax + adjustment;
+    const effectiveTotal = adjustedSubtotal +
+         (adjustedSubtotal * (GST_RATE / 100)) +
+         (adjustedSubtotal * (QST_RATE / 100)) +
+         ((adjustedSubtotal - 150 - dogFee) * (LODGING_TAX_RATE / 100)) +
+         dogFee;
+
     const guestData = {
       email: document.getElementById("email").value,
       firstName: document.getElementById("firstName").value,
@@ -571,32 +569,14 @@
       guests: document.getElementById("guests").value,
       hasDog: bookingData.hasDog,
       booking: bookingData,
-      totalAmount: bookingData.hasDog ? (bookingData.currentTotalPreTax + 75 + 
-                     (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
-                     (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
-                     ((bookingData.currentTotalPreTax - 150) * (LODGING_TAX_RATE / 100))) : 
-                     (bookingData.currentTotalPreTax + 
-                     (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
-                     (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
-                     ((bookingData.currentTotalPreTax - 150) * (LODGING_TAX_RATE / 100))),
-      // Paiement 2 est calculé s'il y a plus de 14 jours avant l'arrivée
+      totalAmount: effectiveTotal,
       payment1: null,
       payment2: null,
       payment2Date: null
     };
 
-    // Recalculer l'échéancier pour les données envoyées
-    const checkin = new Date(bookingData.checkin);
     const today = new Date();
     const diffDays = Math.ceil((checkin - today) / (1000 * 60 * 60 * 24));
-    let effectiveTotal = bookingData.hasDog ? (bookingData.currentTotalPreTax + 75 + 
-                     (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
-                     (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
-                     ((bookingData.currentTotalPreTax -150) * (LODGING_TAX_RATE / 100))) : 
-                     (bookingData.currentTotalPreTax + 
-                     (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
-                     (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
-                     ((bookingData.currentTotalPreTax -150) * (LODGING_TAX_RATE / 100)));
     if (diffDays > 14) {
       guestData.payment1 = effectiveTotal / 2;
       guestData.payment2 = effectiveTotal - guestData.payment1;
