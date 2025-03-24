@@ -459,7 +459,7 @@
       lastName: document.getElementById("lastName").value,
       country: document.getElementById("country").value,
       language: document.getElementById("language").value,
-      phone: iti.getNumber(),
+      phone: iti.getNumber(intlTelInputUtils.numberFormat.E164),
       comments: document.getElementById("comments").value,
       guests: document.getElementById("guests").value,
       hasDog: document.getElementById("hasDog").checked,
