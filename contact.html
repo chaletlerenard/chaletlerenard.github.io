@@ -5,8 +5,234 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Coordonnées Client - Chalet Le Renard</title>
 
-  <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css" />
+  
+  <style>
+    :root {
+      --primary-color: #3a5a40;
+      --secondary-color: #588157;
+      --accent-color: #dad7cd;
+      --text-color: #333;
+      --light-bg: #f8f9fa;
+      --border-color: #dee2e6;
+      --error-color: #dc3545;
+      --success-color: #198754;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --border-radius: 8px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--light-bg);
+      padding: 0;
+      margin: 0;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    
+    @media (min-width: 768px) {
+      .container {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+    
+    .form-section {
+      flex: 1;
+      background-color: white;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .summary-section {
+      width: 100%;
+      background-color: white;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    
+    @media (min-width: 768px) {
+      .form-section {
+        flex: 3;
+      }
+      
+      .summary-section {
+        flex: 2;
+        position: sticky;
+        top: 2rem;
+      }
+    }
+    
+    h2, h3 {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 3px rgba(88, 129, 87, 0.2);
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    
+    .checkbox-group input {
+      width: auto;
+      margin-right: 10px;
+      margin-top: 4px;
+      margin-bottom: 0;
+    }
+    
+    .checkbox-group label {
+      margin-bottom: 0;
+    }
+    
+    a {
+      color: var(--secondary-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    .button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      margin-top: 1rem;
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    .button:hover:not(:disabled) {
+      background-color: var(--secondary-color);
+    }
+    
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    #summaryContent {
+      line-height: 1.8;
+    }
+    
+    #summaryContent p {
+      margin-bottom: 0.75rem;
+    }
+    
+    #summaryContent hr {
+      margin: 1rem 0;
+      border: none;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    #summaryContent ul {
+      list-style-type: none;
+      padding-left: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    #summaryContent ul li {
+      margin-bottom: 0.5rem;
+    }
+    
+    /* Intl Tel Input Customization */
+    .iti {
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    
+    .iti__flag-container {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    @media (max-width: 480px) {
+      .form-section, .summary-section {
+        padding: 1.5rem;
+      }
+      
+      .button {
+        padding: 0.75rem 1.5rem;
+      }
+    }
+    
+    /* Highlight required fields */
+    label[for]::after {
+      content: " *";
+      color: var(--error-color);
+    }
+    
+    label[for="comments"]::after {
+      content: "";
+    }
+    
+    /* Responsive summary section */
+    @media (max-width: 767px) {
+      .summary-section {
+        order: -1;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -15,37 +241,38 @@
   <div class="form-section">
     <h2>Vos coordonnées</h2>
 
-    <label for="email">Courriel *</label>
+    <label for="email">Courriel</label>
     <input type="email" id="email" required>
 
-    <label for="firstName">Prénom *</label>
+    <label for="firstName">Prénom</label>
     <input type="text" id="firstName" required>
 
-    <label for="lastName">Nom *</label>
+    <label for="lastName">Nom</label>
     <input type="text" id="lastName" required>
 
-    <label for="country">Pays *</label>
+    <label for="country">Pays</label>
     <select id="country"></select>
 
-    <label for="phone">Numéro de téléphone *</label>
+    <label for="phone">Numéro de téléphone</label>
     <input type="tel" id="phone" required>
 
-    <label for="language">Langue de préférence *</label>
+    <label for="language">Langue de préférence</label>
     <select id="language" required>
       <option value="francais" selected>Français</option>
       <option value="anglais">Anglais</option>
     </select>
 
-    <textarea id="comments" placeholder="Commentaires (optionnel)"></textarea>
+    <label for="comments">Commentaires (optionnel)</label>
+    <textarea id="comments" placeholder="Ajoutez vos commentaires ici..."></textarea>
 
     <div class="checkbox-group">
       <input type="checkbox" id="acceptContract">
-      <label for="acceptContract">J'ai lu et j'accepte le <a href="#" target="_blank">contrat de location</a> *</label>
+      <label for="acceptContract">J'ai lu et j'accepte le <a href="#" target="_blank">contrat de location</a></label>
     </div>
 
     <div class="checkbox-group">
       <input type="checkbox" id="acceptPrivacy">
-      <label for="acceptPrivacy">J'ai lu et j'accepte la <a href="#" target="_blank">politique de confidentialité</a> *</label>
+      <label for="acceptPrivacy">J'ai lu et j'accepte la <a href="#" target="_blank">politique de confidentialité</a></label>
     </div>
 
     <button class="button" id="continueButton" disabled>Continuer</button>
@@ -96,11 +323,17 @@
     payment2Date.setDate(payment2Date.getDate() - 14);
   }
 
+  // Formater les dates pour l'affichage
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
   // Affichage dans le résumé
   const summaryContent = document.getElementById("summaryContent");
   summaryContent.innerHTML = `
-    <p><strong>Date d'arrivée :</strong> ${bookingData.checkin}</p>
-    <p><strong>Date de départ :</strong> ${bookingData.checkout}</p>
+    <p><strong>Date d'arrivée :</strong> ${formatDate(bookingData.checkin)}</p>
+    <p><strong>Date de départ :</strong> ${formatDate(bookingData.checkout)}</p>
     <p><strong>Nombre de personnes :</strong> ${bookingData.guests}</p>
     ${bookingData.hasDog ? '<p><strong>Chien :</strong> Oui (+75 $)</p>' : '<p><strong>Chien :</strong> Non</p>'}
     <hr>
@@ -108,7 +341,7 @@
     <ul>
       <li>TPS (${GST_RATE}%): ${gstAmount.toFixed(2)} $</li>
       <li>TVQ (${QST_RATE}%): ${qstAmount.toFixed(2)} $</li>
-      <li>Taxe sur l’hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxAmount.toFixed(2)} $</li>
+      <li>Taxe sur l'hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxAmount.toFixed(2)} $</li>
     </ul>
     <hr>
     <p><strong>Total à payer :</strong> ${totalAmount.toFixed(2)} $</p>
@@ -116,7 +349,7 @@
     <p><strong>Échéancier de paiement :</strong></p>
     <ul>
       <li>Paiement 1 (aujourd'hui) : ${payment1.toFixed(2)} $</li>
-      ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2Date.toLocaleDateString()}) : ${payment2.toFixed(2)} $</li>` : ''}
+      ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2Date.toLocaleDateString('fr-CA')}) : ${payment2.toFixed(2)} $</li>` : ''}
     </ul>
   `;
 
@@ -143,7 +376,7 @@
   // Champ téléphone avec validation
   const phoneInput = document.getElementById("phone");
   const iti = window.intlTelInput(phoneInput, {
-    preferredCountries: ["ca"],
+    preferredCountries: ["ca", "fr", "us"],
     separateDialCode: true,
     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
   });
@@ -158,6 +391,17 @@
     const allChecked = document.getElementById("acceptContract").checked && document.getElementById("acceptPrivacy").checked;
 
     continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked);
+    
+    // Visual feedback for phone validation
+    if (phoneInput.value) {
+      if (phoneValid) {
+        phoneInput.style.borderColor = var(--success-color);
+      } else {
+        phoneInput.style.borderColor = var(--error-color);
+      }
+    } else {
+      phoneInput.style.borderColor = '';
+    }
   }
 
   fields.forEach(id => document.getElementById(id).addEventListener("input", validateForm));
@@ -195,6 +439,10 @@
       } else {
         alert("Erreur lors de la création de la session.");
       }
+    })
+    .catch(error => {
+      console.error("Erreur:", error);
+      alert("Une erreur est survenue. Veuillez réessayer.");
     });
   });
 </script>
