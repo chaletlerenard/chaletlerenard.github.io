@@ -1,70 +1,95 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coordonnées Client - Chalet Le Renard</title>
+  <title>Coordonnées - Chalet Le Renard</title>
 
   <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body>
 
-<div class="container">
+<section class="container form-summary-wrapper">
   <div class="form-section">
     <h2>Vos coordonnées</h2>
 
-    <label for="email">Courriel *</label>
-    <input type="email" id="email">
+    <form id="contact-form">
+      <div class="field-group">
+        <label for="email">Courriel *</label>
+        <input type="email" id="email" required>
+      </div>
 
-    <label for="firstName">Prénom *</label>
-    <input type="text" id="firstName">
+      <div class="field-group">
+        <label for="firstName">Prénom *</label>
+        <input type="text" id="firstName" required>
+      </div>
 
-    <label for="lastName">Nom *</label>
-    <input type="text" id="lastName">
+      <div class="field-group">
+        <label for="lastName">Nom *</label>
+        <input type="text" id="lastName" required>
+      </div>
 
-    <label for="country">Pays *</label>
-    <select id="country"></select>
+      <div class="field-group">
+        <label for="country">Pays *</label>
+        <select id="country" required></select>
+      </div>
 
-    <label for="phone">Numéro de téléphone *</label>
-    <input type="tel" id="phone">
+      <div class="field-group">
+        <label for="phone">Numéro de téléphone *</label>
+        <input type="tel" id="phone" required>
+      </div>
 
-    <label for="language">Langue de préférence *</label>
-    <select id="language">
-      <option value="francais" selected>Français</option>
-      <option value="anglais">Anglais</option>
-    </select>
+      <div class="field-group">
+        <label for="language">Langue de préférence *</label>
+        <select id="language" required>
+          <option value="francais" selected>Français</option>
+          <option value="anglais">Anglais</option>
+        </select>
+      </div>
 
-    <textarea id="comments" placeholder="Commentaires (optionnel)"></textarea>
+      <textarea id="comments" placeholder="Commentaires (optionnel)"></textarea>
 
-    <div class="checkbox-group">
-      <input type="checkbox" id="acceptContract">
-      <label for="acceptContract">J'ai lu et j'accepte le <a href="#">contrat de location</a></label>
-    </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="acceptContract">
+        <label for="acceptContract">
+          <i data-lucide="file-text" class="icon-small"></i> J'accepte le <a href="#">contrat de location</a>
+        </label>
+      </div>
 
-    <div class="checkbox-group">
-      <input type="checkbox" id="acceptPrivacy">
-      <label for="acceptPrivacy">J'ai lu et j'accepte la <a href="#">politique de confidentialité</a></label>
-    </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="acceptPrivacy">
+        <label for="acceptPrivacy">
+          <i data-lucide="shield-check" class="icon-small"></i> J'accepte la <a href="#">politique de confidentialité</a>
+        </label>
+      </div>
 
-    <button class="button" id="continueButton" disabled>Continuer</button>
+      <button type="button" id="continueButton" class="button primary-button" disabled>
+        <i data-lucide="arrow-right-circle" class="icon"></i> Continuer
+      </button>
+    </form>
   </div>
 
-  <div class="summary-section">
+  <aside class="summary-section">
     <h3>Résumé de la réservation</h3>
     <div id="summaryContent"></div>
-  </div>
-</div>
+  </aside>
+</section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 <script>
+  lucide.createIcons();
+
   const GST_RATE = 5;
   const QST_RATE = 9.975;
   const LODGING_TAX_RATE = 3.5;
 
   const bookingData = JSON.parse(localStorage.getItem("bookingData"));
   if (!bookingData) {
-    alert("Aucune réservation trouvée. Retour à la réservation.");
+    alert("Aucune réservation trouvée.");
     window.location.href = "booking.html";
   }
 
@@ -100,23 +125,24 @@
     <ul>
       <li>TPS (${GST_RATE}%): ${gstAmount.toFixed(2)} $</li>
       <li>TVQ (${QST_RATE}%): ${qstAmount.toFixed(2)} $</li>
-      <li>Taxe sur l’hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxAmount.toFixed(2)} $</li>
+      <li>Taxe Hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxAmount.toFixed(2)} $</li>
     </ul>
     <hr>
     <p><strong>Total :</strong> ${totalAmount.toFixed(2)} $</p>
     <hr>
-    <p><strong>Échéancier de paiement :</strong></p>
+    <p><strong>Échéancier :</strong></p>
     <ul>
-      <li>Paiement 1 (aujourd'hui) : ${payment1.toFixed(2)} $</li>
-      ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2Date.toLocaleDateString()}) : ${payment2.toFixed(2)} $</li>` : ''}
+      <li>Paiement 1 : ${payment1.toFixed(2)} $</li>
+      ${payment2 > 0 ? `<li>Paiement 2 : ${payment2.toFixed(2)} $ (le ${payment2Date.toLocaleDateString()})</li>` : ''}
     </ul>
   `;
+
+  lucide.createIcons();
 
   const phoneInput = document.getElementById("phone");
   const iti = window.intlTelInput(phoneInput, {
     preferredCountries: ["ca"],
-    separateDialCode: true,
-    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+    separateDialCode: true
   });
 
   const fields = ["email", "firstName", "lastName", "country", "language"];
@@ -151,8 +177,6 @@
       payment2Date: payment2Date ? payment2Date.toISOString().split("T")[0] : null
     };
 
-    console.log("Envoi au backend :", guestData);
-
     fetch("https://chalet-checkout-backend.fly.dev/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -163,7 +187,7 @@
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert("Erreur lors de la création de la session de paiement.");
+        alert("Erreur lors de la création de la session.");
       }
     });
   });
