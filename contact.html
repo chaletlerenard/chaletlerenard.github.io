@@ -319,7 +319,8 @@
   const phoneInput = document.getElementById("phone");
   const iti = window.intlTelInput(phoneInput, {
     preferredCountries: ["ca", "fr", "us"],
-    separateDialCode: true,
+    nationalMode: false,
+    autoHideDialCode: false,
     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
   });
 
