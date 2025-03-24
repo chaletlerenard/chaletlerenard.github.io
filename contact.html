@@ -484,7 +484,7 @@
     const subtotal = bookingData.currentTotalPreTax;
     const gstAmount = subtotal * (GST_RATE / 100);
     const qstAmount = subtotal * (QST_RATE / 100);
-    const lodgingTaxAmount = subtotal * (LODGING_TAX_RATE / 100);
+    const lodgingTaxAmount = (subtotal - 150 - dogFee) * (LODGING_TAX_RATE / 100);
     const totalWithoutDog = subtotal + gstAmount + qstAmount + lodgingTaxAmount;
     
     // Frais chien (75 $ ajoutés si applicable)
@@ -528,12 +528,12 @@
       <p><strong>Date de départ :</strong> ${checkoutFormatted}</p>
 	<p>Heure de départ : au plus tard 11 h</p>
       <p><strong>Nombre de voyageurs :</strong> ${guests}</p>
-      <p><strong>Nombre de jours :</strong> ${nights}</p>
-      <p><strong>Prix par nuit :</strong> ${pricePerNightFormatted}</p>
+      <p><strong>Durée du séjour :</strong> ${nights}</p>
       <p><strong>Chien :</strong> ${bookingData.hasDog ? "Oui" : "Non"}</p>
+      <p><strong>Prix par nuit :</strong> ${pricePerNightFormatted}</p>
       <p><strong>Frais de ménage :</strong> 150 $</p>
       <hr>
-      <p><strong>Sous-total :</strong> ${subtotalFormatted}</p>
+      <p><strong>Sous-total (avant taxes) :</strong> ${subtotalFormatted}</p>
       <ul>
         <li>TPS (${GST_RATE}%): ${gstFormatted}</li>
         <li>TVQ (${QST_RATE}%): ${qstFormatted}</li>
@@ -575,11 +575,11 @@
       totalAmount: bookingData.hasDog ? (bookingData.currentTotalPreTax + 75 + 
                      (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
                      (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
-                     (bookingData.currentTotalPreTax * (LODGING_TAX_RATE / 100))) : 
+                     ((bookingData.currentTotalPreTax - 150) * (LODGING_TAX_RATE / 100))) : 
                      (bookingData.currentTotalPreTax + 
                      (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
                      (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
-                     (bookingData.currentTotalPreTax * (LODGING_TAX_RATE / 100))),
+                     ((bookingData.currentTotalPreTax - 150) * (LODGING_TAX_RATE / 100))),
       // Paiement 2 est calculé s'il y a plus de 14 jours avant l'arrivée
       payment1: null,
       payment2: null,
@@ -597,7 +597,7 @@
                      (bookingData.currentTotalPreTax + 
                      (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
                      (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
-                     (bookingData.currentTotalPreTax * (LODGING_TAX_RATE / 100)));
+                     ((bookingData.currentTotalPreTax -150) * (LODGING_TAX_RATE / 100)));
     if (diffDays > 14) {
       guestData.payment1 = effectiveTotal / 2;
       guestData.payment2 = effectiveTotal - guestData.payment1;
