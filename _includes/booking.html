@@ -1,78 +1,197 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Réservation - Chalet Le Renard</title>
+<!-- Start of Chalet Le Renard Booking Section --> 
+<section id="booking" style="padding: 20px; background-color: #f9f9f9;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <h2 style="font-size: 24px; margin-bottom: 20px;">Réservez votre séjour au Chalet Le Renard</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+      
+      <!-- Check-in date -->
+      <div style="flex: 1 1 300px;">
+        <label for="checkin" style="display: block; margin-bottom: 5px; font-weight: bold;">Date d'arrivée</label>
+        <input type="text" id="checkin" placeholder="Choisissez une date" readonly style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+      </div>
 
-  <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
-  <link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/flatpickr.min.css">
-</head>
-<body>
+      <!-- Check-out date -->
+      <div style="flex: 1 1 300px;">
+        <label for="checkout" style="display: block; margin-bottom: 5px; font-weight: bold;">Date de départ</label>
+        <input type="text" id="checkout" placeholder="Choisissez une date" readonly style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+      </div>
 
-<section id="booking">
-  <h2>Réservez votre séjour au Chalet Le Renard</h2>
+      <!-- Guests -->
+      <div style="flex: 1 1 300px;">
+        <label for="guests" style="display: block; margin-bottom: 5px; font-weight: bold;">Nombre de personnes</label>
+        <select id="guests" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+          <option value="1">1 personne</option>
+          <option value="2">2 personnes</option>
+          <option value="3">3 personnes</option>
+          <option value="4">4 personnes</option>
+          <option value="5">5 personnes</option>
+          <option value="6">6 personnes</option>
+        </select>
+      </div>
 
-  <!-- Formulaire de réservation -->
-  <div>
-    <label>Date d'arrivée</label>
-    <input type="text" id="checkin">
+      <!-- Dog -->
+      <div style="flex: 1 1 300px;">
+        <label for="dog" style="display: block; margin-bottom: 5px; font-weight: bold;">J'amènerai mon chien</label>
+        <div style="display: flex; align-items: center;">
+          <input type="checkbox" id="dog" style="margin-right: 5px;">
+          <span style="font-size: 14px; color: #666;">(+75 $)</span>
+        </div>
+      </div>
 
-    <label>Date de départ</label>
-    <input type="text" id="checkout">
-
-    <label>Nombre de personnes</label>
-    <select id="guests">
-      <option value="1">1 personne</option>
-      <option value="2">2 personnes</option>
-      <option value="3">3 personnes</option>
-      <option value="4">4 personnes</option>
-      <option value="5">5 personnes</option>
-      <option value="6">6 personnes</option>
-    </select>
-
-    <label>J'amènerai mon chien</label>
-    <input type="checkbox" id="dog">
-
-    <button id="searchButton" disabled>Réserver</button>
+      <!-- Reserve button -->
+      <div style="flex: 1 1 300px; align-self: flex-end;">
+        <button id="searchButton" disabled style="width: 100%; padding: 10px; background-color: #ccc; color: #fff; border: none; border-radius: 5px; cursor: not-allowed; transition: background-color 0.3s;">Réserver</button>
+      </div>
+    </div>
   </div>
 </section>
 
+<!-- Dependencies -->
+<link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/flatpickr.min.css">
 <script src="https://npmcdn.com/flatpickr/dist/flatpickr.min.js"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
 
 <script>
+  const stripe = Stripe("pk_live_51OxskHLiPCVDYAuQlkZnBtv5TfdLNUlUU4AvFIdNKZ25Ogc7cj25R2oIwyKHOVl9DM5Zb11GkA32IH4LagpoKfCr00yR2kV7Wl");
   const searchButton = document.getElementById("searchButton");
 
   let latestJsonData = [];
+  let unavailableDates = [];
   let currentTotalPreTax = 0;
 
-  // Exemple données JSON simulées
-  latestJsonData = [
-    { Date: "2025-05-01", Available: "True", "Final Price": "300", "Min Stay": "2" },
-    { Date: "2025-05-02", Available: "True", "Final Price": "300", "Min Stay": "2" }
-  ];
+  let checkinPicker, checkoutPicker;
 
-  flatpickr("#checkin", {
-    locale: flatpickr.l10ns.fr,
-    dateFormat: "Y-m-d",
-    onChange: checkDates
-  });
+  function isDateDisabled(date) {
+    const formattedDate = date.toISOString().split("T")[0];
+    return unavailableDates.includes(formattedDate);
+  }
 
-  flatpickr("#checkout", {
-    locale: flatpickr.l10ns.fr,
-    dateFormat: "Y-m-d",
-    onChange: checkDates
-  });
+  fetch("https://chaletlerenard.github.io/data/latest.json")
+    .then(response => response.json())
+    .then(data => {
+      latestJsonData = data;
+    })
+    .catch(error => console.error("Error loading JSON data:", error));
+
+  const proxyIcsUrl = "https://calendar.8zwxr4hbwn.workers.dev/";
+  fetch(proxyIcsUrl)
+    .then(response => response.ok ? response.text() : Promise.reject("Network response was not ok."))
+    .then(data => {
+      unavailableDates = parseICal(data);
+      initDatePickers();
+    })
+    .catch(error => {
+      console.error("Error fetching ICS data:", error);
+      initDatePickers();
+    });
+
+  function parseICal(data) {
+    const lines = data.split(/\r?\n/);
+    const unavailable = [];
+
+    let currentStart = null;
+    let currentEnd = null;
+
+    lines.forEach(line => {
+      if (line.startsWith("DTSTART")) {
+        const date = line.split(":")[1];
+        if (date) {
+          currentStart = date.slice(0, 4) + "-" + date.slice(4, 6) + "-" + date.slice(6, 8);
+        }
+      }
+      if (line.startsWith("DTEND")) {
+        const date = line.split(":")[1];
+        if (date) {
+          currentEnd = date.slice(0, 4) + "-" + date.slice(4, 6) + "-" + date.slice(6, 8);
+          let currentDate = new Date(currentStart + "T00:00:00");
+          const endDate = new Date(currentEnd + "T00:00:00");
+          while (currentDate < endDate) {
+            const formattedDate = currentDate.toISOString().split("T")[0];
+            unavailable.push(formattedDate);
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+        }
+      }
+    });
+    return unavailable;
+  }
+
+  function initDatePickers() {
+    checkinPicker = flatpickr("#checkin", {
+      locale: flatpickr.l10ns.fr,
+      dateFormat: "Y-m-d",
+      minDate: "today",
+      disable: [isDateDisabled],
+      disableMobile: false,
+      showMonths: window.innerWidth >= 768 ? 2 : 1,
+      onChange: function(selectedDates) {
+        checkDates();
+        if (selectedDates.length > 0) {
+          const checkinDate = selectedDates[0];
+          let minStay = 1;
+          const record = latestJsonData.find(day => day.Date === checkinDate.toISOString().split("T")[0]);
+          if (record && record["Min Stay"]) minStay = parseInt(record["Min Stay"]);
+          const minCheckoutDate = new Date(checkinDate);
+          minCheckoutDate.setDate(minCheckoutDate.getDate() + minStay);
+          checkoutPicker.set("minDate", minCheckoutDate);
+          checkoutPicker.jumpToDate(minCheckoutDate);
+        }
+      },
+      onDayCreate: function(dObj, dStr, fp, dayElem) {
+        const date = dayElem.dateObj;
+        const formattedDate = date.toISOString().split("T")[0];
+        if (unavailableDates.includes(formattedDate)) {
+          dayElem.style.backgroundColor = "#e0e0e0";
+          dayElem.style.color = "#999";
+          dayElem.style.pointerEvents = "none";
+        }
+      }
+    });
+
+    checkoutPicker = flatpickr("#checkout", {
+      locale: flatpickr.l10ns.fr,
+      dateFormat: "Y-m-d",
+      minDate: "today",
+      disable: [isDateDisabled],
+      disableMobile: false,
+      showMonths: window.innerWidth >= 768 ? 2 : 1,
+      onChange: function() {
+        checkDates();
+      },
+      onDayCreate: function(dObj, dStr, fp, dayElem) {
+        const date = dayElem.dateObj;
+        const formattedDate = date.toISOString().split("T")[0];
+        if (unavailableDates.includes(formattedDate)) {
+          dayElem.style.backgroundColor = "#e0e0e0";
+          dayElem.style.color = "#999";
+          dayElem.style.pointerEvents = "none";
+        }
+      }
+    });
+  }
 
   function checkDates() {
     const checkin = document.getElementById("checkin").value;
     const checkout = document.getElementById("checkout").value;
-    const guests = parseInt(document.getElementById("guests").value);
+    const guests = document.getElementById("guests").value;
     const dogChecked = document.getElementById("dog").checked;
 
     if (!checkin || !checkout) {
-      searchButton.disabled = true;
+      resetButton("Réserver");
+      return;
+    }
+
+    const checkinDate = new Date(checkin + "T00:00:00");
+    const checkoutDate = new Date(checkout + "T00:00:00");
+
+    if (checkinDate.getDay() === 6) {
+      disableButton("Le jour d'arrivée ne peut être le samedi");
+      return;
+    }
+
+    if (checkoutDate.getDay() === 6) {
+      disableButton("Le jour de départ ne peut être le samedi");
       return;
     }
 
@@ -82,21 +201,53 @@
     const stayPrices = latestJsonData.filter(day => stayDates.includes(day.Date) && day.Available === "True");
 
     if (stayPrices.length !== nights) {
-      searchButton.disabled = true;
+      disableButton("Dates non disponibles");
+      return;
+    }
+
+    const maxMinStay = Math.max(...stayPrices.map(day => parseInt(day["Min Stay"])));
+    if (nights < maxMinStay) {
+      disableButton(`Minimum ${maxMinStay} nuits`);
       return;
     }
 
     const totalNightlyRate = stayPrices.reduce((total, day) => total + parseInt(day["Final Price"]), 0);
     const cleaningFee = nights >= 3 ? 150 : 140;
-    const sixthGuestFee = guests === 6 ? 20 * nights : 0;
+    const sixthGuestFee = parseInt(guests) === 6 ? 20 * nights : 0;
     const dogFee = dogChecked ? 75 : 0;
 
     currentTotalPreTax = totalNightlyRate + cleaningFee + sixthGuestFee + dogFee;
 
     searchButton.disabled = false;
+    searchButton.classList.add("active");
+    searchButton.style.backgroundColor = "#28a745";
+    searchButton.style.color = "#fff";
+    searchButton.style.cursor = "pointer";
     searchButton.innerText = `Réserver pour ${currentTotalPreTax.toFixed(2)} $`;
   }
 
+  function disableButton(message) {
+    searchButton.disabled = true;
+    searchButton.classList.remove("active");
+    searchButton.style.backgroundColor = "#000";
+    searchButton.style.color = "#fff";
+    searchButton.style.cursor = "not-allowed";
+    searchButton.innerText = message;
+  }
+
+  function resetButton(message) {
+    searchButton.disabled = true;
+    searchButton.classList.remove("active");
+    searchButton.style.backgroundColor = "#ccc";
+    searchButton.style.color = "#fff";
+    searchButton.style.cursor = "not-allowed";
+    searchButton.innerText = message;
+  }
+
+  document.getElementById("guests").addEventListener("change", checkDates);
+  document.getElementById("dog").addEventListener("change", checkDates);
+
+  // ✅ Minimal mandatory change here: store data in localStorage when user clicks "Réserver"
   searchButton.addEventListener("click", () => {
     const bookingDetails = {
       checkin: document.getElementById("checkin").value,
@@ -109,13 +260,36 @@
     console.log("Données envoyées sur la page 2 :", bookingDetails);
 
     localStorage.setItem("bookingData", JSON.stringify(bookingDetails));
-    window.location.href = "contact-details.html";
+
+    fetch("https://chalet-checkout-backend.fly.dev/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: currentTotalPreTax,
+        guests: bookingDetails.guests,
+        dates: `${bookingDetails.checkin} - ${bookingDetails.checkout}`,
+        hasDog: bookingDetails.hasDog
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error("No URL returned from backend:", data);
+        alert("Une erreur est survenue. Veuillez réessayer.");
+      }
+    })
+    .catch(error => {
+      console.error("Error during checkout:", error);
+      alert("Une erreur est survenue lors du processus de paiement.");
+    });
   });
 
   function dateDiff(start, end) {
     const startDate = new Date(start);
     const endDate = new Date(end);
-    const diffTime = endDate - startDate;
+    const diffTime = Math.abs(endDate - startDate);
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
@@ -130,6 +304,4 @@
     return dates;
   }
 </script>
-
-</body>
-</html>
+<!-- End of Chalet Le Renard Booking Section -->

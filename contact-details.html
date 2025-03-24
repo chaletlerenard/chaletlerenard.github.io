@@ -1,338 +1,86 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coordonnées - Chalet Le Renard</title>
+  <title>Coordonnées Client - Chalet Le Renard</title>
 
   <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
-  <script src="https://unpkg.com/lucide@latest"></script>
-  
-  <style>
-    :root {
-      --primary-color: #3f7e44;
-      --accent-color: #e67e22;
-      --text-color: #333;
-      --border-color: #ddd;
-      --background-color: #f9f9f9;
-      --error-color: #e74c3c;
-      --success-color: #2ecc71;
-      --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      line-height: 1.6;
-      color: var(--text-color);
-      background-color: #f5f5f5;
-      padding: 0;
-      margin: 0;
-    }
-    
-    .container {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    
-    h2, h3 {
-      margin-bottom: 1rem;
-      color: var(--primary-color);
-    }
-    
-    .form-summary-wrapper {
-      display: flex;
-      flex-direction: column-reverse;
-      gap: 2rem;
-    }
-    
-    .form-section {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: var(--shadow);
-      flex: 1;
-    }
-    
-    .summary-section {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: var(--shadow);
-      position: relative;
-    }
-    
-    .field-group {
-      margin-bottom: 1.5rem;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-    }
-    
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-    
-    textarea {
-      min-height: 100px;
-      margin-bottom: 1.5rem;
-      resize: vertical;
-    }
-    
-    .checkbox-group {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 1rem;
-    }
-    
-    .checkbox-group input[type="checkbox"] {
-      margin-right: 10px;
-      margin-top: 5px;
-    }
-    
-    .checkbox-group label {
-      margin-bottom: 0;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    .icon-small {
-      width: 16px;
-      height: 16px;
-      margin-right: 5px;
-    }
-    
-    .button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    
-    .primary-button {
-      background-color: var(--primary-color);
-      color: white;
-      width: 100%;
-      margin-top: 1rem;
-    }
-    
-    .primary-button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-    
-    .primary-button:hover:not(:disabled) {
-      background-color: #2d5e33;
-    }
-    
-    .icon {
-      width: 20px;
-      height: 20px;
-    }
-    
-    a {
-      color: var(--primary-color);
-      text-decoration: none;
-    }
-    
-    a:hover {
-      text-decoration: underline;
-    }
-    
-    hr {
-      margin: 1rem 0;
-      border: 0;
-      border-top: 1px solid var(--border-color);
-    }
-    
-    #summaryContent p, 
-    #summaryContent ul {
-      margin-bottom: 0.5rem;
-    }
-    
-    #summaryContent ul {
-      list-style: none;
-      padding-left: 1rem;
-    }
-    
-    .summary-sticky {
-      position: sticky;
-      top: 20px;
-    }
-    
-    /* Responsive layout */
-    @media (min-width: 768px) {
-      .form-summary-wrapper {
-        flex-direction: row;
-        align-items: flex-start;
-      }
-      
-      .form-section {
-        flex: 3;
-      }
-      
-      .summary-section {
-        flex: 2;
-      }
-      
-      .summary-sticky {
-        position: sticky;
-        top: 20px;
-      }
-    }
-    
-    /* Fix telephone input styling */
-    .iti {
-      width: 100%;
-    }
-    
-    .iti__flag-container {
-      z-index: 10;
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css" />
 </head>
-
 <body>
 
-<section class="container form-summary-wrapper">
+<div class="container">
+  <!-- Formulaire client -->
   <div class="form-section">
     <h2>Vos coordonnées</h2>
 
-    <form id="contact-form">
-      <div class="field-group">
-        <label for="email">Courriel *</label>
-        <input type="email" id="email" required placeholder="votre@email.com">
-      </div>
+    <label for="email">Courriel *</label>
+    <input type="email" id="email" required>
 
-      <div class="field-group">
-        <label for="firstName">Prénom *</label>
-        <input type="text" id="firstName" required placeholder="Votre prénom">
-      </div>
+    <label for="firstName">Prénom *</label>
+    <input type="text" id="firstName" required>
 
-      <div class="field-group">
-        <label for="lastName">Nom *</label>
-        <input type="text" id="lastName" required placeholder="Votre nom">
-      </div>
+    <label for="lastName">Nom *</label>
+    <input type="text" id="lastName" required>
 
-      <div class="field-group">
-        <label for="country">Pays *</label>
-        <select id="country" required></select>
-      </div>
+    <label for="country">Pays *</label>
+    <select id="country"></select>
 
-      <div class="field-group">
-        <label for="phone">Numéro de téléphone *</label>
-        <input type="tel" id="phone" required>
-      </div>
+    <label for="phone">Numéro de téléphone *</label>
+    <input type="tel" id="phone" required>
 
-      <div class="field-group">
-        <label for="language">Langue de préférence *</label>
-        <select id="language" required>
-          <option value="francais" selected>Français</option>
-          <option value="anglais">Anglais</option>
-        </select>
-      </div>
+    <label for="language">Langue de préférence *</label>
+    <select id="language" required>
+      <option value="francais" selected>Français</option>
+      <option value="anglais">Anglais</option>
+    </select>
 
-      <div class="field-group">
-        <label for="comments">Commentaires (optionnel)</label>
-        <textarea id="comments" placeholder="Questions ou demandes spéciales..."></textarea>
-      </div>
+    <textarea id="comments" placeholder="Commentaires (optionnel)"></textarea>
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="acceptContract">
-        <label for="acceptContract">
-          <i data-lucide="file-text" class="icon-small"></i> J'accepte le <a href="#">contrat de location</a>
-        </label>
-      </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="acceptContract">
+      <label for="acceptContract">J'ai lu et j'accepte le <a href="#" target="_blank">contrat de location</a> *</label>
+    </div>
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="acceptPrivacy">
-        <label for="acceptPrivacy">
-          <i data-lucide="shield-check" class="icon-small"></i> J'accepte la <a href="#">politique de confidentialité</a>
-        </label>
-      </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="acceptPrivacy">
+      <label for="acceptPrivacy">J'ai lu et j'accepte la <a href="#" target="_blank">politique de confidentialité</a> *</label>
+    </div>
 
-      <button type="button" id="continueButton" class="button primary-button" disabled>
-        <i data-lucide="arrow-right-circle" class="icon"></i> Continuer
-      </button>
-    </form>
+    <button class="button" id="continueButton" disabled>Continuer</button>
   </div>
 
-  <aside class="summary-section summary-sticky">
+  <!-- Résumé réservation -->
+  <div class="summary-section">
     <h3>Résumé de la réservation</h3>
     <div id="summaryContent"></div>
-  </aside>
-</section>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 <script>
-  lucide.createIcons();
-
-  // Fill countries dropdown
-  const countrySelect = document.getElementById("country");
-  const countries = [
-    { code: "CA", name: "Canada" },
-    { code: "FR", name: "France" },
-    { code: "US", name: "États-Unis" },
-    { code: "BE", name: "Belgique" },
-    { code: "CH", name: "Suisse" }
-    // Add more countries as needed
-  ];
-  
-  countries.forEach(country => {
-    const option = document.createElement("option");
-    option.value = country.code;
-    option.textContent = country.name;
-    if (country.code === "CA") option.selected = true;
-    countrySelect.appendChild(option);
-  });
-
+  // Taux de taxes
   const GST_RATE = 5;
   const QST_RATE = 9.975;
   const LODGING_TAX_RATE = 3.5;
 
-  // For demo purposes - normally this would come from localStorage
-  const bookingData = {
-    checkin: "2025-05-15",
-    checkout: "2025-05-22",
-    guests: 4,
-    hasDog: true,
-    currentTotalPreTax: 1200
-  };
+  // Récupérer les données stockées depuis la page 1
+  const bookingData = JSON.parse(localStorage.getItem("bookingData"));
 
+  if (!bookingData) {
+    alert("Erreur de réservation. Veuillez recommencer.");
+    window.location.href = "booking.html";
+  }
+
+  // Calculs
   const subtotal = bookingData.currentTotalPreTax;
   const gstAmount = subtotal * (GST_RATE / 100);
   const qstAmount = subtotal * (QST_RATE / 100);
   const lodgingTaxAmount = bookingData.currentTotalPreTax * (LODGING_TAX_RATE / 100);
   const totalAmount = subtotal + gstAmount + qstAmount + lodgingTaxAmount;
 
+  // Paiement : 50/50 si plus de 14 jours avant l'arrivée
   const today = new Date();
   const checkinDate = new Date(bookingData.checkin);
   const diffDays = Math.ceil((checkinDate - today) / (1000 * 60 * 60 * 24));
@@ -348,17 +96,11 @@
     payment2Date.setDate(payment2Date.getDate() - 14);
   }
 
-  // Format dates
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('fr-CA', options);
-  };
-
+  // Affichage dans le résumé
   const summaryContent = document.getElementById("summaryContent");
   summaryContent.innerHTML = `
-    <p><strong>Date d'arrivée :</strong> ${formatDate(bookingData.checkin)}</p>
-    <p><strong>Date de départ :</strong> ${formatDate(bookingData.checkout)}</p>
+    <p><strong>Date d'arrivée :</strong> ${bookingData.checkin}</p>
+    <p><strong>Date de départ :</strong> ${bookingData.checkout}</p>
     <p><strong>Nombre de personnes :</strong> ${bookingData.guests}</p>
     ${bookingData.hasDog ? '<p><strong>Chien :</strong> Oui (+75 $)</p>' : '<p><strong>Chien :</strong> Non</p>'}
     <hr>
@@ -366,49 +108,94 @@
     <ul>
       <li>TPS (${GST_RATE}%): ${gstAmount.toFixed(2)} $</li>
       <li>TVQ (${QST_RATE}%): ${qstAmount.toFixed(2)} $</li>
-      <li>Taxe Hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxAmount.toFixed(2)} $</li>
+      <li>Taxe sur l’hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxAmount.toFixed(2)} $</li>
     </ul>
     <hr>
-    <p><strong>Total :</strong> ${totalAmount.toFixed(2)} $</p>
+    <p><strong>Total à payer :</strong> ${totalAmount.toFixed(2)} $</p>
     <hr>
-    <p><strong>Échéancier :</strong></p>
+    <p><strong>Échéancier de paiement :</strong></p>
     <ul>
-      <li>Paiement 1 : ${payment1.toFixed(2)} $</li>
-      ${payment2 > 0 ? `<li>Paiement 2 : ${payment2.toFixed(2)} $ (le ${payment2Date ? formatDate(payment2Date) : ''})</li>` : ''}
+      <li>Paiement 1 (aujourd'hui) : ${payment1.toFixed(2)} $</li>
+      ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2Date.toLocaleDateString()}) : ${payment2.toFixed(2)} $</li>` : ''}
     </ul>
   `;
 
-  // Initialize phone input with international formatting
+  // Remplir la liste de pays (Canada en premier)
+  const countrySelect = document.getElementById("country");
+  const countries = [
+    "Canada", "Afghanistan", "Afrique du Sud", "Albanie", "Algérie", "Allemagne", "Andorre", "Angola",
+    "Argentine", "Australie", "Autriche", "Belgique", "Brésil", "Bulgarie", "Cameroun",
+    "Chili", "Chine", "Colombie", "Corée du Sud", "Costa Rica", "Croatie", "Danemark", "Égypte", "Espagne",
+    "États-Unis", "Finlande", "France", "Grèce", "Hongrie", "Inde", "Indonésie", "Irlande", "Islande", "Israël",
+    "Italie", "Japon", "Luxembourg", "Malaisie", "Maroc", "Mexique", "Norvège", "Nouvelle-Zélande", "Pays-Bas",
+    "Philippines", "Pologne", "Portugal", "République tchèque", "Roumanie", "Royaume-Uni", "Russie", "Singapour",
+    "Slovaquie", "Suède", "Suisse", "Thaïlande", "Tunisie", "Turquie", "Ukraine", "Vietnam"
+  ];
+
+  countries.sort((a, b) => a.localeCompare(b));
+  countrySelect.innerHTML = `<option value="Canada" selected>Canada</option>`;
+  countries.forEach(country => {
+    if (country !== "Canada") {
+      countrySelect.innerHTML += `<option value="${country}">${country}</option>`;
+    }
+  });
+
+  // Champ téléphone avec validation
   const phoneInput = document.getElementById("phone");
   const iti = window.intlTelInput(phoneInput, {
-    preferredCountries: ["ca", "fr", "us"],
-    initialCountry: "ca",
+    preferredCountries: ["ca"],
     separateDialCode: true,
     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
   });
 
+  // Validation formulaire
   const fields = ["email", "firstName", "lastName", "country", "language"];
   const continueButton = document.getElementById("continueButton");
 
   function validateForm() {
     const allFieldsFilled = fields.every(id => document.getElementById(id).value.trim() !== "");
-    const phoneValid = phoneInput.value.trim() !== "" && iti.isValidNumber();
+    const phoneValid = iti.isValidNumber();
     const allChecked = document.getElementById("acceptContract").checked && document.getElementById("acceptPrivacy").checked;
 
     continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked);
   }
 
-  // Set up event listeners for all fields
   fields.forEach(id => document.getElementById(id).addEventListener("input", validateForm));
   document.getElementById("acceptContract").addEventListener("change", validateForm);
   document.getElementById("acceptPrivacy").addEventListener("change", validateForm);
   phoneInput.addEventListener("input", validateForm);
+  phoneInput.addEventListener("countrychange", validateForm);
 
-  // Simulate form submission 
+  // Envoi du formulaire
   continueButton.addEventListener("click", () => {
-    // Demo only - this would normally send to server
-    console.log("Form submitted!");
-    alert("Formulaire soumis avec succès (simulation)");
+    const guestData = {
+      email: document.getElementById("email").value,
+      firstName: document.getElementById("firstName").value,
+      lastName: document.getElementById("lastName").value,
+      country: document.getElementById("country").value,
+      language: document.getElementById("language").value,
+      phone: iti.getNumber(),
+      comments: document.getElementById("comments").value,
+      booking: bookingData,
+      totalAmount: totalAmount,
+      payment1: payment1,
+      payment2: payment2,
+      payment2Date: payment2Date ? payment2Date.toISOString().split("T")[0] : null
+    };
+
+    fetch("https://chalet-checkout-backend.fly.dev/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(guestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Erreur lors de la création de la session.");
+      }
+    });
   });
 </script>
 
