@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>  
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -339,15 +339,18 @@
     <label for="lastName">Nom</label>
     <input type="text" id="lastName" required>
     
-    <!-- New input for number of guests -->
+    <!-- New dropdown for number of guests -->
     <label for="guests">Nombre de personnes</label>
-    <input type="number" id="guests" min="1" max="6" value="1" required>
+    <select id="guests" required>
+      <option value="1" selected>1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+    </select>
     
-    <!-- New checkbox for dog option -->
-    <div class="checkbox-group">
-      <input type="checkbox" id="hasDog">
-      <label for="hasDog">Chien (+75 $)</label>
-    </div>
+    <!-- Dog option removed from "vos coordonnées" section -->
 
     <label for="country">Pays</label>
     <select id="country"></select>
@@ -464,9 +467,9 @@
     }, 100);
   });
 
-  // Initialiser les champs invités et chien avec les données récupérées
+  // Initialiser le champ invités avec les données récupérées
   document.getElementById("guests").value = bookingData.guests || 1;
-  document.getElementById("hasDog").checked = bookingData.hasDog || false;
+  // La valeur "hasDog" est désormais déterminée par bookingData et non modifiable dans "vos coordonnées"
 
   // Mise à jour dynamique du résumé
   function updateSummary() {
@@ -483,8 +486,8 @@
     const lodgingTaxAmount = subtotal * (LODGING_TAX_RATE / 100);
     const totalWithoutDog = subtotal + gstAmount + qstAmount + lodgingTaxAmount;
     
-    // Frais chien (75 $ ajoutés si coché)
-    const dogFee = document.getElementById("hasDog").checked ? 75 : 0;
+    // Frais chien (75 $ ajoutés si applicable)
+    const dogFee = bookingData.hasDog ? 75 : 0;
     const effectiveTotal = totalWithoutDog + dogFee;
     
     // Échéancier de paiement
@@ -524,7 +527,7 @@
       <p><strong>Nombre de personnes :</strong> ${guests}</p>
       <p><strong>Nombre de jours :</strong> ${nights}</p>
       <p><strong>Prix par nuit :</strong> ${pricePerNightFormatted}</p>
-      <p><strong>Chien :</strong> ${document.getElementById("hasDog").checked ? "Oui (+75,00 $)" : "Non"}</p>
+      <p><strong>Chien :</strong> ${bookingData.hasDog ? "Oui" : "Non"}</p>
       <p><strong>Frais de ménage :</strong> 150 $</p>
       <hr>
       <p><strong>Sous-total :</strong> ${subtotalFormatted}</p>
@@ -551,7 +554,7 @@
   // Appeler updateSummary initialement et lors des changements des nouveaux champs
   updateSummary();
   document.getElementById("guests").addEventListener("input", updateSummary);
-  document.getElementById("hasDog").addEventListener("change", updateSummary);
+  // L'option chien n'est plus modifiable dans cette section, donc pas d'écouteur d'événement pour "hasDog"
   
   // Envoi du formulaire
   continueButton.addEventListener("click", () => {
@@ -564,9 +567,9 @@
       phone: iti.getNumber(intlTelInputUtils.numberFormat.E164),
       comments: document.getElementById("comments").value,
       guests: document.getElementById("guests").value,
-      hasDog: document.getElementById("hasDog").checked,
+      hasDog: bookingData.hasDog,
       booking: bookingData,
-      totalAmount: document.getElementById("hasDog").checked ? (bookingData.currentTotalPreTax + 75 + 
+      totalAmount: bookingData.hasDog ? (bookingData.currentTotalPreTax + 75 + 
                      (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
                      (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
                      (bookingData.currentTotalPreTax * (LODGING_TAX_RATE / 100))) : 
@@ -584,7 +587,7 @@
     const checkin = new Date(bookingData.checkin);
     const today = new Date();
     const diffDays = Math.ceil((checkin - today) / (1000 * 60 * 60 * 24));
-    let effectiveTotal = document.getElementById("hasDog").checked ? (bookingData.currentTotalPreTax + 75 + 
+    let effectiveTotal = bookingData.hasDog ? (bookingData.currentTotalPreTax + 75 + 
                      (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
                      (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
                      ((bookingData.currentTotalPreTax -150) * (LODGING_TAX_RATE / 100))) : 
