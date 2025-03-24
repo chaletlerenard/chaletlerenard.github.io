@@ -6,7 +6,7 @@ layout: none
 <html lang="en">
 <head>
   <meta charset="UTF-8"> 
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chalet Le Renard</title>
 
   <!-- Fonts & Icons -->
@@ -15,6 +15,79 @@ layout: none
 
   <!-- External Stylesheet -->
   <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
+
+  <style>
+    /* Parallax header */
+    header {
+      position: relative;
+      background-image: url('{{ "/gallery/99.avif" | relative_url }}');
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      padding: 0 1rem;
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.4); /* Optional dark overlay for readability */
+      z-index: 1;
+    }
+
+    header h1,
+    header h3 {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Ensure header content scales well on different screens */
+    header h1 {
+      font-size: 3rem;
+    }
+
+    header h3 {
+      font-size: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      header {
+        background-attachment: scroll; /* fallback for mobile */
+        height: 70vh;
+      }
+
+      header h1 {
+        font-size: 2.2rem;
+      }
+
+      header h3 {
+        font-size: 1.2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header {
+        height: 60vh;
+      }
+
+      header h1 {
+        font-size: 1.8rem;
+      }
+
+      header h3 {
+        font-size: 1rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -35,10 +108,10 @@ layout: none
     <h1>Chalet Le Renard</h1>
     <h3>Chalet à louer avec spa privé - En pleine nature</h3>
   </header>
-  
+
   <!-- Details Section (included via Liquid) -->
   {% include details.html %}
-  
+
   <!-- Booking Section (included via Liquid) -->
   {% include booking.html %}
 
@@ -66,7 +139,7 @@ layout: none
       <button class="carousel-btn prev-btn" onclick="prevSlide()">&#10094;</button>
       <button class="carousel-btn next-btn" onclick="nextSlide()">&#10095;</button>
       <button class="carousel-close" onclick="closeCarousel()">&#10006;</button>
-      
+
       <!-- Carousel Inner -->
       <div class="carousel-inner" id="carouselInner">
         {% for file in carousel_images %}
@@ -79,9 +152,6 @@ layout: none
   </div>
 
   <script>
-    // ------------------------------------
-    // 1) Carousel functionality
-    // ------------------------------------
     const carouselOverlay = document.getElementById("carouselOverlay");
     const carouselInner = document.getElementById("carouselInner");
     let currentIndex = 0;
@@ -114,17 +184,12 @@ layout: none
       carouselInner.style.transform = "translateX(-" + offset + "%)";
     }
 
-    // Close carousel if clicking outside the container
     window.addEventListener("click", function(e) {
       if (e.target === carouselOverlay) {
         closeCarousel();
       }
     });
 
-    // ------------------------------------
-    // 2) Hide/show navigation bar
-    //    after scrolling beyond header
-    // ------------------------------------
     const navbar = document.getElementById("navbar");
     const header = document.querySelector("header");
 
@@ -137,9 +202,6 @@ layout: none
       }
     });
 
-    // ------------------------------------
-    // 3) Mobile navigation toggle
-    // ------------------------------------
     document.addEventListener("DOMContentLoaded", function() {
       const mobileToggle = document.querySelector(".mobile-nav-toggle");
       mobileToggle.addEventListener("click", function() {
