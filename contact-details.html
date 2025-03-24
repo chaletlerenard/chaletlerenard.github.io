@@ -1,292 +1,203 @@
-<!-- Start of Chalet Le Renard Contact Details Page -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coordonnées du client - Chalet Le Renard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f9f9f9;
-      color: #333;
-    }
+  <title>Coordonnées Client - Chalet Le Renard</title>
 
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .form-section, .summary-section {
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      margin: 10px;
-    }
-
-    .form-section {
-      flex: 1 1 600px;
-      min-width: 300px;
-    }
-
-    .summary-section {
-      flex: 1 1 400px;
-      min-width: 300px;
-      height: fit-content;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    textarea {
-      resize: vertical;
-    }
-
-    .checkbox-group {
-      margin-bottom: 15px;
-    }
-
-    .checkbox-group label {
-      font-weight: normal;
-    }
-
-    .checkbox-group input {
-      width: auto;
-      margin-right: 10px;
-    }
-
-    .buttons {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
-
-    .button {
-      flex: 1 1 100%;
-      background-color: #b45309;
-      color: #fff;
-      border: none;
-      padding: 15px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-
-    h2, h3 {
-      margin-top: 0;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
-      .buttons {
-        flex-direction: column;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css" />
 </head>
 <body>
 
-  <div class="container">
-    <!-- Contact Form Section -->
-    <div class="form-section">
-      <h2>Vos coordonnées</h2>
+<div class="container">
+  <!-- Formulaire client -->
+  <div class="form-section">
+    <h2>Vos coordonnées</h2>
 
-      <label for="email">Courriel *</label>
-      <input type="email" id="email" placeholder="Entrez votre adresse courriel" required>
+    <label for="email">Courriel *</label>
+    <input type="email" id="email" required>
 
-      <label for="firstName">Prénom *</label>
-      <input type="text" id="firstName" placeholder="Entrez votre prénom" required>
+    <label for="firstName">Prénom *</label>
+    <input type="text" id="firstName" required>
 
-      <label for="lastName">Nom *</label>
-      <input type="text" id="lastName" placeholder="Entrez votre nom" required>
+    <label for="lastName">Nom *</label>
+    <input type="text" id="lastName" required>
 
-      <label for="country">Pays *</label>
-      <select id="country" required>
-        <option value="">Sélectionnez votre pays</option>
-        <option value="Canada">Canada</option>
-        <option value="France">France</option>
-        <option value="Belgique">Belgique</option>
-      </select>
+    <label for="country">Pays *</label>
+    <select id="country"></select>
 
-      <label for="phone">Numéro de téléphone *</label>
-      <input type="tel" id="phone" placeholder="Entrez votre numéro de téléphone" required>
+    <label for="phone">Numéro de téléphone *</label>
+    <input type="tel" id="phone" required>
 
-      <label for="comments">Commentaires (optionnel)</label>
-      <textarea id="comments" placeholder="Des questions ou précisions?"></textarea>
+    <label for="language">Langue de préférence *</label>
+    <select id="language" required>
+      <option value="francais" selected>Français</option>
+      <option value="anglais">Anglais</option>
+    </select>
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="acceptContract">
-        <label for="acceptContract">J'ai lu et j'accepte le <a href="#" target="_blank">contrat de location</a> *</label>
-      </div>
+    <textarea id="comments" placeholder="Commentaires (optionnel)"></textarea>
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="acceptPrivacy">
-        <label for="acceptPrivacy">J'ai lu et j'accepte la <a href="#" target="_blank">politique de confidentialité</a> *</label>
-      </div>
-
-      <div class="buttons">
-        <button class="button" id="continueButton" disabled>Continuer</button>
-      </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="acceptContract">
+      <label for="acceptContract">J'ai lu et j'accepte le <a href="#" target="_blank">contrat de location</a> *</label>
     </div>
 
-    <!-- Reservation Summary Section -->
-    <div class="summary-section">
-      <h3>Résumé de la réservation</h3>
-      <div id="summaryContent">
-        <!-- Injected by JS -->
-      </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="acceptPrivacy">
+      <label for="acceptPrivacy">J'ai lu et j'accepte la <a href="#" target="_blank">politique de confidentialité</a> *</label>
     </div>
+
+    <button class="button" id="continueButton" disabled>Continuer</button>
   </div>
 
-  <script>
-    // Editable tax rates
-    const GST_RATE = 5;
-    const QST_RATE = 9.975;
-    const LODGING_TAX_RATE = 3.5;
+  <!-- Résumé réservation -->
+  <div class="summary-section">
+    <h3>Résumé de la réservation</h3>
+    <div id="summaryContent"></div>
+  </div>
+</div>
 
-    // Booking data passed from page 1 (mock data for now)
-    const bookingData = {
-      checkin: "2025-04-22",
-      checkout: "2025-04-25",
-      guests: 2,
-      hasDog: false,
-      basePrice: 600,    // Total rental price before fees
-      cleaningFee: 150
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<script>
+  // Taux de taxes
+  const GST_RATE = 5;
+  const QST_RATE = 9.975;
+  const LODGING_TAX_RATE = 3.5;
+
+  // Récupérer les données stockées depuis la page 1
+  const bookingData = JSON.parse(localStorage.getItem("bookingData"));
+
+  if (!bookingData) {
+    alert("Erreur de réservation. Veuillez recommencer.");
+    window.location.href = "booking.html";
+  }
+
+  // Calculs
+  const subtotal = bookingData.currentTotalPreTax;
+  const gstAmount = subtotal * (GST_RATE / 100);
+  const qstAmount = subtotal * (QST_RATE / 100);
+  const lodgingTaxAmount = bookingData.currentTotalPreTax * (LODGING_TAX_RATE / 100);
+  const totalAmount = subtotal + gstAmount + qstAmount + lodgingTaxAmount;
+
+  // Paiement : 50/50 si plus de 14 jours avant l'arrivée
+  const today = new Date();
+  const checkinDate = new Date(bookingData.checkin);
+  const diffDays = Math.ceil((checkinDate - today) / (1000 * 60 * 60 * 24));
+
+  let payment1 = totalAmount;
+  let payment2 = 0;
+  let payment2Date = null;
+
+  if (diffDays > 14) {
+    payment1 = totalAmount / 2;
+    payment2 = totalAmount - payment1;
+    payment2Date = new Date(checkinDate);
+    payment2Date.setDate(payment2Date.getDate() - 14);
+  }
+
+  // Affichage dans le résumé
+  const summaryContent = document.getElementById("summaryContent");
+  summaryContent.innerHTML = `
+    <p><strong>Date d'arrivée :</strong> ${bookingData.checkin}</p>
+    <p><strong>Date de départ :</strong> ${bookingData.checkout}</p>
+    <p><strong>Nombre de personnes :</strong> ${bookingData.guests}</p>
+    ${bookingData.hasDog ? '<p><strong>Chien :</strong> Oui (+75 $)</p>' : '<p><strong>Chien :</strong> Non</p>'}
+    <hr>
+    <p><strong>Sous-total :</strong> ${subtotal.toFixed(2)} $</p>
+    <ul>
+      <li>TPS (${GST_RATE}%): ${gstAmount.toFixed(2)} $</li>
+      <li>TVQ (${QST_RATE}%): ${qstAmount.toFixed(2)} $</li>
+      <li>Taxe sur l’hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxAmount.toFixed(2)} $</li>
+    </ul>
+    <hr>
+    <p><strong>Total à payer :</strong> ${totalAmount.toFixed(2)} $</p>
+    <hr>
+    <p><strong>Échéancier de paiement :</strong></p>
+    <ul>
+      <li>Paiement 1 (aujourd'hui) : ${payment1.toFixed(2)} $</li>
+      ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2Date.toLocaleDateString()}) : ${payment2.toFixed(2)} $</li>` : ''}
+    </ul>
+  `;
+
+  // Remplir la liste de pays (Canada en premier)
+  const countrySelect = document.getElementById("country");
+  const countries = [
+    "Canada", "Afghanistan", "Afrique du Sud", "Albanie", "Algérie", "Allemagne", "Andorre", "Angola",
+    "Argentine", "Australie", "Autriche", "Belgique", "Brésil", "Bulgarie", "Cameroun",
+    "Chili", "Chine", "Colombie", "Corée du Sud", "Costa Rica", "Croatie", "Danemark", "Égypte", "Espagne",
+    "États-Unis", "Finlande", "France", "Grèce", "Hongrie", "Inde", "Indonésie", "Irlande", "Islande", "Israël",
+    "Italie", "Japon", "Luxembourg", "Malaisie", "Maroc", "Mexique", "Norvège", "Nouvelle-Zélande", "Pays-Bas",
+    "Philippines", "Pologne", "Portugal", "République tchèque", "Roumanie", "Royaume-Uni", "Russie", "Singapour",
+    "Slovaquie", "Suède", "Suisse", "Thaïlande", "Tunisie", "Turquie", "Ukraine", "Vietnam"
+  ];
+
+  countries.sort((a, b) => a.localeCompare(b));
+  countrySelect.innerHTML = `<option value="Canada" selected>Canada</option>`;
+  countries.forEach(country => {
+    if (country !== "Canada") {
+      countrySelect.innerHTML += `<option value="${country}">${country}</option>`;
+    }
+  });
+
+  // Champ téléphone avec validation
+  const phoneInput = document.getElementById("phone");
+  const iti = window.intlTelInput(phoneInput, {
+    preferredCountries: ["ca"],
+    separateDialCode: true,
+    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+  });
+
+  // Validation formulaire
+  const fields = ["email", "firstName", "lastName", "country", "language"];
+  const continueButton = document.getElementById("continueButton");
+
+  function validateForm() {
+    const allFieldsFilled = fields.every(id => document.getElementById(id).value.trim() !== "");
+    const phoneValid = iti.isValidNumber();
+    const allChecked = document.getElementById("acceptContract").checked && document.getElementById("acceptPrivacy").checked;
+
+    continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked);
+  }
+
+  fields.forEach(id => document.getElementById(id).addEventListener("input", validateForm));
+  document.getElementById("acceptContract").addEventListener("change", validateForm);
+  document.getElementById("acceptPrivacy").addEventListener("change", validateForm);
+  phoneInput.addEventListener("input", validateForm);
+  phoneInput.addEventListener("countrychange", validateForm);
+
+  // Envoi du formulaire
+  continueButton.addEventListener("click", () => {
+    const guestData = {
+      email: document.getElementById("email").value,
+      firstName: document.getElementById("firstName").value,
+      lastName: document.getElementById("lastName").value,
+      country: document.getElementById("country").value,
+      language: document.getElementById("language").value,
+      phone: iti.getNumber(),
+      comments: document.getElementById("comments").value,
+      booking: bookingData,
+      totalAmount: totalAmount,
+      payment1: payment1,
+      payment2: payment2,
+      payment2Date: payment2Date ? payment2Date.toISOString().split("T")[0] : null
     };
 
-    // Calculate totals
-    const subtotal = bookingData.basePrice + bookingData.cleaningFee;
-    const gstAmount = subtotal * (GST_RATE / 100);
-    const qstAmount = subtotal * (QST_RATE / 100);
-    const lodgingTaxAmount = bookingData.basePrice * (LODGING_TAX_RATE / 100);
-    const totalTaxes = gstAmount + qstAmount + lodgingTaxAmount;
-    const totalAmount = subtotal + totalTaxes;
-
-    // Payment schedule calculation
-    const today = new Date();
-    const checkinDate = new Date(bookingData.checkin);
-    const diffDays = Math.ceil((checkinDate - today) / (1000 * 60 * 60 * 24));
-
-    let payment1 = totalAmount;
-    let payment2 = 0;
-    let payment2Date = null;
-
-    if (diffDays > 14) {
-      payment1 = totalAmount / 2;
-      payment2 = totalAmount - payment1;
-      payment2Date = new Date(checkinDate);
-      payment2Date.setDate(payment2Date.getDate() - 14);
-    }
-
-    // Populate summary content
-    const summaryContent = document.getElementById("summaryContent");
-    summaryContent.innerHTML = `
-      <p><strong>Dates:</strong> ${bookingData.checkin} - ${bookingData.checkout}</p>
-      <p><strong>Nombre de personnes:</strong> ${bookingData.guests}</p>
-      <hr>
-      <p><strong>Location:</strong> ${bookingData.basePrice.toFixed(2)} $</p>
-      <p><strong>Frais de ménage:</strong> ${bookingData.cleaningFee.toFixed(2)} $</p>
-      <hr>
-      <p><strong>Taxes:</strong></p>
-      <ul>
-        <li>TPS (${GST_RATE}%): ${gstAmount.toFixed(2)} $</li>
-        <li>TVQ (${QST_RATE}%): ${qstAmount.toFixed(2)} $</li>
-        <li>Taxe sur l’hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxAmount.toFixed(2)} $</li>
-      </ul>
-      <hr>
-      <p><strong>Total:</strong> ${totalAmount.toFixed(2)} $</p>
-      <hr>
-      <p><strong>Échéancier de paiement:</strong></p>
-      <ul>
-        <li>Paiement 1 (aujourd'hui): ${payment1.toFixed(2)} $</li>
-        ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2Date.toLocaleDateString()}): ${payment2.toFixed(2)} $</li>` : ''}
-      </ul>
-    `;
-
-    // Validation logic
-    const fields = ["email", "firstName", "lastName", "country", "phone"];
-    const checkboxes = ["acceptContract", "acceptPrivacy"];
-    const continueButton = document.getElementById("continueButton");
-
-    function validateForm() {
-      const allFieldsFilled = fields.every(id => {
-        const el = document.getElementById(id);
-        return el.value.trim() !== "";
-      });
-
-      const allChecked = checkboxes.every(id => {
-        return document.getElementById(id).checked;
-      });
-
-      continueButton.disabled = !(allFieldsFilled && allChecked);
-    }
-
-    fields.forEach(id => {
-      document.getElementById(id).addEventListener("input", validateForm);
+    fetch("https://chalet-checkout-backend.fly.dev/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(guestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Erreur lors de la création de la session.");
+      }
     });
-
-    checkboxes.forEach(id => {
-      document.getElementById(id).addEventListener("change", validateForm);
-    });
-
-    continueButton.addEventListener("click", () => {
-      const guestData = {
-        email: document.getElementById("email").value,
-        firstName: document.getElementById("firstName").value,
-        lastName: document.getElementById("lastName").value,
-        country: document.getElementById("country").value,
-        phone: document.getElementById("phone").value,
-        comments: document.getElementById("comments").value,
-        booking: bookingData,
-        totalAmount: totalAmount,
-        payment1: payment1,
-        payment2: payment2,
-        payment2Date: payment2Date ? payment2Date.toISOString().split("T")[0] : null
-      };
-
-      // Send to backend
-      fetch("https://chalet-checkout-backend.fly.dev/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(guestData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          alert("Erreur lors de la création de la session de paiement.");
-        }
-      })
-      .catch(error => {
-        console.error("Erreur:", error);
-        alert("Une erreur est survenue. Veuillez réessayer.");
-      });
-    });
-  </script>
+  });
+</script>
 
 </body>
 </html>
