@@ -1,197 +1,292 @@
+<!-- Start of Chalet Le Renard Contact Details Page -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Réservation - Chalet Le Renard</title>
-  <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
-  <link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/flatpickr.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coordonnées du client - Chalet Le Renard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .form-section, .summary-section {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin: 10px;
+    }
+
+    .form-section {
+      flex: 1 1 600px;
+      min-width: 300px;
+    }
+
+    .summary-section {
+      flex: 1 1 400px;
+      min-width: 300px;
+      height: fit-content;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .checkbox-group {
+      margin-bottom: 15px;
+    }
+
+    .checkbox-group label {
+      font-weight: normal;
+    }
+
+    .checkbox-group input {
+      width: auto;
+      margin-right: 10px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      flex: 1 1 100%;
+      background-color: #b45309;
+      color: #fff;
+      border: none;
+      padding: 15px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    h2, h3 {
+      margin-top: 0;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<!-- Start of Chalet Le Renard Booking Section -->
-<section id="booking" style="padding: 20px; background-color: #f9f9f9;">
-  <div style="max-width: 1200px; margin: 0 auto;">
-    <h2 style="font-size: 24px; margin-bottom: 20px;">Réservez votre séjour au Chalet Le Renard</h2>
-    <div style="display: flex; flex-wrap: wrap; gap: 20px; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+  <div class="container">
+    <!-- Contact Form Section -->
+    <div class="form-section">
+      <h2>Vos coordonnées</h2>
 
-      <!-- Check-in date -->
-      <div style="flex: 1 1 300px;">
-        <label for="checkin" style="font-weight: bold;">Date d'arrivée</label>
-        <input type="text" id="checkin" placeholder="Choisissez une date" readonly style="width: 100%;">
+      <label for="email">Courriel *</label>
+      <input type="email" id="email" placeholder="Entrez votre adresse courriel" required>
+
+      <label for="firstName">Prénom *</label>
+      <input type="text" id="firstName" placeholder="Entrez votre prénom" required>
+
+      <label for="lastName">Nom *</label>
+      <input type="text" id="lastName" placeholder="Entrez votre nom" required>
+
+      <label for="country">Pays *</label>
+      <select id="country" required>
+        <option value="">Sélectionnez votre pays</option>
+        <option value="Canada">Canada</option>
+        <option value="France">France</option>
+        <option value="Belgique">Belgique</option>
+      </select>
+
+      <label for="phone">Numéro de téléphone *</label>
+      <input type="tel" id="phone" placeholder="Entrez votre numéro de téléphone" required>
+
+      <label for="comments">Commentaires (optionnel)</label>
+      <textarea id="comments" placeholder="Des questions ou précisions?"></textarea>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="acceptContract">
+        <label for="acceptContract">J'ai lu et j'accepte le <a href="#" target="_blank">contrat de location</a> *</label>
       </div>
 
-      <!-- Check-out date -->
-      <div style="flex: 1 1 300px;">
-        <label for="checkout" style="font-weight: bold;">Date de départ</label>
-        <input type="text" id="checkout" placeholder="Choisissez une date" readonly style="width: 100%;">
+      <div class="checkbox-group">
+        <input type="checkbox" id="acceptPrivacy">
+        <label for="acceptPrivacy">J'ai lu et j'accepte la <a href="#" target="_blank">politique de confidentialité</a> *</label>
       </div>
 
-      <!-- Guests -->
-      <div style="flex: 1 1 300px;">
-        <label for="guests" style="font-weight: bold;">Nombre de personnes</label>
-        <select id="guests" style="width: 100%;">
-          <option value="1">1 personne</option>
-          <option value="2">2 personnes</option>
-          <option value="3">3 personnes</option>
-          <option value="4">4 personnes</option>
-          <option value="5">5 personnes</option>
-          <option value="6">6 personnes</option>
-        </select>
+      <div class="buttons">
+        <button class="button" id="continueButton" disabled>Continuer</button>
       </div>
+    </div>
 
-      <!-- Dog -->
-      <div style="flex: 1 1 300px;">
-        <label for="dog" style="font-weight: bold;">J'amènerai mon chien</label>
-        <div>
-          <input type="checkbox" id="dog"> (+75 $)
-        </div>
+    <!-- Reservation Summary Section -->
+    <div class="summary-section">
+      <h3>Résumé de la réservation</h3>
+      <div id="summaryContent">
+        <!-- Injected by JS -->
       </div>
-
-      <!-- Reserve button -->
-      <div style="flex: 1 1 300px;">
-        <button id="searchButton" disabled style="width: 100%;">Réserver</button>
-      </div>
-
     </div>
   </div>
-</section>
 
-<script src="https://npmcdn.com/flatpickr/dist/flatpickr.min.js"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+  <script>
+    // Editable tax rates
+    const GST_RATE = 5;
+    const QST_RATE = 9.975;
+    const LODGING_TAX_RATE = 3.5;
 
-<script>
-  const searchButton = document.getElementById("searchButton");
-
-  let latestJsonData = [];
-  let unavailableDates = [];
-  let currentTotalPreTax = 0;
-  let checkinPicker, checkoutPicker;
-
-  fetch("https://chaletlerenard.github.io/data/latest.json")
-    .then(response => response.json())
-    .then(data => latestJsonData = data);
-
-  const proxyIcsUrl = "https://calendar.8zwxr4hbwn.workers.dev/";
-  fetch(proxyIcsUrl)
-    .then(response => response.text())
-    .then(data => {
-      unavailableDates = parseICal(data);
-      initDatePickers();
-    });
-
-  function parseICal(data) {
-    const lines = data.split(/\r?\n/);
-    const unavailable = [];
-    let currentStart = null, currentEnd = null;
-
-    lines.forEach(line => {
-      if (line.startsWith("DTSTART")) {
-        currentStart = line.split(":")[1];
-        currentStart = currentStart.slice(0, 4) + "-" + currentStart.slice(4, 6) + "-" + currentStart.slice(6, 8);
-      }
-      if (line.startsWith("DTEND")) {
-        currentEnd = line.split(":")[1];
-        currentEnd = currentEnd.slice(0, 4) + "-" + currentEnd.slice(4, 6) + "-" + currentEnd.slice(6, 8);
-        let currentDate = new Date(currentStart);
-        const endDate = new Date(currentEnd);
-        while (currentDate < endDate) {
-          unavailable.push(currentDate.toISOString().split("T")[0]);
-          currentDate.setDate(currentDate.getDate() + 1);
-        }
-      }
-    });
-    return unavailable;
-  }
-
-  function initDatePickers() {
-    checkinPicker = flatpickr("#checkin", {
-      locale: flatpickr.l10ns.fr,
-      dateFormat: "Y-m-d",
-      minDate: "today",
-      disable: [date => unavailableDates.includes(date.toISOString().split("T")[0])],
-      onChange: checkDates
-    });
-
-    checkoutPicker = flatpickr("#checkout", {
-      locale: flatpickr.l10ns.fr,
-      dateFormat: "Y-m-d",
-      minDate: "today",
-      disable: [date => unavailableDates.includes(date.toISOString().split("T")[0])],
-      onChange: checkDates
-    });
-  }
-
-  function checkDates() {
-    const checkin = document.getElementById("checkin").value;
-    const checkout = document.getElementById("checkout").value;
-    const guests = parseInt(document.getElementById("guests").value);
-    const dogChecked = document.getElementById("dog").checked;
-
-    if (!checkin || !checkout) {
-      searchButton.disabled = true;
-      return;
-    }
-
-    const nights = dateDiff(checkin, checkout);
-    const stayDates = getStayDates(checkin, checkout);
-
-    const stayPrices = latestJsonData.filter(day => stayDates.includes(day.Date) && day.Available === "True");
-
-    if (stayPrices.length !== nights) {
-      searchButton.disabled = true;
-      return;
-    }
-
-    const maxMinStay = Math.max(...stayPrices.map(day => parseInt(day["Min Stay"])));
-    if (nights < maxMinStay) {
-      searchButton.disabled = true;
-      return;
-    }
-
-    const totalNightlyRate = stayPrices.reduce((total, day) => total + parseInt(day["Final Price"]), 0);
-    const cleaningFee = nights >= 3 ? 150 : 140;
-    const sixthGuestFee = guests === 6 ? 20 * nights : 0;
-    const dogFee = dogChecked ? 75 : 0;
-
-    currentTotalPreTax = totalNightlyRate + cleaningFee + sixthGuestFee + dogFee;
-
-    searchButton.disabled = false;
-    searchButton.innerText = `Réserver pour ${currentTotalPreTax.toFixed(2)} $`;
-  }
-
-  searchButton.addEventListener("click", () => {
-    const bookingDetails = {
-      checkin: document.getElementById("checkin").value,
-      checkout: document.getElementById("checkout").value,
-      guests: parseInt(document.getElementById("guests").value),
-      hasDog: document.getElementById("dog").checked,
-      currentTotalPreTax: currentTotalPreTax
+    // Booking data passed from page 1 (mock data for now)
+    const bookingData = {
+      checkin: "2025-04-22",
+      checkout: "2025-04-25",
+      guests: 2,
+      hasDog: false,
+      basePrice: 600,    // Total rental price before fees
+      cleaningFee: 150
     };
 
-    localStorage.setItem("bookingData", JSON.stringify(bookingDetails));
+    // Calculate totals
+    const subtotal = bookingData.basePrice + bookingData.cleaningFee;
+    const gstAmount = subtotal * (GST_RATE / 100);
+    const qstAmount = subtotal * (QST_RATE / 100);
+    const lodgingTaxAmount = bookingData.basePrice * (LODGING_TAX_RATE / 100);
+    const totalTaxes = gstAmount + qstAmount + lodgingTaxAmount;
+    const totalAmount = subtotal + totalTaxes;
 
-    window.location.href = "contact-details.html";
-  });
+    // Payment schedule calculation
+    const today = new Date();
+    const checkinDate = new Date(bookingData.checkin);
+    const diffDays = Math.ceil((checkinDate - today) / (1000 * 60 * 60 * 24));
 
-  function dateDiff(start, end) {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const diffTime = endDate - startDate;
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }
+    let payment1 = totalAmount;
+    let payment2 = 0;
+    let payment2Date = null;
 
-  function getStayDates(start, end) {
-    const dates = [];
-    let current = new Date(start);
-    const endDate = new Date(end);
-    while (current < endDate) {
-      dates.push(current.toISOString().split("T")[0]);
-      current.setDate(current.getDate() + 1);
+    if (diffDays > 14) {
+      payment1 = totalAmount / 2;
+      payment2 = totalAmount - payment1;
+      payment2Date = new Date(checkinDate);
+      payment2Date.setDate(payment2Date.getDate() - 14);
     }
-    return dates;
-  }
-</script>
+
+    // Populate summary content
+    const summaryContent = document.getElementById("summaryContent");
+    summaryContent.innerHTML = `
+      <p><strong>Dates:</strong> ${bookingData.checkin} - ${bookingData.checkout}</p>
+      <p><strong>Nombre de personnes:</strong> ${bookingData.guests}</p>
+      <hr>
+      <p><strong>Location:</strong> ${bookingData.basePrice.toFixed(2)} $</p>
+      <p><strong>Frais de ménage:</strong> ${bookingData.cleaningFee.toFixed(2)} $</p>
+      <hr>
+      <p><strong>Taxes:</strong></p>
+      <ul>
+        <li>TPS (${GST_RATE}%): ${gstAmount.toFixed(2)} $</li>
+        <li>TVQ (${QST_RATE}%): ${qstAmount.toFixed(2)} $</li>
+        <li>Taxe sur l’hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxAmount.toFixed(2)} $</li>
+      </ul>
+      <hr>
+      <p><strong>Total:</strong> ${totalAmount.toFixed(2)} $</p>
+      <hr>
+      <p><strong>Échéancier de paiement:</strong></p>
+      <ul>
+        <li>Paiement 1 (aujourd'hui): ${payment1.toFixed(2)} $</li>
+        ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2Date.toLocaleDateString()}): ${payment2.toFixed(2)} $</li>` : ''}
+      </ul>
+    `;
+
+    // Validation logic
+    const fields = ["email", "firstName", "lastName", "country", "phone"];
+    const checkboxes = ["acceptContract", "acceptPrivacy"];
+    const continueButton = document.getElementById("continueButton");
+
+    function validateForm() {
+      const allFieldsFilled = fields.every(id => {
+        const el = document.getElementById(id);
+        return el.value.trim() !== "";
+      });
+
+      const allChecked = checkboxes.every(id => {
+        return document.getElementById(id).checked;
+      });
+
+      continueButton.disabled = !(allFieldsFilled && allChecked);
+    }
+
+    fields.forEach(id => {
+      document.getElementById(id).addEventListener("input", validateForm);
+    });
+
+    checkboxes.forEach(id => {
+      document.getElementById(id).addEventListener("change", validateForm);
+    });
+
+    continueButton.addEventListener("click", () => {
+      const guestData = {
+        email: document.getElementById("email").value,
+        firstName: document.getElementById("firstName").value,
+        lastName: document.getElementById("lastName").value,
+        country: document.getElementById("country").value,
+        phone: document.getElementById("phone").value,
+        comments: document.getElementById("comments").value,
+        booking: bookingData,
+        totalAmount: totalAmount,
+        payment1: payment1,
+        payment2: payment2,
+        payment2Date: payment2Date ? payment2Date.toISOString().split("T")[0] : null
+      };
+
+      // Send to backend
+      fetch("https://chalet-checkout-backend.fly.dev/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(guestData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert("Erreur lors de la création de la session de paiement.");
+        }
+      })
+      .catch(error => {
+        console.error("Erreur:", error);
+        alert("Une erreur est survenue. Veuillez réessayer.");
+      });
+    });
+  </script>
 
 </body>
 </html>
