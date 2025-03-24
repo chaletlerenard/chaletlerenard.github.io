@@ -232,6 +232,12 @@
         order: -1;
       }
     }
+    
+    /* Info icon styling */
+    .info-icon {
+      font-size: 0.8rem;
+      cursor: help;
+    }
   </style>
 </head>
 <body>
@@ -249,6 +255,16 @@
 
     <label for="lastName">Nom</label>
     <input type="text" id="lastName" required>
+    
+    <!-- New input for number of guests -->
+    <label for="guests">Nombre de personnes</label>
+    <input type="number" id="guests" min="1" max="6" value="1" required>
+    
+    <!-- New checkbox for dog option -->
+    <div class="checkbox-group">
+      <input type="checkbox" id="hasDog">
+      <label for="hasDog">Chien (+75 $)</label>
+    </div>
 
     <label for="country">Pays</label>
     <select id="country"></select>
@@ -261,16 +277,6 @@
       <option value="francais" selected>Français</option>
       <option value="anglais">Anglais</option>
     </select>
-
-    <!-- New field: Nombre de personnes -->
-    <label for="guests">Nombre de personnes</label>
-    <input type="number" id="guests" min="1" value="1" required>
-
-    <!-- New field: Option chien -->
-    <div class="checkbox-group">
-      <input type="checkbox" id="hasDog">
-      <label for="hasDog">Chien (ajouter 75,00 $)</label>
-    </div>
 
     <label for="comments">Commentaires (optionnel)</label>
     <textarea id="comments" placeholder="Ajoutez vos commentaires ici..."></textarea>
@@ -304,21 +310,12 @@
 
   // Récupérer les données stockées depuis la page 1
   const bookingData = JSON.parse(localStorage.getItem("bookingData"));
-
   if (!bookingData) {
     alert("Erreur de réservation. Veuillez recommencer.");
     window.location.href = "booking.html";
   }
 
-  // Set initial values for guests and hasDog from bookingData if available
-  if (bookingData.guests) {
-    document.getElementById("guests").value = bookingData.guests;
-  }
-  if (typeof bookingData.hasDog !== "undefined") {
-    document.getElementById("hasDog").checked = bookingData.hasDog;
-  }
-
-  // Initialize phone input with international format
+  // Champ téléphone avec validation
   const phoneInput = document.getElementById("phone");
   const iti = window.intlTelInput(phoneInput, {
     preferredCountries: ["ca", "fr", "us"],
@@ -346,104 +343,20 @@
     }
   });
 
-  // Format date function
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
-  }
-
-  // Global variable to store computed amounts
-  let computedAmounts = {};
-
-  // Function to update summary based on dynamic fields
-  function updateSummary() {
-    const guests = parseInt(document.getElementById("guests").value) || 1;
-    const hasDog = document.getElementById("hasDog").checked;
-    const checkin = new Date(bookingData.checkin);
-    const checkout = new Date(bookingData.checkout);
-    const nights = Math.round((checkout - checkin) / (1000 * 60 * 60 * 24));
-    
-    // Cleaning fee is always 150 $
-    const cleaningFee = 150;
-    const originalGuests = bookingData.guests || 1;
-    const roomCharge = bookingData.currentTotalPreTax - cleaningFee;
-    const computedPricePerNight = roomCharge / (nights * originalGuests);
-    
-    // Recalculate new subtotal: (computed price per night × nights × new guests) + cleaning fee + (dog fee if applicable)
-    const dogFee = hasDog ? 75 : 0;
-    const newSubtotal = computedPricePerNight * nights * guests + cleaningFee + dogFee;
-    
-    // Calculate taxes and total
-    const gstAmount = newSubtotal * (GST_RATE / 100);
-    const qstAmount = newSubtotal * (QST_RATE / 100);
-    const lodgingTaxAmount = newSubtotal * (LODGING_TAX_RATE / 100);
-    const totalAmount = newSubtotal + gstAmount + qstAmount + lodgingTaxAmount;
-    
-    // Payment schedule: 50/50 if more than 14 days before arrival
-    const today = new Date();
-    const checkinDate = new Date(bookingData.checkin);
-    const diffDays = Math.ceil((checkinDate - today) / (1000 * 60 * 60 * 24));
-    let payment1, payment2, payment2Date;
-    if (diffDays > 14) {
-      payment1 = totalAmount / 2;
-      payment2 = totalAmount - payment1;
-      payment2Date = new Date(checkinDate);
-      payment2Date.setDate(payment2Date.getDate() - 14);
-    } else {
-      payment1 = totalAmount;
-      payment2 = 0;
-      payment2Date = null;
-    }
-    
-    computedAmounts = { guests, hasDog, nights, newSubtotal, gstAmount, qstAmount, lodgingTaxAmount, totalAmount, payment1, payment2, payment2Date, computedPricePerNight };
-    
-    summaryContent.innerHTML = `
-      <p><strong>Date d'arrivée :</strong> ${formatDate(bookingData.checkin)}</p>
-      <p><strong>Date de départ :</strong> ${formatDate(bookingData.checkout)}</p>
-      <p><strong>Prix par nuit :</strong> ${computedPricePerNight.toFixed(2).replace(".", ",")} $</p>
-      <p><strong>Nombre de personnes :</strong> ${guests}</p>
-      ${hasDog ? '<p><strong>Chien :</strong> Oui (+75,00 $)</p>' : '<p><strong>Chien :</strong> Non</p>'}
-      <hr>
-      <p><strong>Sous-total :</strong> ${newSubtotal.toFixed(2).replace(".", ",")} $</p>
-      <ul>
-        <li>TPS (${GST_RATE}%): ${gstAmount.toFixed(2).replace(".", ",")} $</li>
-        <li>TVQ (${QST_RATE}%): ${qstAmount.toFixed(2).replace(".", ",")} $</li>
-        <li>Taxe sur l'hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxAmount.toFixed(2).replace(".", ",")} $</li>
-      </ul>
-      <hr>
-      <p><strong>Total à payer :</strong> ${totalAmount.toFixed(2).replace(".", ",")} $</p>
-      <hr>
-      <p><strong>Échéancier de paiement :</strong></p>
-      <ul>
-        <li>Paiement 1 (aujourd'hui) : ${payment1.toFixed(2).replace(".", ",")} $</li>
-        ${payment2 > 0 ? `<li title="14 jours avant votre arrivée">Paiement 2 (le ${payment2Date.toLocaleDateString('fr-CA')}) : ${payment2.toFixed(2).replace(".", ",")} $</li>` : ''}
-      </ul>
-    `;
-  }
-
-  const summaryContent = document.getElementById("summaryContent");
-  updateSummary();
-
-  // Event listeners for dynamic updates
-  document.getElementById("guests").addEventListener("input", updateSummary);
-  document.getElementById("hasDog").addEventListener("change", updateSummary);
-
-  // Form validation
-  const fields = ["email", "firstName", "lastName", "country", "language"];
+  // Validation formulaire
+  const fields = ["email", "firstName", "lastName", "country", "language", "guests"];
   const continueButton = document.getElementById("continueButton");
 
   function validateForm() {
     const allFieldsFilled = fields.every(id => document.getElementById(id).value.trim() !== "");
     const phoneValid = iti.isValidNumber();
     const allChecked = document.getElementById("acceptContract").checked && document.getElementById("acceptPrivacy").checked;
+
     continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked);
     
+    // Visual feedback for phone validation
     if (phoneInput.value) {
-      if (phoneValid) {
-        phoneInput.style.borderColor = "var(--success-color)";
-      } else {
-        phoneInput.style.borderColor = "var(--error-color)";
-      }
+      phoneInput.style.borderColor = phoneValid ? "var(--success-color)" : "var(--error-color)";
     } else {
       phoneInput.style.borderColor = '';
     }
@@ -455,8 +368,91 @@
   phoneInput.addEventListener("input", validateForm);
   phoneInput.addEventListener("countrychange", validateForm);
 
+  // Initialiser les champs invités et chien avec les données récupérées
+  document.getElementById("guests").value = bookingData.guests || 1;
+  document.getElementById("hasDog").checked = bookingData.hasDog || false;
+
+  // Mise à jour dynamique du résumé
+  function updateSummary() {
+    // Calculer le nombre de nuits
+    const checkin = new Date(bookingData.checkin);
+    const checkout = new Date(bookingData.checkout);
+    const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
+    const pricePerNight = bookingData.currentTotalPreTax / nights;
+    
+    // Calcul du sous-total et taxes sur le tarif de base (sans le chien)
+    const subtotal = bookingData.currentTotalPreTax;
+    const gstAmount = subtotal * (GST_RATE / 100);
+    const qstAmount = subtotal * (QST_RATE / 100);
+    const lodgingTaxAmount = subtotal * (LODGING_TAX_RATE / 100);
+    const totalWithoutDog = subtotal + gstAmount + qstAmount + lodgingTaxAmount;
+    
+    // Frais chien (75 $ ajoutés si coché)
+    const dogFee = document.getElementById("hasDog").checked ? 75 : 0;
+    const effectiveTotal = totalWithoutDog + dogFee;
+    
+    // Échéancier de paiement
+    const today = new Date();
+    const diffDays = Math.ceil((checkin - today) / (1000 * 60 * 60 * 24));
+    let payment1 = effectiveTotal;
+    let payment2 = 0;
+    let payment2Date = null;
+    if (diffDays > 14) {
+      payment1 = effectiveTotal / 2;
+      payment2 = effectiveTotal - payment1;
+      payment2Date = new Date(checkin);
+      payment2Date.setDate(payment2Date.getDate() - 14);
+    }
+    
+    // Récupérer le nombre de personnes
+    const guests = document.getElementById("guests").value;
+    
+    // Formatage des montants en dollars (français canadien)
+    const subtotalFormatted = subtotal.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
+    const gstFormatted = gstAmount.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
+    const qstFormatted = qstAmount.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
+    const lodgingTaxFormatted = lodgingTaxAmount.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
+    const effectiveTotalFormatted = effectiveTotal.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
+    const payment1Formatted = payment1.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
+    const payment2Formatted = payment2.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
+    const pricePerNightFormatted = pricePerNight.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
+    const checkinFormatted = checkin.toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+    const checkoutFormatted = checkout.toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+    const payment2DateFormatted = payment2Date ? payment2Date.toLocaleDateString('fr-CA') : "";
+    
+    // Mettre à jour le contenu du résumé
+    const summaryContent = document.getElementById("summaryContent");
+    summaryContent.innerHTML = `
+      <p><strong>Date d'arrivée :</strong> ${checkinFormatted}</p>
+      <p><strong>Date de départ :</strong> ${checkoutFormatted}</p>
+      <p><strong>Nombre de personnes :</strong> ${guests}</p>
+      <p><strong>Prix par nuit :</strong> ${pricePerNightFormatted}</p>
+      <p><strong>Chien :</strong> ${document.getElementById("hasDog").checked ? "Oui (+75,00 $)" : "Non"}</p>
+      <hr>
+      <p><strong>Sous-total :</strong> ${subtotalFormatted}</p>
+      <ul>
+        <li>TPS (${GST_RATE}%): ${gstFormatted}</li>
+        <li>TVQ (${QST_RATE}%): ${qstFormatted}</li>
+        <li>Taxe sur l'hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxFormatted}</li>
+      </ul>
+      <hr>
+      <p><strong>Total à payer :</strong> ${effectiveTotalFormatted}</p>
+      <hr>
+      <p><strong>Échéancier de paiement :</strong></p>
+      <ul>
+        <li>Paiement 1 (aujourd'hui) : ${payment1Formatted}</li>
+        ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2DateFormatted}) : ${payment2Formatted} <sup><span class="info-icon" title="14 jours avant votre arrivée">&#9432;</span></sup></li>` : ''}
+      </ul>
+    `;
+  }
+  
+  // Appeler updateSummary initialement et lors des changements des nouveaux champs
+  updateSummary();
+  document.getElementById("guests").addEventListener("input", updateSummary);
+  document.getElementById("hasDog").addEventListener("change", updateSummary);
+  
+  // Envoi du formulaire
   continueButton.addEventListener("click", () => {
-    updateSummary();
     const guestData = {
       email: document.getElementById("email").value,
       firstName: document.getElementById("firstName").value,
@@ -465,17 +461,44 @@
       language: document.getElementById("language").value,
       phone: iti.getNumber(),
       comments: document.getElementById("comments").value,
-      booking: {
-        ...bookingData,
-        guests: computedAmounts.guests,
-        hasDog: computedAmounts.hasDog,
-        currentTotalPreTax: computedAmounts.newSubtotal
-      },
-      totalAmount: computedAmounts.totalAmount,
-      payment1: computedAmounts.payment1,
-      payment2: computedAmounts.payment2,
-      payment2Date: computedAmounts.payment2Date ? computedAmounts.payment2Date.toISOString().split("T")[0] : null
+      guests: document.getElementById("guests").value,
+      hasDog: document.getElementById("hasDog").checked,
+      booking: bookingData,
+      totalAmount: document.getElementById("hasDog").checked ? (bookingData.currentTotalPreTax + 75 + 
+                     (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
+                     (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
+                     (bookingData.currentTotalPreTax * (LODGING_TAX_RATE / 100))) : 
+                     (bookingData.currentTotalPreTax + 
+                     (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
+                     (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
+                     (bookingData.currentTotalPreTax * (LODGING_TAX_RATE / 100))),
+      // Paiement 2 est calculé s'il y a plus de 14 jours avant l'arrivée
+      payment1: null,
+      payment2: null,
+      payment2Date: null
     };
+
+    // Recalculer l'échéancier pour les données envoyées
+    const checkin = new Date(bookingData.checkin);
+    const today = new Date();
+    const diffDays = Math.ceil((checkin - today) / (1000 * 60 * 60 * 24));
+    let effectiveTotal = document.getElementById("hasDog").checked ? (bookingData.currentTotalPreTax + 75 + 
+                     (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
+                     (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
+                     (bookingData.currentTotalPreTax * (LODGING_TAX_RATE / 100))) : 
+                     (bookingData.currentTotalPreTax + 
+                     (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
+                     (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
+                     (bookingData.currentTotalPreTax * (LODGING_TAX_RATE / 100)));
+    if (diffDays > 14) {
+      guestData.payment1 = effectiveTotal / 2;
+      guestData.payment2 = effectiveTotal - guestData.payment1;
+      const payment2Date = new Date(checkin);
+      payment2Date.setDate(payment2Date.getDate() - 14);
+      guestData.payment2Date = payment2Date.toISOString().split("T")[0];
+    } else {
+      guestData.payment1 = effectiveTotal;
+    }
 
     fetch("https://chalet-checkout-backend.fly.dev/create-checkout-session", {
       method: "POST",
