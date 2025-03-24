@@ -1,4 +1,7 @@
 <!-- Start of Chalet Le Renard Booking Section -->
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
 <section id="booking" style="padding: 20px; background-color: #f9f9f9;">
   <div style="max-width: 1200px; margin: 0 auto;">
     <h2 style="font-size: 24px; margin-bottom: 20px;">Réservez votre séjour au Chalet Le Renard</h2>
@@ -7,19 +10,19 @@
       <!-- Check-in date -->
       <div style="flex: 1 1 300px;">
         <label for="checkin" style="display: block; margin-bottom: 5px; font-weight: bold;">Date d'arrivée</label>
-        <input type="text" id="checkin" placeholder="Choisissez une date" readonly style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        <input type="text" id="checkin" placeholder="Choisissez une date" readonly style="width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
       </div>
 
       <!-- Check-out date -->
       <div style="flex: 1 1 300px;">
         <label for="checkout" style="display: block; margin-bottom: 5px; font-weight: bold;">Date de départ</label>
-        <input type="text" id="checkout" placeholder="Choisissez une date" readonly style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        <input type="text" id="checkout" placeholder="Choisissez une date" readonly style="width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
       </div>
 
       <!-- Guests -->
       <div style="flex: 1 1 300px;">
         <label for="guests" style="display: block; margin-bottom: 5px; font-weight: bold;">Nombre de personnes</label>
-        <select id="guests" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        <select id="guests" style="width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
           <option value="1">1 personne</option>
           <option value="2">2 personnes</option>
           <option value="3">3 personnes</option>
@@ -31,16 +34,15 @@
 
       <!-- Dog -->
       <div style="flex: 1 1 300px;">
-        <label for="dog" style="display: block; margin-bottom: 5px; font-weight: bold;">J'amènerai mon chien</label>
-        <div style="display: flex; align-items: center;">
-          <input type="checkbox" id="dog" style="margin-right: 5px;">
-          <span style="font-size: 14px; color: #666;">(+75 $)</span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <input type="checkbox" id="dog" style="margin: 0; width: 24px; height: 24px;">
+          <label for="dog" style="font-weight: bold; margin: 0;">J'amènerai mon chien</label>
         </div>
       </div>
 
       <!-- Reserve button -->
       <div style="flex: 1 1 300px; align-self: flex-end;">
-        <button id="searchButton" disabled style="width: 100%; padding: 10px; background-color: #ccc; color: #fff; border: none; border-radius: 5px; cursor: not-allowed; transition: background-color 0.3s;">Réserver</button>
+        <button id="searchButton" disabled style="width: 100%; padding: 15px; background-color: #ccc; color: #fff; border: none; border-radius: 5px; cursor: not-allowed; transition: background-color 0.3s; font-size: 16px;">Réserver</button>
       </div>
     </div>
   </div>
@@ -52,10 +54,11 @@
 <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
 
 <script>
+  // The entire existing JavaScript remains unchanged
   let latestJsonData = [];
   let unavailableDates = [];
   let currentTotalPreTax = 0;
-  let cleaningFee = 0; // Global variable for cleaning fee
+  let cleaningFee = 0;
 
   let checkinPicker, checkoutPicker;
 

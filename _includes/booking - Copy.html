@@ -50,15 +50,12 @@
 <link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/flatpickr.min.css">
 <script src="https://npmcdn.com/flatpickr/dist/flatpickr.min.js"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
-<script src="https://js.stripe.com/v3/"></script>
 
 <script>
-  const stripe = Stripe("pk_live_51OxskHLiPCVDYAuQlkZnBtv5TfdLNUlUU4AvFIdNKZ25Ogc7cj25R2oIwyKHOVl9DM5Zb11GkA32IH4LagpoKfCr00yR2kV7Wl");
-  const searchButton = document.getElementById("searchButton");
-
   let latestJsonData = [];
   let unavailableDates = [];
   let currentTotalPreTax = 0;
+  let cleaningFee = 0; // Global variable for cleaning fee
 
   let checkinPicker, checkoutPicker;
 
@@ -186,12 +183,12 @@
     const checkoutDate = new Date(checkout + "T00:00:00");
 
     if (checkinDate.getDay() === 6) {
-      disableButton("Le jour d'arrivée ne peut être le samedi");
+      disableButton("Le jour d'arrivée ne peut être un samedi");
       return;
     }
 
     if (checkoutDate.getDay() === 6) {
-      disableButton("Le jour de départ ne peut être le samedi");
+      disableButton("Le jour de départ ne peut être un samedi");
       return;
     }
 
@@ -212,7 +209,7 @@
     }
 
     const totalNightlyRate = stayPrices.reduce((total, day) => total + parseInt(day["Final Price"]), 0);
-    const cleaningFee = nights >= 3 ? 150 : 140;
+    cleaningFee = nights >= 3 ? 150 : 140; // Updated: assign to global variable
     const sixthGuestFee = parseInt(guests) === 6 ? 20 * nights : 0;
     const dogFee = dogChecked ? 75 : 0;
 
@@ -247,36 +244,29 @@
   document.getElementById("guests").addEventListener("change", checkDates);
   document.getElementById("dog").addEventListener("change", checkDates);
 
-  // ✅ MINIMAL NECESSARY CHANGE HERE:
+  // Modified button functionality to save booking data to localStorage and redirect
+  const searchButton = document.getElementById("searchButton");
   searchButton.addEventListener("click", () => {
     const checkin = document.getElementById("checkin").value;
     const checkout = document.getElementById("checkout").value;
     const guests = document.getElementById("guests").value;
     const dogChecked = document.getElementById("dog").checked;
-
-    fetch("https://chalet-checkout-backend.fly.dev/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amount: currentTotalPreTax,
-        guests: guests,
-        dates: `${checkin} - ${checkout}`,
-        hasDog: dogChecked
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.url) {
-        window.location.href = data.url;  // ✅ Redirect to Stripe Checkout page
-      } else {
-        console.error("No URL returned from backend:", data);
-        alert("Une erreur est survenue. Veuillez réessayer.");
-      }
-    })
-    .catch(error => {
-      console.error("Error during checkout:", error);
-      alert("Une erreur est survenue lors du processus de paiement.");
-    });
+    
+    // Create booking data object to match what the contact page expects
+    const bookingData = {
+      checkin: checkin,
+      checkout: checkout,
+      guests: guests,
+      hasDog: dogChecked,
+      cleaningFee: cleaningFee, // New: pass cleaning fee to storage
+      currentTotalPreTax: currentTotalPreTax
+    };
+    
+    // Store the booking data in localStorage
+    localStorage.setItem("bookingData", JSON.stringify(bookingData));
+    
+    // Redirect to the contact page
+    window.location.href = "/contact.html";
   });
 
   function dateDiff(start, end) {
