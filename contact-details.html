@@ -11,27 +11,26 @@
 <body>
 
 <div class="container">
-  <!-- Formulaire client -->
   <div class="form-section">
     <h2>Vos coordonnées</h2>
 
     <label for="email">Courriel *</label>
-    <input type="email" id="email" required>
+    <input type="email" id="email">
 
     <label for="firstName">Prénom *</label>
-    <input type="text" id="firstName" required>
+    <input type="text" id="firstName">
 
     <label for="lastName">Nom *</label>
-    <input type="text" id="lastName" required>
+    <input type="text" id="lastName">
 
     <label for="country">Pays *</label>
     <select id="country"></select>
 
     <label for="phone">Numéro de téléphone *</label>
-    <input type="tel" id="phone" required>
+    <input type="tel" id="phone">
 
     <label for="language">Langue de préférence *</label>
-    <select id="language" required>
+    <select id="language">
       <option value="francais" selected>Français</option>
       <option value="anglais">Anglais</option>
     </select>
@@ -40,18 +39,17 @@
 
     <div class="checkbox-group">
       <input type="checkbox" id="acceptContract">
-      <label for="acceptContract">J'ai lu et j'accepte le <a href="#" target="_blank">contrat de location</a> *</label>
+      <label for="acceptContract">J'ai lu et j'accepte le <a href="#">contrat de location</a></label>
     </div>
 
     <div class="checkbox-group">
       <input type="checkbox" id="acceptPrivacy">
-      <label for="acceptPrivacy">J'ai lu et j'accepte la <a href="#" target="_blank">politique de confidentialité</a> *</label>
+      <label for="acceptPrivacy">J'ai lu et j'accepte la <a href="#">politique de confidentialité</a></label>
     </div>
 
     <button class="button" id="continueButton" disabled>Continuer</button>
   </div>
 
-  <!-- Résumé réservation -->
   <div class="summary-section">
     <h3>Résumé de la réservation</h3>
     <div id="summaryContent"></div>
@@ -60,27 +58,22 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 <script>
-  // Taux de taxes
   const GST_RATE = 5;
   const QST_RATE = 9.975;
   const LODGING_TAX_RATE = 3.5;
 
-  // Récupérer les données stockées depuis la page 1
   const bookingData = JSON.parse(localStorage.getItem("bookingData"));
-
   if (!bookingData) {
-    alert("Erreur de réservation. Veuillez recommencer.");
+    alert("Aucune réservation trouvée. Retour à la réservation.");
     window.location.href = "booking.html";
   }
 
-  // Calculs
   const subtotal = bookingData.currentTotalPreTax;
   const gstAmount = subtotal * (GST_RATE / 100);
   const qstAmount = subtotal * (QST_RATE / 100);
   const lodgingTaxAmount = bookingData.currentTotalPreTax * (LODGING_TAX_RATE / 100);
   const totalAmount = subtotal + gstAmount + qstAmount + lodgingTaxAmount;
 
-  // Paiement : 50/50 si plus de 14 jours avant l'arrivée
   const today = new Date();
   const checkinDate = new Date(bookingData.checkin);
   const diffDays = Math.ceil((checkinDate - today) / (1000 * 60 * 60 * 24));
@@ -96,7 +89,6 @@
     payment2Date.setDate(payment2Date.getDate() - 14);
   }
 
-  // Affichage dans le résumé
   const summaryContent = document.getElementById("summaryContent");
   summaryContent.innerHTML = `
     <p><strong>Date d'arrivée :</strong> ${bookingData.checkin}</p>
@@ -111,7 +103,7 @@
       <li>Taxe sur l’hébergement (${LODGING_TAX_RATE}%): ${lodgingTaxAmount.toFixed(2)} $</li>
     </ul>
     <hr>
-    <p><strong>Total à payer :</strong> ${totalAmount.toFixed(2)} $</p>
+    <p><strong>Total :</strong> ${totalAmount.toFixed(2)} $</p>
     <hr>
     <p><strong>Échéancier de paiement :</strong></p>
     <ul>
@@ -120,27 +112,6 @@
     </ul>
   `;
 
-  // Remplir la liste de pays (Canada en premier)
-  const countrySelect = document.getElementById("country");
-  const countries = [
-    "Canada", "Afghanistan", "Afrique du Sud", "Albanie", "Algérie", "Allemagne", "Andorre", "Angola",
-    "Argentine", "Australie", "Autriche", "Belgique", "Brésil", "Bulgarie", "Cameroun",
-    "Chili", "Chine", "Colombie", "Corée du Sud", "Costa Rica", "Croatie", "Danemark", "Égypte", "Espagne",
-    "États-Unis", "Finlande", "France", "Grèce", "Hongrie", "Inde", "Indonésie", "Irlande", "Islande", "Israël",
-    "Italie", "Japon", "Luxembourg", "Malaisie", "Maroc", "Mexique", "Norvège", "Nouvelle-Zélande", "Pays-Bas",
-    "Philippines", "Pologne", "Portugal", "République tchèque", "Roumanie", "Royaume-Uni", "Russie", "Singapour",
-    "Slovaquie", "Suède", "Suisse", "Thaïlande", "Tunisie", "Turquie", "Ukraine", "Vietnam"
-  ];
-
-  countries.sort((a, b) => a.localeCompare(b));
-  countrySelect.innerHTML = `<option value="Canada" selected>Canada</option>`;
-  countries.forEach(country => {
-    if (country !== "Canada") {
-      countrySelect.innerHTML += `<option value="${country}">${country}</option>`;
-    }
-  });
-
-  // Champ téléphone avec validation
   const phoneInput = document.getElementById("phone");
   const iti = window.intlTelInput(phoneInput, {
     preferredCountries: ["ca"],
@@ -148,7 +119,6 @@
     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
   });
 
-  // Validation formulaire
   const fields = ["email", "firstName", "lastName", "country", "language"];
   const continueButton = document.getElementById("continueButton");
 
@@ -164,9 +134,7 @@
   document.getElementById("acceptContract").addEventListener("change", validateForm);
   document.getElementById("acceptPrivacy").addEventListener("change", validateForm);
   phoneInput.addEventListener("input", validateForm);
-  phoneInput.addEventListener("countrychange", validateForm);
 
-  // Envoi du formulaire
   continueButton.addEventListener("click", () => {
     const guestData = {
       email: document.getElementById("email").value,
@@ -183,6 +151,8 @@
       payment2Date: payment2Date ? payment2Date.toISOString().split("T")[0] : null
     };
 
+    console.log("Envoi au backend :", guestData);
+
     fetch("https://chalet-checkout-backend.fly.dev/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -193,7 +163,7 @@
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert("Erreur lors de la création de la session.");
+        alert("Erreur lors de la création de la session de paiement.");
       }
     });
   });
