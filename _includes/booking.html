@@ -1,59 +1,40 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Réservation - Chalet Le Renard</title>
+
   <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
   <link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
 
-<!-- Start of Chalet Le Renard Booking Section -->
-<section id="booking" style="padding: 20px; background-color: #f9f9f9;">
-  <div style="max-width: 1200px; margin: 0 auto;">
-    <h2 style="font-size: 24px; margin-bottom: 20px;">Réservez votre séjour au Chalet Le Renard</h2>
-    <div style="display: flex; flex-wrap: wrap; gap: 20px; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+<section id="booking">
+  <h2>Réservez votre séjour au Chalet Le Renard</h2>
 
-      <!-- Check-in date -->
-      <div style="flex: 1 1 300px;">
-        <label for="checkin" style="font-weight: bold;">Date d'arrivée</label>
-        <input type="text" id="checkin" placeholder="Choisissez une date" readonly style="width: 100%;">
-      </div>
+  <!-- Formulaire de réservation -->
+  <div>
+    <label>Date d'arrivée</label>
+    <input type="text" id="checkin">
 
-      <!-- Check-out date -->
-      <div style="flex: 1 1 300px;">
-        <label for="checkout" style="font-weight: bold;">Date de départ</label>
-        <input type="text" id="checkout" placeholder="Choisissez une date" readonly style="width: 100%;">
-      </div>
+    <label>Date de départ</label>
+    <input type="text" id="checkout">
 
-      <!-- Guests -->
-      <div style="flex: 1 1 300px;">
-        <label for="guests" style="font-weight: bold;">Nombre de personnes</label>
-        <select id="guests" style="width: 100%;">
-          <option value="1">1 personne</option>
-          <option value="2">2 personnes</option>
-          <option value="3">3 personnes</option>
-          <option value="4">4 personnes</option>
-          <option value="5">5 personnes</option>
-          <option value="6">6 personnes</option>
-        </select>
-      </div>
+    <label>Nombre de personnes</label>
+    <select id="guests">
+      <option value="1">1 personne</option>
+      <option value="2">2 personnes</option>
+      <option value="3">3 personnes</option>
+      <option value="4">4 personnes</option>
+      <option value="5">5 personnes</option>
+      <option value="6">6 personnes</option>
+    </select>
 
-      <!-- Dog -->
-      <div style="flex: 1 1 300px;">
-        <label for="dog" style="font-weight: bold;">J'amènerai mon chien</label>
-        <div>
-          <input type="checkbox" id="dog"> (+75 $)
-        </div>
-      </div>
+    <label>J'amènerai mon chien</label>
+    <input type="checkbox" id="dog">
 
-      <!-- Reserve button -->
-      <div style="flex: 1 1 300px;">
-        <button id="searchButton" disabled style="width: 100%;">Réserver</button>
-      </div>
-
-    </div>
+    <button id="searchButton" disabled>Réserver</button>
   </div>
 </section>
 
@@ -64,63 +45,25 @@
   const searchButton = document.getElementById("searchButton");
 
   let latestJsonData = [];
-  let unavailableDates = [];
   let currentTotalPreTax = 0;
-  let checkinPicker, checkoutPicker;
 
-  fetch("https://chaletlerenard.github.io/data/latest.json")
-    .then(response => response.json())
-    .then(data => latestJsonData = data);
+  // Exemple données JSON simulées
+  latestJsonData = [
+    { Date: "2025-05-01", Available: "True", "Final Price": "300", "Min Stay": "2" },
+    { Date: "2025-05-02", Available: "True", "Final Price": "300", "Min Stay": "2" }
+  ];
 
-  const proxyIcsUrl = "https://calendar.8zwxr4hbwn.workers.dev/";
-  fetch(proxyIcsUrl)
-    .then(response => response.text())
-    .then(data => {
-      unavailableDates = parseICal(data);
-      initDatePickers();
-    });
+  flatpickr("#checkin", {
+    locale: flatpickr.l10ns.fr,
+    dateFormat: "Y-m-d",
+    onChange: checkDates
+  });
 
-  function parseICal(data) {
-    const lines = data.split(/\r?\n/);
-    const unavailable = [];
-    let currentStart = null, currentEnd = null;
-
-    lines.forEach(line => {
-      if (line.startsWith("DTSTART")) {
-        currentStart = line.split(":")[1];
-        currentStart = currentStart.slice(0, 4) + "-" + currentStart.slice(4, 6) + "-" + currentStart.slice(6, 8);
-      }
-      if (line.startsWith("DTEND")) {
-        currentEnd = line.split(":")[1];
-        currentEnd = currentEnd.slice(0, 4) + "-" + currentEnd.slice(4, 6) + "-" + currentEnd.slice(6, 8);
-        let currentDate = new Date(currentStart);
-        const endDate = new Date(currentEnd);
-        while (currentDate < endDate) {
-          unavailable.push(currentDate.toISOString().split("T")[0]);
-          currentDate.setDate(currentDate.getDate() + 1);
-        }
-      }
-    });
-    return unavailable;
-  }
-
-  function initDatePickers() {
-    checkinPicker = flatpickr("#checkin", {
-      locale: flatpickr.l10ns.fr,
-      dateFormat: "Y-m-d",
-      minDate: "today",
-      disable: [date => unavailableDates.includes(date.toISOString().split("T")[0])],
-      onChange: checkDates
-    });
-
-    checkoutPicker = flatpickr("#checkout", {
-      locale: flatpickr.l10ns.fr,
-      dateFormat: "Y-m-d",
-      minDate: "today",
-      disable: [date => unavailableDates.includes(date.toISOString().split("T")[0])],
-      onChange: checkDates
-    });
-  }
+  flatpickr("#checkout", {
+    locale: flatpickr.l10ns.fr,
+    dateFormat: "Y-m-d",
+    onChange: checkDates
+  });
 
   function checkDates() {
     const checkin = document.getElementById("checkin").value;
@@ -139,12 +82,6 @@
     const stayPrices = latestJsonData.filter(day => stayDates.includes(day.Date) && day.Available === "True");
 
     if (stayPrices.length !== nights) {
-      searchButton.disabled = true;
-      return;
-    }
-
-    const maxMinStay = Math.max(...stayPrices.map(day => parseInt(day["Min Stay"])));
-    if (nights < maxMinStay) {
       searchButton.disabled = true;
       return;
     }
@@ -169,8 +106,9 @@
       currentTotalPreTax: currentTotalPreTax
     };
 
-    localStorage.setItem("bookingData", JSON.stringify(bookingDetails));
+    console.log("Données envoyées sur la page 2 :", bookingDetails);
 
+    localStorage.setItem("bookingData", JSON.stringify(bookingDetails));
     window.location.href = "contact-details.html";
   });
 
