@@ -503,7 +503,7 @@
     let effectiveTotal = document.getElementById("hasDog").checked ? (bookingData.currentTotalPreTax + 75 + 
                      (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
                      (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
-                     (bookingData.currentTotalPreTax * (LODGING_TAX_RATE / 100))) : 
+                     ((bookingData.currentTotalPreTax -150) * (LODGING_TAX_RATE / 100))) : 
                      (bookingData.currentTotalPreTax + 
                      (bookingData.currentTotalPreTax * (GST_RATE / 100)) + 
                      (bookingData.currentTotalPreTax * (QST_RATE / 100)) + 
