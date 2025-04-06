@@ -453,13 +453,8 @@
     const checkout = new Date(bookingData.checkout + "T00:00:00");
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
     
-    // Obtenir le nombre de voyageurs actuel et calculer l'ajustement
-    const currentGuests = parseInt(document.getElementById("guests").value);
-    let adjustment = 0;
-    if (currentGuests === 6) {
-      adjustment = 20 * nights;
-    }
-    const adjustedSubtotal = bookingData.currentTotalPreTax + adjustment;
+    // Utiliser directement bookingData.currentTotalPreTax car il inclut déjà le calcul en fonction du nombre de voyageurs
+    const adjustedSubtotal = bookingData.currentTotalPreTax;
 
     // Frais chien (75 $ ajoutés si applicable)
     const dogFee = bookingData.hasDog ? 75 : 0;
@@ -539,12 +534,8 @@
     const checkout = new Date(bookingData.checkout + "T00:00:00");
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
     const dogFee = bookingData.hasDog ? 75 : 0;
-    const currentGuests = parseInt(document.getElementById("guests").value);
-    let adjustment = 0;
-    if (currentGuests === 6) {
-      adjustment = 20 * nights;
-    }
-    const adjustedSubtotal = bookingData.currentTotalPreTax + adjustment;
+    // Utiliser directement bookingData.currentTotalPreTax puisque celui-ci est déjà mis à jour
+    const adjustedSubtotal = bookingData.currentTotalPreTax;
     const effectiveTotal = adjustedSubtotal +
          (adjustedSubtotal * (GST_RATE / 100)) +
          (adjustedSubtotal * (QST_RATE / 100)) +
