@@ -100,6 +100,16 @@
       }
     }
   </style>
+  
+  <!-- Include EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js"></script>
+  <script type="text/javascript">
+    // This email sending functionality is powered by EmailJS (https://www.emailjs.com/)
+    // Initializing EmailJS with the provided public key.
+    (function(){
+      emailjs.init("SCAOdpzoDJmL3DdLn");
+    })();
+  </script>
 </head>
 <body>
   <div class="container">
@@ -119,13 +129,55 @@
     if (!reservationData) {
       document.getElementById("confirmationContent").innerHTML = "<p>Aucune donnée de réservation disponible.</p>";
     } else {
-      const booking = reservationData.booking;
-      const checkin = new Date(booking.checkin + "T00:00:00");
-      const checkout = new Date(booking.checkout + "T00:00:00");
+      // Constantes pour le calcul
+      const GST_RATE = 5;
+      const QST_RATE = 9.975;
+      const LODGING_TAX_RATE = 3.5;
+      const cleaningFee = 150;
+      const dogFee = reservationData.booking.hasDog ? 75 : 0;
+      
+      // Dates et durée
+      const checkin = new Date(reservationData.booking.checkin + "T00:00:00");
+      const checkout = new Date(reservationData.booking.checkout + "T00:00:00");
       const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
       const checkinFormatted = checkin.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
       const checkoutFormatted = checkout.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
       
+      // Calcul de l'ajustement en fonction du nombre de voyageurs
+      const initialGuests = reservationData.booking.guests;
+      const currentGuests = parseInt(reservationData.guests);
+      let adjustment = 0;
+      if (initialGuests === 6 && currentGuests !== 6) {
+        adjustment = -20 * nights;
+      } else if (initialGuests !== 6 && currentGuests === 6) {
+        adjustment = 20 * nights;
+      }
+      
+      // Calcul du sous-total ajusté
+      const adjustedSubtotal = reservationData.booking.currentTotalPreTax + adjustment;
+      
+      // Calcul des taxes
+      const gstAmount = adjustedSubtotal * (GST_RATE / 100);
+      const qstAmount = adjustedSubtotal * (QST_RATE / 100);
+      const lodgingTaxAmount = (adjustedSubtotal - cleaningFee - dogFee) * (LODGING_TAX_RATE / 100);
+      const totalTaxAmount = gstAmount + qstAmount + lodgingTaxAmount;
+      
+      // Calcul du total à payer
+      const effectiveTotal = adjustedSubtotal + totalTaxAmount + dogFee;
+      
+      // Formats en dollars canadiens
+      const adjustedSubtotalFormatted = adjustedSubtotal.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+      const totalTaxFormatted = totalTaxAmount.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+      const effectiveTotalFormatted = effectiveTotal.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+      
+      // Formats des paiements
+      const payment1Formatted = Number(reservationData.payment1).toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+      let payment2Formatted = "";
+      if (reservationData.payment2) {
+        payment2Formatted = Number(reservationData.payment2).toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+      }
+      
+      // Mise à jour du contenu du résumé de confirmation
       const summaryHTML = `
         <p><strong>Courriel :</strong> ${reservationData.email}</p>
         <p><strong>Prénom :</strong> ${reservationData.firstName}</p>
@@ -139,63 +191,59 @@
         <p><strong>Date de départ :</strong> ${checkoutFormatted}</p>
         <p><strong>Nombre de voyageurs :</strong> ${reservationData.guests}</p>
         <p><strong>Chien :</strong> ${reservationData.hasDog ? "Oui" : "Non"}</p>
-        <p><strong>Total à payer :</strong> ${reservationData.totalAmount.toLocaleString("fr-CA", { style: "currency", currency: "CAD" })}</p>
+        <hr>
+        <p><strong>Sous-total (avant taxes) :</strong> ${adjustedSubtotalFormatted}</p>
+        <p><strong>Taxes :</strong> ${totalTaxFormatted}</p>
+        <hr>
+        <p><strong>Total à payer :</strong> ${effectiveTotalFormatted}</p>
+        <hr>
+        <p><strong>Paiement 1 :</strong> ${payment1Formatted}</p>
+        ${ reservationData.payment2 ? `<p><strong>Paiement 2 (le ${reservationData.payment2Date}) :</strong> ${payment2Formatted}</p>` : "" }
       `;
       document.getElementById("confirmationContent").innerHTML = summaryHTML;
       
-      // Préparer les formats pour l'email
+      // Stocker les formats de dates pour l'email
       window._confirmationData = {
         checkinFormatted,
         checkoutFormatted
       };
+      
+      // Préparer les paramètres pour EmailJS
+      window._emailParams = {
+        email: reservationData.email,
+        firstName: reservationData.firstName,
+        lastName: reservationData.lastName,
+        country: reservationData.country,
+        language: reservationData.language,
+        phone: reservationData.phone,
+        comments: reservationData.comments || "Aucun",
+        checkinFormatted: checkinFormatted,
+        checkoutFormatted: checkoutFormatted,
+        guests: reservationData.guests,
+        hasDog: reservationData.hasDog ? "Oui" : "Non",
+        adjustedSubtotal: adjustedSubtotalFormatted,
+        taxes: totalTaxFormatted,
+        effectiveTotal: effectiveTotalFormatted,
+        payment1: payment1Formatted,
+        payment2: reservationData.payment2 ? payment2Formatted : "N/A",
+        payment2Date: reservationData.payment2Date ? reservationData.payment2Date : "N/A"
+      };
     }
     
+    // Envoi de l'email via EmailJS avec tous les paramètres requis
     document.getElementById("sendRequestButton").addEventListener("click", () => {
       if (!reservationData) {
         alert("Aucune donnée de réservation disponible.");
         return;
       }
-      const checkinFormatted = window._confirmationData.checkinFormatted;
-      const checkoutFormatted = window._confirmationData.checkoutFormatted;
       
-      const emailBody = 
-`Détails de la réservation:
-Courriel: ${reservationData.email}
-Prénom: ${reservationData.firstName}
-Nom: ${reservationData.lastName}
-Pays: ${reservationData.country}
-Langue de préférence: ${reservationData.language}
-Numéro de téléphone: ${reservationData.phone}
-Commentaires: ${reservationData.comments || "Aucun"}
-
-Date d'arrivée: ${checkinFormatted}
-Date de départ: ${checkoutFormatted}
-Nombre de voyageurs: ${reservationData.guests}
-Chien: ${reservationData.hasDog ? "Oui" : "Non"}
-Total à payer: ${reservationData.totalAmount.toLocaleString("fr-CA", { style: "currency", currency: "CAD" })}
-`;
-
-      fetch("https://chalet-checkout-backend.fly.dev/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: "gtl@keemail.me",
-          subject: "Demande de réservation - Chalet Le Renard",
-          body: emailBody
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert("La demande a été envoyée avec succès.");
-          localStorage.removeItem("reservationData");
-        } else {
-          alert("Erreur lors de l'envoi de la demande.");
-        }
-      })
-      .catch(error => {
-        console.error("Erreur:", error);
-        alert("Une erreur est survenue lors de l'envoi de la demande.");
+      emailjs.send("service_9opr6js", "template_lerenardbooking", window._emailParams)
+      .then(function(response) {
+        alert("La demande a été envoyée avec succès.");
+        localStorage.removeItem("reservationData");
+      }, function(error) {
+        console.log("FAILED...", error);
+        alert("Erreur lors de l'envoi de la demande.");
       });
     });
   </script>
