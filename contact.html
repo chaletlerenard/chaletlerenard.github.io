@@ -380,7 +380,7 @@
     hasDog: false
   };
 
-  // Conserver le nombre de voyageurs initial pour le calcul d'ajustement
+  // Conserver le nombre de voyageurs initial pour d'autres usages si nécessaire
   const initialGuests = bookingData.guests;
 
   // Champ téléphone avec validation
@@ -456,9 +456,7 @@
     // Obtenir le nombre de voyageurs actuel et calculer l'ajustement
     const currentGuests = parseInt(document.getElementById("guests").value);
     let adjustment = 0;
-    if (initialGuests === 6 && currentGuests !== 6) {
-      adjustment = -20 * nights;
-    } else if (initialGuests !== 6 && currentGuests === 6) {
+    if (currentGuests === 6) {
       adjustment = 20 * nights;
     }
     const adjustedSubtotal = bookingData.currentTotalPreTax + adjustment;
@@ -543,9 +541,7 @@
     const dogFee = bookingData.hasDog ? 75 : 0;
     const currentGuests = parseInt(document.getElementById("guests").value);
     let adjustment = 0;
-    if (initialGuests === 6 && currentGuests !== 6) {
-      adjustment = -20 * nights;
-    } else if (initialGuests !== 6 && currentGuests === 6) {
+    if (currentGuests === 6) {
       adjustment = 20 * nights;
     }
     const adjustedSubtotal = bookingData.currentTotalPreTax + adjustment;
