@@ -452,8 +452,9 @@
   // Mise à jour dynamique du résumé
   function updateSummary() {
     // Calculer le nombre de nuits
-    const checkin = new Date(bookingData.checkin);
-    const checkout = new Date(bookingData.checkout);
+    // Imperative change: Append "T00:00:00" to ensure local date parsing
+    const checkin = new Date(bookingData.checkin + "T00:00:00");
+    const checkout = new Date(bookingData.checkout + "T00:00:00");
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
     
     // Obtenir le nombre de voyageurs actuel et calculer l'ajustement
@@ -540,8 +541,9 @@
   
   // Envoi du formulaire
   continueButton.addEventListener("click", () => {
-    const checkin = new Date(bookingData.checkin);
-    const checkout = new Date(bookingData.checkout);
+    // Imperative change: Append "T00:00:00" to ensure local date parsing
+    const checkin = new Date(bookingData.checkin + "T00:00:00");
+    const checkout = new Date(bookingData.checkout + "T00:00:00");
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
     const dogFee = bookingData.hasDog ? 75 : 0;
     const currentGuests = parseInt(document.getElementById("guests").value);
