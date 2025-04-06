@@ -100,16 +100,6 @@
       }
     }
   </style>
-  
-  <!-- Include the updated EmailJS SDK -->
-  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-  <script type="text/javascript">
-    // This email sending functionality is powered by EmailJS (https://www.emailjs.com/)
-    // Initializing EmailJS with the provided public key.
-    (function(){
-      emailjs.init("SCAOdpzoDJmL3DdLn");
-    })();
-  </script>
 </head>
 <body>
   <div class="container">
@@ -202,7 +192,7 @@
       `;
       document.getElementById("confirmationContent").innerHTML = summaryHTML;
       
-      // Préparer les paramètres pour EmailJS, including comments
+      // Préparer les paramètres pour EmailJS
       window._emailParams = {
         email: reservationData.email,
         firstName: reservationData.firstName,
@@ -240,6 +230,17 @@
         alert("Erreur lors de l'envoi de la demande.");
       });
     });
+  </script>
+  
+  <!-- Include EmailJS Browser SDK according to EmailJS instructions -->
+  <script type="text/javascript"
+          src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function(){
+      emailjs.init({
+        publicKey: "SCAOdpzoDJmL3DdLn",
+      });
+    })();
   </script>
 </body>
 </html>
