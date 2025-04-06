@@ -223,6 +223,7 @@
 
     const totalNightlyRate = stayPrices.reduce((total, day) => total + parseInt(day["Final Price"]), 0);
     cleaningFee = nights >= 3 ? 150 : 140;
+    // Calcul du supplément : 20 $ par nuit seulement si le nombre de voyageurs est exactement 6
     const sixthGuestFee = parseInt(guests) === 6 ? 20 * nights : 0;
     const dogFee = dogChecked ? 75 : 0;
 
@@ -264,7 +265,7 @@
     const guests = document.getElementById("guests").value;
     const dogChecked = document.getElementById("dog").checked;
 
-    // Show wait message and animation
+    // Affichage du message d'attente et animation
     searchButton.innerText = "Patientez quelques instants";
     searchButton.disabled = true;
     searchButton.style.cursor = "wait";
