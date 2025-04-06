@@ -1,12 +1,23 @@
 <!-- Start of Chalet Le Renard Booking Section -->
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <style>
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    .pulsing {
+      animation: pulse 1.5s infinite;
+    }
+  </style>
 </head>
 <section id="booking" style="padding: 20px; background-color: #f9f9f9;">
   <div style="max-width: 1200px; margin: 0 auto;">
     <h2 style="font-size: 24px; margin-bottom: 20px;">Réservez votre séjour au Chalet Le Renard</h2>
     <div style="display: flex; flex-wrap: wrap; gap: 20px; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
-      
+
       <!-- Check-in date -->
       <div style="flex: 1 1 300px;">
         <label for="checkin" style="display: block; margin-bottom: 5px; font-weight: bold;">Date d'arrivée</label>
@@ -54,7 +65,6 @@
 <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
 
 <script>
-  // The entire existing JavaScript remains unchanged
   let latestJsonData = [];
   let unavailableDates = [];
   let currentTotalPreTax = 0;
@@ -212,7 +222,7 @@
     }
 
     const totalNightlyRate = stayPrices.reduce((total, day) => total + parseInt(day["Final Price"]), 0);
-    cleaningFee = nights >= 3 ? 150 : 140; // Updated: assign to global variable
+    cleaningFee = nights >= 3 ? 150 : 140;
     const sixthGuestFee = parseInt(guests) === 6 ? 20 * nights : 0;
     const dogFee = dogChecked ? 75 : 0;
 
@@ -247,28 +257,30 @@
   document.getElementById("guests").addEventListener("change", checkDates);
   document.getElementById("dog").addEventListener("change", checkDates);
 
-  // Modified button functionality to save booking data to localStorage and redirect
   const searchButton = document.getElementById("searchButton");
   searchButton.addEventListener("click", () => {
     const checkin = document.getElementById("checkin").value;
     const checkout = document.getElementById("checkout").value;
     const guests = document.getElementById("guests").value;
     const dogChecked = document.getElementById("dog").checked;
-    
-    // Create booking data object to match what the contact page expects
+
+    // Show wait message and animation
+    searchButton.innerText = "Patientez quelques instants";
+    searchButton.disabled = true;
+    searchButton.style.cursor = "wait";
+    searchButton.classList.add("pulsing");
+
     const bookingData = {
       checkin: checkin,
       checkout: checkout,
       guests: guests,
       hasDog: dogChecked,
-      cleaningFee: cleaningFee, // New: pass cleaning fee to storage
+      cleaningFee: cleaningFee,
       currentTotalPreTax: currentTotalPreTax
     };
-    
-    // Store the booking data in localStorage
+
     localStorage.setItem("bookingData", JSON.stringify(bookingData));
-    
-    // Redirect to the contact page
+
     window.location.href = "/contact.html";
   });
 
