@@ -101,8 +101,8 @@
     }
   </style>
   
-  <!-- Include EmailJS SDK -->
-  <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js"></script>
+  <!-- Include the updated EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <script type="text/javascript">
     // This email sending functionality is powered by EmailJS (https://www.emailjs.com/)
     // Initializing EmailJS with the provided public key.
@@ -202,13 +202,7 @@
       `;
       document.getElementById("confirmationContent").innerHTML = summaryHTML;
       
-      // Stocker les formats de dates pour l'email
-      window._confirmationData = {
-        checkinFormatted,
-        checkoutFormatted
-      };
-      
-      // Préparer les paramètres pour EmailJS
+      // Préparer les paramètres pour EmailJS, including comments
       window._emailParams = {
         email: reservationData.email,
         firstName: reservationData.firstName,
