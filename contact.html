@@ -207,6 +207,11 @@
       .button {
         padding: 0.75rem 1.5rem;
       }
+      .tooltip {
+        max-width: 80vw;
+        bottom: auto;
+        top: calc(100% + 10px);
+      }
     }
     
     /* Highlight required fields */
@@ -295,12 +300,6 @@
       visibility: visible;
       opacity: 1;
     }
-    
-    @media (max-width: 480px) {
-      .tooltip {
-        max-width: 80vw;
-      }
-    }
   </style>
 </head>
 <body>
@@ -329,8 +328,6 @@
       <option value="5">5</option>
       <option value="6">6</option>
     </select>
-    
-    <!-- Dog option removed from "vos coordonnées" section -->
 
     <label for="country">Pays</label>
     <select id="country"></select>
@@ -452,7 +449,6 @@
   // Mise à jour dynamique du résumé
   function updateSummary() {
     // Calculer le nombre de nuits
-    // Imperative change: Append "T00:00:00" to ensure local date parsing
     const checkin = new Date(bookingData.checkin + "T00:00:00");
     const checkout = new Date(bookingData.checkout + "T00:00:00");
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
@@ -541,7 +537,6 @@
   
   // Envoi du formulaire
   continueButton.addEventListener("click", () => {
-    // Imperative change: Append "T00:00:00" to ensure local date parsing
     const checkin = new Date(bookingData.checkin + "T00:00:00");
     const checkout = new Date(bookingData.checkout + "T00:00:00");
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
@@ -589,23 +584,9 @@
       guestData.payment1 = effectiveTotal;
     }
 
-    fetch("https://chalet-checkout-backend.fly.dev/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(guestData)
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert("Erreur lors de la création de la session.");
-      }
-    })
-    .catch(error => {
-      console.error("Erreur:", error);
-      alert("Une erreur est survenue. Veuillez réessayer.");
-    });
+    // Store reservation data and redirect to confirmation page
+    localStorage.setItem("reservationData", JSON.stringify(guestData));
+    window.location.href = "confirmation.html";
   });
 </script>
 
