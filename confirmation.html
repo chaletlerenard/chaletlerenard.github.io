@@ -91,6 +91,13 @@
       background-color: var(--secondary-color);
     }
     
+    /* Hide reCAPTCHA widget by default */
+    .g-recaptcha {
+      margin: 1rem 0;
+      display: none;
+      justify-content: center;
+    }
+    
     @media (max-width: 480px) {
       .summary-section {
         padding: 1.5rem;
@@ -100,6 +107,19 @@
       }
     }
   </style>
+  
+  <!-- Include EmailJS Browser SDK according to EmailJS instructions -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function(){
+      emailjs.init({
+        publicKey: "SCAOdpzoDJmL3DdLn",
+      });
+    })();
+  </script>
+  
+  <!-- Include Google reCAPTCHA v2 API -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
   <div class="container">
@@ -108,11 +128,18 @@
       <div id="confirmationContent">
         <!-- Les détails de la réservation seront affichés ici -->
       </div>
+      
+      <!-- reCAPTCHA widget (hidden by default) -->
+      <div class="g-recaptcha" id="recaptchaContainer" data-sitekey="6LdeQwwrAAAAAC3EegglIilhKI5TVVWw47xC_fZi"></div>
+      
       <button class="button" id="sendRequestButton">Envoyer la demande</button>
     </div>
   </div>
   
   <script>
+    // Global counter for submission attempts
+    let submissionCount = 0;
+    
     // Récupérer les données de réservation stockées
     const reservationData = JSON.parse(localStorage.getItem("reservationData"));
     
@@ -214,8 +241,22 @@
       };
     }
     
-    // Envoi de l'email via EmailJS avec tous les paramètres requis
+    // Gestion de la soumission avec vérification conditionnelle de reCAPTCHA
     document.getElementById("sendRequestButton").addEventListener("click", () => {
+      // Incrémente le compteur de soumissions
+      submissionCount++;
+      
+      // Si c'est une tentative de soumission répétée (2e fois ou plus)
+      if (submissionCount > 1) {
+        // Afficher le widget reCAPTCHA s'il n'est pas déjà visible
+        document.getElementById("recaptchaContainer").style.display = "flex";
+        // Vérifier que reCAPTCHA est résolu
+        if (grecaptcha.getResponse() === "") {
+          alert("Veuillez vérifier que vous n'êtes pas un robot.");
+          return;
+        }
+      }
+      
       if (!reservationData) {
         alert("Aucune donnée de réservation disponible.");
         return;
@@ -230,17 +271,6 @@
         alert("Erreur lors de l'envoi de la demande.");
       });
     });
-  </script>
-  
-  <!-- Include EmailJS Browser SDK according to EmailJS instructions -->
-  <script type="text/javascript"
-          src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script type="text/javascript">
-    (function(){
-      emailjs.init({
-        publicKey: "SCAOdpzoDJmL3DdLn",
-      });
-    })();
   </script>
 </body>
 </html>
