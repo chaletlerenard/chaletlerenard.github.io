@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirmation de la réservation - Chalet Le Renard</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #3a5a40;
+      --secondary-color: #588157;
+      --accent-color: #dad7cd;
+      --text-color: #333;
+      --light-bg: #f8f9fa;
+      --border-color: #dee2e6;
+      --error-color: #dc3545;
+      --success-color: #198754;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --border-radius: 8px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--light-bg);
+      padding: 0;
+      margin: 0;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .summary-section {
+      width: 100%;
+      max-width: 600px;
+      background-color: white;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+    
+    h2 {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+    
+    p {
+      margin-bottom: 0.75rem;
+    }
+    
+    hr {
+      margin: 1rem 0;
+      border: none;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      margin-top: 1rem;
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    .button:hover:not(:disabled) {
+      background-color: var(--secondary-color);
+    }
+    
+    @media (max-width: 480px) {
+      .summary-section {
+        padding: 1.5rem;
+      }
+      .button {
+        padding: 0.75rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="summary-section">
+      <h2>Confirmation de la réservation</h2>
+      <div id="confirmationContent">
+        <!-- Les détails de la réservation seront affichés ici -->
+      </div>
+      <button class="button" id="sendRequestButton">Envoyer la demande</button>
+    </div>
+  </div>
+  
+  <script>
+    // Récupérer les données de réservation stockées
+    const reservationData = JSON.parse(localStorage.getItem("reservationData"));
+    
+    if (!reservationData) {
+      document.getElementById("confirmationContent").innerHTML = "<p>Aucune donnée de réservation disponible.</p>";
+    } else {
+      const booking = reservationData.booking;
+      const checkin = new Date(booking.checkin + "T00:00:00");
+      const checkout = new Date(booking.checkout + "T00:00:00");
+      const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
+      const checkinFormatted = checkin.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
+      const checkoutFormatted = checkout.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
+      
+      const summaryHTML = `
+        <p><strong>Courriel :</strong> ${reservationData.email}</p>
+        <p><strong>Prénom :</strong> ${reservationData.firstName}</p>
+        <p><strong>Nom :</strong> ${reservationData.lastName}</p>
+        <p><strong>Pays :</strong> ${reservationData.country}</p>
+        <p><strong>Langue de préférence :</strong> ${reservationData.language}</p>
+        <p><strong>Numéro de téléphone :</strong> ${reservationData.phone}</p>
+        <p><strong>Commentaires :</strong> ${reservationData.comments || "Aucun"}</p>
+        <hr>
+        <p><strong>Date d'arrivée :</strong> ${checkinFormatted}</p>
+        <p><strong>Date de départ :</strong> ${checkoutFormatted}</p>
+        <p><strong>Nombre de voyageurs :</strong> ${reservationData.guests}</p>
+        <p><strong>Chien :</strong> ${reservationData.hasDog ? "Oui" : "Non"}</p>
+        <p><strong>Total à payer :</strong> ${reservationData.totalAmount.toLocaleString("fr-CA", { style: "currency", currency: "CAD" })}</p>
+      `;
+      document.getElementById("confirmationContent").innerHTML = summaryHTML;
+      
+      // Préparer les formats pour l'email
+      window._confirmationData = {
+        checkinFormatted,
+        checkoutFormatted
+      };
+    }
+    
+    document.getElementById("sendRequestButton").addEventListener("click", () => {
+      if (!reservationData) {
+        alert("Aucune donnée de réservation disponible.");
+        return;
+      }
+      const checkinFormatted = window._confirmationData.checkinFormatted;
+      const checkoutFormatted = window._confirmationData.checkoutFormatted;
+      
+      const emailBody = 
+`Détails de la réservation:
+Courriel: ${reservationData.email}
+Prénom: ${reservationData.firstName}
+Nom: ${reservationData.lastName}
+Pays: ${reservationData.country}
+Langue de préférence: ${reservationData.language}
+Numéro de téléphone: ${reservationData.phone}
+Commentaires: ${reservationData.comments || "Aucun"}
+
+Date d'arrivée: ${checkinFormatted}
+Date de départ: ${checkoutFormatted}
+Nombre de voyageurs: ${reservationData.guests}
+Chien: ${reservationData.hasDog ? "Oui" : "Non"}
+Total à payer: ${reservationData.totalAmount.toLocaleString("fr-CA", { style: "currency", currency: "CAD" })}
+`;
+
+      fetch("https://chalet-checkout-backend.fly.dev/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: "gtl@keemail.me",
+          subject: "Demande de réservation - Chalet Le Renard",
+          body: emailBody
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert("La demande a été envoyée avec succès.");
+          localStorage.removeItem("reservationData");
+        } else {
+          alert("Erreur lors de l'envoi de la demande.");
+        }
+      })
+      .catch(error => {
+        console.error("Erreur:", error);
+        alert("Une erreur est survenue lors de l'envoi de la demande.");
+      });
+    });
+  </script>
+</body>
+</html>
