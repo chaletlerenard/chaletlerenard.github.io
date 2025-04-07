@@ -177,13 +177,28 @@
         alert("Aucune donnée de réservation disponible.");
         return;
       }
+
+      // Envoi vers le propriétaire
       emailjs.send("service_9opr6js", "template_lerenardbooking", window._emailParams)
         .then(() => {
-          document.getElementById("confirmationMessage").style.display = "block";
-          alert("La demande a été envoyée avec succès.");
-          localStorage.removeItem("reservationData");
+          // Ensuite, envoi vers le client
+          const clientParams = {
+            ...window._emailParams,
+            email: reservationData.email // utilisé comme destinataire dans le template
+          };
+
+          emailjs.send("service_9opr6js", "template_bookingconfirm", clientParams)
+            .then(() => {
+              document.getElementById("confirmationMessage").style.display = "block";
+              alert("La demande a été envoyée avec succès.");
+              localStorage.removeItem("reservationData");
+            }, error => {
+              console.log("FAILED to send confirmation to client...", error);
+              alert("La demande a été reçue, mais nous n’avons pas pu envoyer le courriel de confirmation.");
+            });
+
         }, error => {
-          console.log("FAILED...", error);
+          console.log("FAILED to send booking to admin...", error);
           alert("Erreur lors de l'envoi de la demande.");
         });
     });
