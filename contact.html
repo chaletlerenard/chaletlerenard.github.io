@@ -511,9 +511,18 @@
     validateForm();
   });
 
-  // Specific phone validation - only check error after field has been blurred
+  // Specific phone validation - only check error after field has been blurred and auto-format the number
   phoneInput.addEventListener("blur", function() {
     phoneTouched = true;
+    if (iti.isValidNumber()) {
+      // Auto-format the number according to the national format of the selected country
+      const formattedNumber = intlTelInputUtils.formatNumber(
+        iti.getNumber(),
+        iti.getSelectedCountryData().iso2,
+        intlTelInputUtils.numberFormat.NATIONAL
+      );
+      phoneInput.value = formattedNumber;
+    }
     validatePhone();
     validateForm();
   });
