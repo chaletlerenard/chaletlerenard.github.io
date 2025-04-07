@@ -69,6 +69,11 @@
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
     }
+    @media (max-width: 767px) {
+      .summary-section {
+        order: -1;
+      }
+    }
     h2, h3 {
       color: var(--primary-color);
       margin-bottom: 1.5rem;
@@ -104,8 +109,13 @@
       margin-bottom: 1rem;
     }
     .checkbox-group input {
+      width: auto;
       margin-right: 10px;
-      margin-top: 4px;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .checkbox-group label {
+      margin-bottom: 0;
     }
     .button {
       background-color: var(--primary-color);
@@ -227,10 +237,8 @@
 <body>
 
 <div class="container">
-  <!-- LEFT COLUMN: Traveler section + Contact form -->
   <div class="left-column">
 
-    <!-- Independent Traveler Section -->
     <div class="traveler-section">
       <h3>Information sur les voyageurs</h3>
       <label for="adults">Adultes</label>
@@ -251,7 +259,6 @@
       <div id="travelerError" style="color: var(--error-color); font-size:0.9rem; display:none;"></div>
     </div>
 
-    <!-- Contact Form Section -->
     <div class="form-section">
       <h2>Vos coordonnées</h2>
 
@@ -303,7 +310,6 @@
     </div>
   </div>
 
-  <!-- RIGHT COLUMN: Booking Summary -->
   <div class="summary-section">
     <h3>Résumé de la réservation</h3>
     <div id="summaryContent"></div>
@@ -324,7 +330,6 @@
     hasDog: false
   };
 
-  // Phone input
   const phoneInput = document.getElementById("phone");
   const iti = window.intlTelInput(phoneInput, {
     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
@@ -334,7 +339,6 @@
     autoPlaceholder: "polite"
   });
 
-  // Populate country list
   const countrySelect = document.getElementById("country");
   const countries = [ "Canada","Afghanistan","Afrique du Sud","Albanie","Algérie","Allemagne","Andorre","Angola",
     "Argentine","Australie","Autriche","Belgique","Brésil","Bulgarie","Cameroun","Chili","Chine","Colombie",
@@ -349,7 +353,6 @@
     if(c!=="Canada") countrySelect.innerHTML += `<option value="${c}">${c}</option>`;
   });
 
-  // Form validation helpers
   const fields = ["email","firstName","lastName","country","language"];
   const continueButton = document.getElementById("continueButton");
   const emailInput = document.getElementById("email");
@@ -385,7 +388,6 @@
     return true;
   }
 
-  // --- Traveler section logic ---
   function updateTravelerOptions(){
     const total = bookingData.guests;
     const adults = document.getElementById("adults");
@@ -410,31 +412,24 @@
     const B = parseInt(document.getElementById("age_2_17").value||"-1");
     const C = parseInt(document.getElementById("age_0_2").value||"-1");
     const err = document.getElementById("travelerError");
-
-    // all three must be chosen
     if(A<0||B<0||C<0){
       err.style.display="none";
       return false;
     }
-
-    // auto-zero the others if adults == total
     if(A === bookingData.guests){
       document.getElementById("age_2_17").value = "0";
       document.getElementById("age_0_2").value = "0";
     }
-
-    // sum of Adultes + 2-17 must not exceed total
     if(A + B > bookingData.guests){
-      err.textContent = 
+      err.textContent =
         "La somme des adultes et des 2‑17 ans ne doit pas dépasser le nombre total de voyageurs ("+
         bookingData.guests+
         "). Pour changer le nombre total de voyageurs, veuillez revenir à l’étape précédente.";
       err.style.display = "block";
       return false;
     }
-    // overall total must be at least equal to total
     if(A + B + C < bookingData.guests){
-      err.textContent = 
+      err.textContent =
         "Le total des voyageurs (Adultes + 2‑17 ans + 0‑2 ans) doit être au moins égal au nombre total de voyageurs ("+
         bookingData.guests+
         "). Pour changer le nombre total de voyageurs, veuillez revenir à l’étape précédente.";
@@ -444,7 +439,6 @@
     err.style.display = "none";
     return true;
   }
-  // --- end traveler logic ---
 
   function validateForm(){
     const filled = fields.every(id=>document.getElementById(id).value.trim()!=="");
@@ -456,7 +450,6 @@
     continueButton.disabled = !(filled && emailOk && phoneOk && checked && travFilled && travOk);
   }
 
-  // event listeners
   fields.forEach(id=>{
     document.getElementById(id).addEventListener("input", validateForm);
   });
@@ -495,7 +488,6 @@
     updateSummary();
   });
 
-  // summary logic (unchanged)
   function updateSummary(){
     const inD = new Date(bookingData.checkin+"T00:00:00");
     const outD = new Date(bookingData.checkout+"T00:00:00");
