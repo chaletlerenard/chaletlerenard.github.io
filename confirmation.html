@@ -52,6 +52,12 @@
     }
     .button:hover:not(:disabled) { background-color: var(--secondary-color); }
     .g-recaptcha { margin: 1rem 0; display: none; justify-content: center; }
+    .confirmation-message {
+      margin-top: 1rem;
+      color: var(--success-color);
+      font-weight: 500;
+      display: none;
+    }
     @media (max-width: 480px) {
       .summary-section { padding: 1.5rem; }
       .button { padding: 0.75rem 1.5rem; }
@@ -72,7 +78,8 @@
       <h2>Confirmation de la réservation</h2>
       <div id="confirmationContent"></div>
       <div class="g-recaptcha" id="recaptchaContainer" data-sitekey="6LdeQwwrAAAAAC3EegglIilhKI5TVVWw47xC_fZi"></div>
-      <button class="button" id="sendRequestButton">Envoyer la demande</button>
+      <button class="button" id="sendRequestButton">Accepter et envoyer</button>
+      <div class="confirmation-message" id="confirmationMessage">Votre demande a été envoyée avec succès. Nous vous répondrons sous peu.</div>
     </div>
   </div>
 
@@ -103,7 +110,6 @@
       const p1 = Number(reservationData.payment1);
       const p2 = reservationData.payment2 ? Number(reservationData.payment2) : null;
 
-      // Construire les lignes conditionnelles
       let travellersInfo = "";
       if (parseInt(reservationData.adultes) > 0) {
         travellersInfo += `<p><strong>Adultes :</strong> ${reservationData.adultes}</p>`;
@@ -137,6 +143,12 @@
         <hr>
         <p><strong>Paiement 1 :</strong> ${fmtMoney(p1)}</p>
         ${p2 !== null ? `<p><strong>Paiement 2 (le ${reservationData.payment2Date}) :</strong> ${fmtMoney(p2)}</p>` : ""}
+        <hr>
+        <p><strong>Politique d’annulation :</strong> Les annulations sont permises dans un délai de 7 jours suivant l’acceptation de la demande, lorsque le séjour est prévu dans plus de 30 jours. Dans les autres cas, un délai de 48 heures suivant l’acceptation de la demande s’applique. Aucune annulation n’est possible lorsque la demande est effectuée à moins de 14 jours du début du séjour.</p>
+
+        <p><strong>Modalités de paiement :</strong> Le paiement s’effectue par carte de crédit, via notre partenaire de paiement sécurisé Stripe, une fois la demande acceptée. Nous acceptons également les virements Interac.</p>
+
+        <p><strong>Traitement de la demande :</strong> Toutes les demandes sont confirmées en moins de 24 heures.</p>
       `;
       document.getElementById("confirmationContent").innerHTML = summaryHTML;
 
@@ -167,6 +179,7 @@
       }
       emailjs.send("service_9opr6js", "template_lerenardbooking", window._emailParams)
         .then(() => {
+          document.getElementById("confirmationMessage").style.display = "block";
           alert("La demande a été envoyée avec succès.");
           localStorage.removeItem("reservationData");
         }, error => {
