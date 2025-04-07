@@ -22,13 +22,11 @@
       --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       --border-radius: 8px;
     }
-    
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
     body {
       font-family: 'Montserrat', sans-serif;
       line-height: 1.6;
@@ -37,7 +35,6 @@
       padding: 0;
       margin: 0;
     }
-    
     .container {
       width: 100%;
       max-width: 1200px;
@@ -46,7 +43,6 @@
       display: flex;
       justify-content: center;
     }
-    
     .summary-section {
       width: 100%;
       max-width: 600px;
@@ -55,23 +51,19 @@
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
     }
-    
     h2 {
       color: var(--primary-color);
       margin-bottom: 1.5rem;
       font-weight: 600;
     }
-    
     p {
       margin-bottom: 0.75rem;
     }
-    
     hr {
       margin: 1rem 0;
       border: none;
       border-top: 1px solid var(--border-color);
     }
-    
     .button {
       background-color: var(--primary-color);
       color: white;
@@ -86,18 +78,14 @@
       margin-top: 1rem;
       font-family: 'Montserrat', sans-serif;
     }
-    
     .button:hover:not(:disabled) {
       background-color: var(--secondary-color);
     }
-    
-    /* Hide reCAPTCHA widget by default */
     .g-recaptcha {
       margin: 1rem 0;
       display: none;
       justify-content: center;
     }
-    
     @media (max-width: 480px) {
       .summary-section {
         padding: 1.5rem;
@@ -108,7 +96,6 @@
     }
   </style>
   
-  <!-- Include EmailJS Browser SDK according to EmailJS instructions -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script type="text/javascript">
     (function(){
@@ -117,84 +104,51 @@
       });
     })();
   </script>
-  
-  <!-- Include Google reCAPTCHA v2 API -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
   <div class="container">
     <div class="summary-section">
       <h2>Confirmation de la réservation</h2>
-      <div id="confirmationContent">
-        <!-- Les détails de la réservation seront affichés ici -->
-      </div>
+      <div id="confirmationContent"></div>
       
-      <!-- reCAPTCHA widget (hidden by default) -->
       <div class="g-recaptcha" id="recaptchaContainer" data-sitekey="6LdeQwwrAAAAAC3EegglIilhKI5TVVWw47xC_fZi"></div>
-      
       <button class="button" id="sendRequestButton">Envoyer la demande</button>
     </div>
   </div>
   
   <script>
-    // Global counter for submission attempts
     let submissionCount = 0;
-    
-    // Récupérer les données de réservation stockées
     const reservationData = JSON.parse(localStorage.getItem("reservationData"));
     
     if (!reservationData) {
       document.getElementById("confirmationContent").innerHTML = "<p>Aucune donnée de réservation disponible.</p>";
     } else {
-      // Constantes pour le calcul
       const GST_RATE = 5;
       const QST_RATE = 9.975;
       const LODGING_TAX_RATE = 3.5;
       const cleaningFee = 150;
       const dogFee = reservationData.booking.hasDog ? 75 : 0;
       
-      // Dates et durée
       const checkin = new Date(reservationData.booking.checkin + "T00:00:00");
       const checkout = new Date(reservationData.booking.checkout + "T00:00:00");
       const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
       const checkinFormatted = checkin.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
       const checkoutFormatted = checkout.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
       
-      // Calcul de l'ajustement en fonction du nombre de voyageurs
-      const initialGuests = reservationData.booking.guests;
-      const currentGuests = parseInt(reservationData.guests);
-      let adjustment = 0;
-      if (initialGuests === 6 && currentGuests !== 6) {
-        adjustment = -20 * nights;
-      } else if (initialGuests !== 6 && currentGuests === 6) {
-        adjustment = 20 * nights;
-      }
-      
-      // Calcul du sous-total ajusté
-      const adjustedSubtotal = reservationData.booking.currentTotalPreTax + adjustment;
-      
-      // Calcul des taxes
+      const adjustedSubtotal = reservationData.booking.currentTotalPreTax;
       const gstAmount = adjustedSubtotal * (GST_RATE / 100);
       const qstAmount = adjustedSubtotal * (QST_RATE / 100);
       const lodgingTaxAmount = (adjustedSubtotal - cleaningFee - dogFee) * (LODGING_TAX_RATE / 100);
       const totalTaxAmount = gstAmount + qstAmount + lodgingTaxAmount;
-      
-      // Calcul du total à payer
       const effectiveTotal = adjustedSubtotal + totalTaxAmount + dogFee;
       
-      // Formats en dollars canadiens
-      const adjustedSubtotalFormatted = adjustedSubtotal.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-      const totalTaxFormatted = totalTaxAmount.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-      const effectiveTotalFormatted = effectiveTotal.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-      
-      // Formats des paiements
+      const fmt = v => v.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
       const payment1Formatted = Number(reservationData.payment1).toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-      let payment2Formatted = "";
-      if (reservationData.payment2) {
-        payment2Formatted = Number(reservationData.payment2).toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-      }
-      
-      // Mise à jour du contenu du résumé de confirmation
+      const payment2Formatted = reservationData.payment2
+        ? Number(reservationData.payment2).toLocaleString("fr-CA", { style: "currency", currency: "CAD" })
+        : "";
+
       const summaryHTML = `
         <p><strong>Courriel :</strong> ${reservationData.email}</p>
         <p><strong>Prénom :</strong> ${reservationData.firstName}</p>
@@ -207,69 +161,56 @@
         <p><strong>Date d'arrivée :</strong> ${checkinFormatted}</p>
         <p><strong>Date de départ :</strong> ${checkoutFormatted}</p>
         <p><strong>Nombre de voyageurs :</strong> ${reservationData.guests}</p>
+        <p><strong>Adultes :</strong> ${reservationData.adultes}</p>
+        <p><strong>2‑17 ans :</strong> ${reservationData.age2_17}</p>
+        <p><strong>0‑2 ans :</strong> ${reservationData.age0_2}</p>
         <p><strong>Chien :</strong> ${reservationData.hasDog ? "Oui" : "Non"}</p>
         <hr>
-        <p><strong>Sous-total (avant taxes) :</strong> ${adjustedSubtotalFormatted}</p>
-        <p><strong>Taxes :</strong> ${totalTaxFormatted}</p>
+        <p><strong>Sous-total (avant taxes) :</strong> ${fmt(adjustedSubtotal)}</p>
+        <p><strong>Taxes :</strong> ${fmt(totalTaxAmount)}</p>
         <hr>
-        <p><strong>Total à payer :</strong> ${effectiveTotalFormatted}</p>
+        <p><strong>Total à payer :</strong> ${fmt(effectiveTotal)}</p>
         <hr>
-        <p><strong>Paiement 1 :</strong> ${payment1Formatted}</p>
-        ${ reservationData.payment2 ? `<p><strong>Paiement 2 (le ${reservationData.payment2Date}) :</strong> ${payment2Formatted}</p>` : "" }
+        <p><strong>Paiement 1 :</strong> ${payment1Formatted}</p>
+        ${ reservationData.payment2 
+           ? `<p><strong>Paiement 2 (le ${reservationData.payment2Date}) :</strong> ${payment2Formatted}</p>` 
+           : "" }
       `;
       document.getElementById("confirmationContent").innerHTML = summaryHTML;
-      
-      // Préparer les paramètres pour EmailJS
+
       window._emailParams = {
-        email: reservationData.email,
-        firstName: reservationData.firstName,
-        lastName: reservationData.lastName,
-        country: reservationData.country,
-        language: reservationData.language,
-        phone: reservationData.phone,
-        comments: reservationData.comments || "Aucun",
-        checkinFormatted: checkinFormatted,
-        checkoutFormatted: checkoutFormatted,
-        guests: reservationData.guests,
-        hasDog: reservationData.hasDog ? "Oui" : "Non",
-        adjustedSubtotal: adjustedSubtotalFormatted,
-        taxes: totalTaxFormatted,
-        effectiveTotal: effectiveTotalFormatted,
+        ...reservationData,
+        checkinFormatted,
+        checkoutFormatted,
+        adjustedSubtotal: fmt(adjustedSubtotal),
+        taxes: fmt(totalTaxAmount),
+        effectiveTotal: fmt(effectiveTotal),
         payment1: payment1Formatted,
-        payment2: reservationData.payment2 ? payment2Formatted : "N/A",
-        payment2Date: reservationData.payment2Date ? reservationData.payment2Date : "N/A"
+        payment2: reservationData.payment2 ? payment2Formatted : "N/A"
       };
     }
     
-    // Gestion de la soumission avec vérification conditionnelle de reCAPTCHA
     document.getElementById("sendRequestButton").addEventListener("click", () => {
-      // Incrémente le compteur de soumissions
       submissionCount++;
-      
-      // Si c'est une tentative de soumission répétée (2e fois ou plus)
       if (submissionCount > 1) {
-        // Afficher le widget reCAPTCHA s'il n'est pas déjà visible
         document.getElementById("recaptchaContainer").style.display = "flex";
-        // Vérifier que reCAPTCHA est résolu
         if (grecaptcha.getResponse() === "") {
           alert("Veuillez vérifier que vous n'êtes pas un robot.");
           return;
         }
       }
-      
       if (!reservationData) {
         alert("Aucune donnée de réservation disponible.");
         return;
       }
-      
       emailjs.send("service_9opr6js", "template_lerenardbooking", window._emailParams)
-      .then(function(response) {
-        alert("La demande a été envoyée avec succès.");
-        localStorage.removeItem("reservationData");
-      }, function(error) {
-        console.log("FAILED...", error);
-        alert("Erreur lors de l'envoi de la demande.");
-      });
+        .then(() => {
+          alert("La demande a été envoyée avec succès.");
+          localStorage.removeItem("reservationData");
+        }, (error) => {
+          console.log("FAILED...", error);
+          alert("Erreur lors de l'envoi de la demande.");
+        });
     });
   </script>
 </body>
