@@ -23,13 +23,11 @@
       --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       --border-radius: 8px;
     }
-    
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
     body {
       font-family: 'Montserrat', sans-serif;
       line-height: 1.6;
@@ -38,7 +36,6 @@
       padding: 0;
       margin: 0;
     }
-    
     .container {
       width: 100%;
       max-width: 1200px;
@@ -48,14 +45,12 @@
       flex-direction: column;
       gap: 2rem;
     }
-    
     @media (min-width: 768px) {
       .container {
         flex-direction: row;
         align-items: flex-start;
       }
     }
-    
     .form-section {
       flex: 1;
       background-color: white;
@@ -63,7 +58,6 @@
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
     }
-    
     .summary-section {
       width: 100%;
       background-color: white;
@@ -72,32 +66,27 @@
       box-shadow: var(--shadow);
       position: relative;
     }
-    
     @media (min-width: 768px) {
       .form-section {
         flex: 3;
       }
-      
       .summary-section {
         flex: 2;
         position: sticky;
         top: 2rem;
       }
     }
-    
     h2, h3 {
       color: var(--primary-color);
       margin-bottom: 1.5rem;
       font-weight: 600;
     }
-    
     label {
       display: block;
       margin-bottom: 0.5rem;
       font-weight: 500;
       font-size: 0.9rem;
     }
-    
     input, select, textarea {
       width: 100%;
       padding: 0.75rem;
@@ -108,45 +97,37 @@
       font-size: 1rem;
       transition: border-color 0.3s ease;
     }
-    
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--secondary-color);
       box-shadow: 0 0 0 3px rgba(88, 129, 87, 0.2);
     }
-    
     textarea {
       min-height: 100px;
       resize: vertical;
     }
-    
     .checkbox-group {
       display: flex;
       align-items: flex-start;
       margin-bottom: 1rem;
     }
-    
     .checkbox-group input {
       width: auto;
       margin-right: 10px;
       margin-top: 4px;
       margin-bottom: 0;
     }
-    
     .checkbox-group label {
       margin-bottom: 0;
     }
-    
     a {
       color: var(--secondary-color);
       text-decoration: none;
       font-weight: 500;
     }
-    
     a:hover {
       text-decoration: underline;
     }
-    
     .button {
       background-color: var(--primary-color);
       color: white;
@@ -161,81 +142,60 @@
       margin-top: 1rem;
       font-family: 'Montserrat', sans-serif;
     }
-    
     .button:hover:not(:disabled) {
       background-color: var(--secondary-color);
     }
-    
     .button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
-    
     #summaryContent {
       line-height: 1.8;
     }
-    
     #summaryContent p {
       margin-bottom: 0.75rem;
     }
-    
     #summaryContent hr {
       margin: 1rem 0;
       border: none;
       border-top: 1px solid var(--border-color);
     }
-    
-    /* Intl Tel Input Customization */
     .iti {
       width: 100%;
       margin-bottom: 1.5rem;
     }
-    
     .iti__flag-container {
       top: 0;
     }
-    
     #phone {
       padding-left: 52px; 
     }
-    
     @media (max-width: 480px) {
       .form-section, .summary-section {
         padding: 1.5rem;
       }
-      
       .button {
         padding: 0.75rem 1.5rem;
       }
     }
-    
-    /* Highlight required fields */
     label[for]::after {
       content: " *";
       color: var(--error-color);
     }
-    
     label[for="comments"]::after {
       content: "";
     }
-    
     @media (max-width: 767px) {
       .summary-section {
         order: -1;
       }
     }
-    
-    .info-icon {
-      display: none;
-    }
-    
     .tooltip-container {
       position: relative;
       display: inline-flex;
       align-items: center;
       margin-left: 5px;
     }
-    
     .info-button {
       display: inline-flex;
       align-items: center;
@@ -252,13 +212,10 @@
       transition: all 0.2s ease;
       outline: none;
     }
-    
     .info-button:hover, .info-button:focus {
       background-color: var(--primary-color);
       transform: scale(1.1);
     }
-    
-    /* Tooltip fixes for mobile */
     .tooltip {
       visibility: hidden;
       position: absolute;
@@ -279,7 +236,6 @@
       transform: translateX(-50%);
       bottom: calc(100% + 10px);
     }
-    
     .tooltip::after {
       content: "";
       position: absolute;
@@ -290,33 +246,6 @@
       border-style: solid;
       border-color: white transparent transparent transparent;
     }
-    
-    /* Mobile-specific tooltip positioning */
-    @media (max-width: 767px) {
-      .tooltip {
-        bottom: auto;
-        top: calc(100% + 10px);
-        left: 50%;
-        transform: translateX(-50%);
-        max-width: 250px;
-      }
-      
-      .tooltip::after {
-        top: auto;
-        bottom: 100%;
-        border-color: transparent transparent white transparent;
-      }
-    }
-    
-    /* Very small screens */
-    @media (max-width: 480px) {
-      .tooltip {
-        max-width: 200px;
-        width: auto;
-        white-space: normal;
-      }
-    }
-    
     .tooltip-container:hover .tooltip,
     .tooltip-container:focus-within .tooltip {
       visibility: visible;
@@ -333,7 +262,6 @@
 
     <label for="email">Courriel</label>
     <input type="email" id="email" required>
-    <!-- Error message element for email format -->
     <div id="emailError" style="color: var(--error-color); font-size: 0.9rem; margin-bottom: 1rem; display: none;">
       Format de courriel invalide.
     </div>
@@ -349,7 +277,6 @@
 
     <label for="phone">Numéro de téléphone</label>
     <input type="tel" id="phone" required>
-    <!-- Error message element for phone format -->
     <div id="phoneError" style="color: var(--error-color); font-size: 0.9rem; margin-bottom: 1rem; display: none;">
       Numéro de téléphone invalide.
     </div>
@@ -359,29 +286,6 @@
       <option value="francais" selected>Français</option>
       <option value="anglais">Anglais</option>
     </select>
-
-    <!-- Separate Traveler Information Section -->
-    <fieldset style="border: 1px solid var(--border-color); padding: 1rem; margin-bottom: 1rem;">
-      <legend style="font-weight:600; color: var(--primary-color);">Information sur les voyageurs</legend>
-      
-      <label for="adults">Adultes</label>
-      <select id="adults" required>
-        <option value="">Sélectionner</option>
-      </select>
-      
-      <label for="age_2_17">2-17 ans</label>
-      <select id="age_2_17" required>
-        <option value="">Sélectionner</option>
-      </select>
-      
-      <label for="age_0_2">0-2 ans</label>
-      <select id="age_0_2" required>
-        <option value="">Sélectionner</option>
-      </select>
-      
-      <!-- Error message for traveler info validation -->
-      <div id="travelerError" style="color: var(--error-color); font-size: 0.9rem; display: none;"></div>
-    </fieldset>
 
     <label for="comments">Commentaires (optionnel)</label>
     <textarea id="comments" placeholder="Ajoutez vos commentaires ici..."></textarea>
@@ -403,326 +307,270 @@
     <button class="button" id="continueButton" disabled>Continuer</button>
   </div>
 
-  <!-- Résumé réservation -->
+  <!-- Résumé réservation et section voyageurs -->
   <div class="summary-section">
     <h3>Résumé de la réservation</h3>
     <div id="summaryContent"></div>
+
+    <!-- Nouvelle section Information sur les voyageurs -->
+    <fieldset style="border:1px solid var(--border-color); padding:1rem; margin-top:2rem;">
+      <legend style="font-weight:600; color: var(--primary-color);">Information sur les voyageurs</legend>
+      
+      <label for="adults">Adultes</label>
+      <select id="adults" required>
+        <option value="">Sélectionner</option>
+      </select>
+      
+      <label for="age_2_17">2-17 ans</label>
+      <select id="age_2_17" required>
+        <option value="">Sélectionner</option>
+      </select>
+      
+      <label for="age_0_2">0-2 ans</label>
+      <select id="age_0_2" required>
+        <option value="">Sélectionner</option>
+      </select>
+      
+      <div id="travelerError" style="color: var(--error-color); font-size:0.9rem; display:none;"></div>
+    </fieldset>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 <script>
-  // Taux de taxes
   const GST_RATE = 5;
   const QST_RATE = 9.975;
   const LODGING_TAX_RATE = 3.5;
 
-  // Récupérer les données stockées depuis la page 1
   const bookingData = JSON.parse(localStorage.getItem("bookingData")) || {
     checkin: new Date().toISOString(),
-    checkout: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    checkout: new Date(Date.now() + 7*24*60*60*1000).toISOString(),
     currentTotalPreTax: 1000,
     guests: 2,
     hasDog: false
   };
 
-  // Initialiser le champ téléphone avec validation
+  // Initialisation téléphone
   const phoneInput = document.getElementById("phone");
   const iti = window.intlTelInput(phoneInput, {
     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-    preferredCountries: ["ca", "fr", "us"],
+    preferredCountries: ["ca","fr","us"],
     separateDialCode: true,
     initialCountry: "ca",
     autoPlaceholder: "polite"
   });
 
-  // Remplir la liste de pays (Canada en premier)
+  // Pays
   const countrySelect = document.getElementById("country");
-  const countries = [
-    "Canada", "Afghanistan", "Afrique du Sud", "Albanie", "Algérie", "Allemagne", "Andorre", "Angola",
-    "Argentine", "Australie", "Autriche", "Belgique", "Brésil", "Bulgarie", "Cameroun",
-    "Chili", "Chine", "Colombie", "Corée du Sud", "Costa Rica", "Croatie", "Danemark", "Égypte", "Espagne",
-    "États-Unis", "Finlande", "France", "Grèce", "Hongrie", "Inde", "Indonésie", "Irlande", "Islande", "Israël",
-    "Italie", "Japon", "Luxembourg", "Malaisie", "Maroc", "Mexique", "Norvège", "Nouvelle-Zélande", "Pays-Bas",
-    "Philippines", "Pologne", "Portugal", "République tchèque", "Roumanie", "Royaume-Uni", "Russie", "Singapour",
-    "Slovaquie", "Suède", "Suisse", "Thaïlande", "Tunisie", "Turquie", "Ukraine", "Vietnam"
-  ];
-
-  countries.sort((a, b) => a.localeCompare(b));
+  const countries = [ "Canada","Afghanistan","Afrique du Sud","Albanie","Algérie","Allemagne","Andorre","Angola",
+    "Argentine","Australie","Autriche","Belgique","Brésil","Bulgarie","Cameroun","Chili","Chine","Colombie",
+    "Corée du Sud","Costa Rica","Croatie","Danemark","Égypte","Espagne","États-Unis","Finlande","France",
+    "Grèce","Hongrie","Inde","Indonésie","Irlande","Islande","Israël","Italie","Japon","Luxembourg","Malaisie",
+    "Maroc","Mexique","Norvège","Nouvelle-Zélande","Pays-Bas","Philippines","Pologne","Portugal",
+    "République tchèque","Roumanie","Royaume-Uni","Russie","Singapour","Slovaquie","Suède","Suisse",
+    "Thaïlande","Tunisie","Turquie","Ukraine","Vietnam" ];
+  countries.sort((a,b)=>a.localeCompare(b));
   countrySelect.innerHTML = `<option value="Canada" selected>Canada</option>`;
-  countries.forEach(country => {
-    if (country !== "Canada") {
-      countrySelect.innerHTML += `<option value="${country}">${country}</option>`;
-    }
+  countries.forEach(c=>{
+    if(c!=="Canada") countrySelect.innerHTML += `<option value="${c}">${c}</option>`;
   });
 
-  // Validation du formulaire (champs obligatoires existants)
-  const fields = ["email", "firstName", "lastName", "country", "language"];
+  const fields = ["email","firstName","lastName","country","language"];
   const continueButton = document.getElementById("continueButton");
   const emailInput = document.getElementById("email");
   const emailError = document.getElementById("emailError");
   const phoneError = document.getElementById("phoneError");
 
-  let emailTouched = false;
-  let phoneTouched = false;
+  let emailTouched = false, phoneTouched = false;
 
-  function isValidEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
+  function isValidEmail(e) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
   }
-
   function validateEmail() {
-    if (emailInput.value.trim() !== "" && !isValidEmail(emailInput.value)) {
-      if (emailTouched) {
-        emailError.style.display = "block";
-        emailInput.style.borderColor = "var(--error-color)";
+    if(emailInput.value.trim()!=="" && !isValidEmail(emailInput.value)){
+      if(emailTouched){
+        emailError.style.display="block";
+        emailInput.style.borderColor="var(--error-color)";
       }
       return false;
-    } else {
-      emailError.style.display = "none";
-      emailInput.style.borderColor = emailInput.value.trim() !== "" ? "var(--success-color)" : "";
-      return true;
     }
-  }
-
-  function validatePhone() {
-    if (phoneInput.value.trim() !== "" && !iti.isValidNumber()) {
-      if (phoneTouched) {
-        phoneError.style.display = "block";
-        phoneInput.style.borderColor = "var(--error-color)";
-      }
-      return false;
-    } else {
-      phoneError.style.display = "none";
-      phoneInput.style.borderColor = phoneInput.value.trim() !== "" ? "var(--success-color)" : "";
-      return true;
-    }
-  }
-
-  // --- New Traveler Information Functions ---
-  function updateTravelerOptions() {
-    const totalGuests = bookingData.guests;
-    // Update Adultes (options from 1 to totalGuests)
-    const adultsSelect = document.getElementById("adults");
-    adultsSelect.innerHTML = '<option value="">Sélectionner</option>';
-    for (let i = 1; i <= totalGuests; i++) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = i;
-      adultsSelect.appendChild(option);
-    }
-    // Update 2-17 ans (options from 0 to totalGuests - 1)
-    const age2_17Select = document.getElementById("age_2_17");
-    age2_17Select.innerHTML = '<option value="">Sélectionner</option>';
-    for (let i = 0; i <= totalGuests - 1; i++) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = i;
-      age2_17Select.appendChild(option);
-    }
-    // Update 0-2 ans (options from 0 to totalGuests - 1)
-    const age0_2Select = document.getElementById("age_0_2");
-    age0_2Select.innerHTML = '<option value="">Sélectionner</option>';
-    for (let i = 0; i <= totalGuests - 1; i++) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = i;
-      age0_2Select.appendChild(option);
-    }
-  }
-
-  function validateTravelerInfo() {
-    const adultsVal = document.getElementById("adults").value;
-    const age2_17Val = document.getElementById("age_2_17").value;
-    const age0_2Val = document.getElementById("age_0_2").value;
-    const errorDiv = document.getElementById("travelerError");
-
-    // Ensure all fields are selected
-    if (adultsVal === "" || age2_17Val === "" || age0_2Val === "") {
-      errorDiv.textContent = "";
-      errorDiv.style.display = "none";
-      return false;
-    }
-
-    const A = parseInt(adultsVal);
-    const B = parseInt(age2_17Val);
-    const C = parseInt(age0_2Val);
-
-    // Condition 1: The sum of Adultes and 2-17 must not exceed the total guests
-    if (A + B > bookingData.guests) {
-      errorDiv.textContent = "La somme des adultes et des 2‑17 ne doit pas dépasser le nombre total de voyageurs (" + bookingData.guests + ").";
-      errorDiv.style.display = "block";
-      return false;
-    }
-    // Condition 2: The overall total (Adultes + 2‑17 + 0‑2) must be at least equal to the total guests
-    if (A + B + C < bookingData.guests) {
-      errorDiv.textContent = "Le total des voyageurs (Adultes + 2‑17 ans + 0‑2 ans) doit être au moins égal au nombre total de voyageurs (" + bookingData.guests + ").";
-      errorDiv.style.display = "block";
-      return false;
-    }
-    errorDiv.textContent = "";
-    errorDiv.style.display = "none";
+    emailError.style.display="none";
+    emailInput.style.borderColor = emailInput.value.trim()!=="" ? "var(--success-color)" : "";
     return true;
   }
-  // --- End New Traveler Information Functions ---
-
-  function validateForm() {
-    const allFieldsFilled = fields.every(id => document.getElementById(id).value.trim() !== "");
-    const emailValid = validateEmail();
-    const phoneValid = validatePhone();
-    const allChecked = document.getElementById("acceptContract").checked && document.getElementById("acceptPrivacy").checked;
-    // Vérifier que tous les champs de l'information sur les voyageurs sont renseignés
-    const travelerFieldsFilled =
-      document.getElementById("adults").value.trim() !== "" &&
-      document.getElementById("age_2_17").value.trim() !== "" &&
-      document.getElementById("age_0_2").value.trim() !== "";
-    const travelerValid = validateTravelerInfo();
-    
-    continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked && emailValid && travelerFieldsFilled && travelerValid);
+  function validatePhone(){
+    if(phoneInput.value.trim()!=="" && !iti.isValidNumber()){
+      if(phoneTouched){
+        phoneError.style.display="block";
+        phoneInput.style.borderColor="var(--error-color)";
+      }
+      return false;
+    }
+    phoneError.style.display="none";
+    phoneInput.style.borderColor = phoneInput.value.trim()!=="" ? "var(--success-color)" : "";
+    return true;
   }
 
-  // Écouteurs d'événements pour les champs existants
-  fields.forEach(id => {
+  // --- Voyageurs ---
+  function updateTravelerOptions(){
+    const total = bookingData.guests;
+    const adults = document.getElementById("adults");
+    adults.innerHTML = '<option value="">Sélectionner</option>';
+    for(let i=1;i<=total;i++){
+      adults.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+    const age2 = document.getElementById("age_2_17");
+    age2.innerHTML = '<option value="">Sélectionner</option>';
+    for(let i=0;i<=total-1;i++){
+      age2.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+    const age0 = document.getElementById("age_0_2");
+    age0.innerHTML = '<option value="">Sélectionner</option>';
+    for(let i=0;i<=total-1;i++){
+      age0.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+  }
+
+  function validateTravelerInfo(){
+    const A = parseInt(document.getElementById("adults").value||"-1");
+    const B = parseInt(document.getElementById("age_2_17").value||"-1");
+    const C = parseInt(document.getElementById("age_0_2").value||"-1");
+    const err = document.getElementById("travelerError");
+    if(A<0||B<0||C<0){
+      err.style.display="none";
+      return false;
+    }
+    // Si adultes == total, on met les autres à zéro
+    if(A===bookingData.guests){
+      document.getElementById("age_2_17").value="0";
+      document.getElementById("age_0_2").value="0";
+    }
+    if(A+B>bookingData.guests){
+      err.textContent = "La somme des adultes et des 2‑17 ans ne doit pas dépasser le nombre total de voyageurs ("+bookingData.guests+"). Pour changer le nombre total de voyageurs, veuillez revenir à l’étape précédente.";
+      err.style.display="block";
+      return false;
+    }
+    if(A+B+C<bookingData.guests){
+      err.textContent = "Le total des voyageurs (Adultes + 2‑17 ans + 0‑2 ans) doit être au moins égal au nombre total de voyageurs ("+bookingData.guests+"). Pour changer le nombre total de voyageurs, veuillez revenir à l’étape précédente.";
+      err.style.display="block";
+      return false;
+    }
+    err.style.display="none";
+    return true;
+  }
+  // --- Fin voyageurs ---
+
+  function validateForm(){
+    const filled = fields.every(id=>document.getElementById(id).value.trim()!=="");
+    const emailOk = validateEmail();
+    const phoneOk = validatePhone();
+    const checked = document.getElementById("acceptContract").checked && document.getElementById("acceptPrivacy").checked;
+    const travFilled = ["adults","age_2_17","age_0_2"].every(id=>document.getElementById(id).value.trim()!=="");
+    const travOk = validateTravelerInfo();
+    continueButton.disabled = !(filled && emailOk && phoneOk && checked && travFilled && travOk);
+  }
+
+  // Listeners
+  fields.forEach(id=>{
     document.getElementById(id).addEventListener("input", validateForm);
   });
-  
-  // Écouteurs pour la validation du courriel
-  emailInput.addEventListener("blur", function() {
-    emailTouched = true;
-    validateEmail();
+  emailInput.addEventListener("blur", ()=>{
+    emailTouched=true; validateEmail(); validateForm();
+  });
+  emailInput.addEventListener("input", ()=>{
+    if(emailTouched) validateEmail();
     validateForm();
   });
-  emailInput.addEventListener("input", function() {
-    if (emailTouched) {
-      validateEmail();
+  phoneInput.addEventListener("blur", ()=>{
+    phoneTouched=true;
+    if(iti.isValidNumber()){
+      phoneInput.value = iti.getNumber(intlTelInputUtils.numberFormat.NATIONAL);
     }
-    validateForm();
+    validatePhone(); validateForm();
   });
-
-  // Écouteurs pour la validation du téléphone
-  phoneInput.addEventListener("blur", function() {
-    phoneTouched = true;
-    if (iti.isValidNumber()) {
-      const formattedNumber = iti.getNumber(intlTelInputUtils.numberFormat.NATIONAL);
-      phoneInput.value = formattedNumber;
-    }
-    validatePhone();
-    validateForm();
-  });
-  phoneInput.addEventListener("input", function() {
-    if (phoneTouched) {
-      validatePhone();
-    }
+  phoneInput.addEventListener("input", ()=>{
+    if(phoneTouched) validatePhone();
     validateForm();
   });
   phoneInput.addEventListener("countrychange", validateForm);
 
-  // Écouteurs pour les nouveaux champs de l'information sur les voyageurs
-  document.getElementById("adults").addEventListener("change", function() {
-    validateTravelerInfo();
-    validateForm();
-  });
-  document.getElementById("age_2_17").addEventListener("change", function() {
-    validateTravelerInfo();
-    validateForm();
-  });
-  document.getElementById("age_0_2").addEventListener("change", function() {
-    validateTravelerInfo();
-    validateForm();
+  ["adults","age_2_17","age_0_2"].forEach(id=>{
+    document.getElementById(id).addEventListener("change", ()=>{
+      validateTravelerInfo();
+      validateForm();
+    });
   });
 
   document.getElementById("acceptContract").addEventListener("change", validateForm);
   document.getElementById("acceptPrivacy").addEventListener("change", validateForm);
 
-  document.addEventListener("DOMContentLoaded", function() {
-    setTimeout(function() {
-      window.dispatchEvent(new Event("resize"));
-    }, 100);
-    // Initialiser les options pour les informations sur les voyageurs dès le chargement
+  document.addEventListener("DOMContentLoaded", ()=>{
+    setTimeout(()=>window.dispatchEvent(new Event("resize")),100);
     updateTravelerOptions();
   });
 
-  // Mise à jour dynamique du résumé
-  function updateSummary() {
-    const checkin = new Date(bookingData.checkin + "T00:00:00");
-    const checkout = new Date(bookingData.checkout + "T00:00:00");
-    const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
-    
-    const adjustedSubtotal = bookingData.currentTotalPreTax;
-    const gstAmount = adjustedSubtotal * (GST_RATE / 100);
-    const qstAmount = adjustedSubtotal * (QST_RATE / 100);
-    const lodgingTaxAmount = (adjustedSubtotal - 150) * (LODGING_TAX_RATE / 100);
-    const totalTaxAmount = gstAmount + qstAmount + lodgingTaxAmount;
-    const effectiveTotal = adjustedSubtotal + totalTaxAmount;
-    const pricePerNight = (adjustedSubtotal - 150) / nights;
-    
-    const adjustedSubtotalFormatted = adjustedSubtotal.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-    const totalTaxFormatted = totalTaxAmount.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-    const effectiveTotalFormatted = effectiveTotal.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-    const pricePerNightFormatted = pricePerNight.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-    const checkinFormatted = checkin.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
-    const checkoutFormatted = checkout.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
-    
-    let payment1 = effectiveTotal;
-    let payment2 = 0;
-    let payment2Date = null;
+  // Mise à jour résumé
+  function updateSummary(){
+    const inD = new Date(bookingData.checkin+"T00:00:00");
+    const outD = new Date(bookingData.checkout+"T00:00:00");
+    const nights = (outD-inD)/(1000*60*60*24);
+    const sub = bookingData.currentTotalPreTax;
+    const gst = sub*(GST_RATE/100);
+    const qst = sub*(QST_RATE/100);
+    const lodg = (sub-150)*(LODGING_TAX_RATE/100);
+    const totalTax = gst+qst+lodg;
+    const eff = sub+totalTax;
+    const perNight = (sub-150)/nights;
+    const fmt = (v)=>v.toLocaleString("fr-CA",{style:"currency",currency:"CAD"});
+    const dateFmt = (d)=>d.toLocaleDateString("fr-CA",{year:"numeric",month:"long",day:"numeric"});
+    let p1=eff, p2=0, p2d=null;
     const today = new Date();
-    const diffDays = Math.ceil((checkin - today) / (1000 * 60 * 60 * 24));
-    if (diffDays > 14) {
-      payment1 = effectiveTotal / 2;
-      payment2 = effectiveTotal - payment1;
-      payment2Date = new Date(checkin);
-      payment2Date.setDate(payment2Date.getDate() - 14);
+    const diff = Math.ceil((inD-today)/(1000*60*60*24));
+    if(diff>14){
+      p1=eff/2;
+      p2=eff-p1;
+      p2d=new Date(inD);
+      p2d.setDate(p2d.getDate()-14);
     }
-    const payment1Formatted = payment1.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-    const payment2Formatted = payment2.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-    const payment2DateFormatted = payment2Date ? payment2Date.toLocaleDateString("fr-CA") : "";
-    
-    const summaryContent = document.getElementById("summaryContent");
-    summaryContent.innerHTML = `
-      <p><strong>Date d'arrivée :</strong> ${checkinFormatted}</p>
-      <p><i>Heure d'arrivée : à partir de 16h</i></p>
-      <p><strong>Date de départ :</strong> ${checkoutFormatted}</p>
-      <p><i>Heure de départ : au plus tard 11h</i></p>
+    document.getElementById("summaryContent").innerHTML = `
+      <p><strong>Date d'arrivée :</strong> ${dateFmt(inD)}</p>
+      <p><i>Heure d'arrivée : à partir de 16h</i></p>
+      <p><strong>Date de départ :</strong> ${dateFmt(outD)}</p>
+      <p><i>Heure de départ : au plus tard 11h</i></p>
       <p><strong>Nombre de voyageurs :</strong> ${bookingData.guests}</p>
       <p><strong>Durée du séjour :</strong> ${nights} nuits</p>
-      <p><strong>Chien :</strong> ${bookingData.hasDog ? "Oui" : "Non"}</p>
-      <p><strong>Prix par nuit :</strong> ${pricePerNightFormatted}</p>
-      <p><strong>Frais de ménage :</strong> 150 $</p>
+      <p><strong>Chien :</strong> ${bookingData.hasDog?"Oui":"Non"}</p>
+      <p><strong>Prix par nuit :</strong> ${fmt(perNight)}</p>
+      <p><strong>Frais de ménage :</strong> 150 $</p>
       <hr>
-      <p><strong>Sous-total (avant taxes) :</strong> ${adjustedSubtotalFormatted}</p>
-      <p><strong>Taxes :</strong> ${totalTaxFormatted}</p>
+      <p><strong>Sous-total (avant taxes) :</strong> ${fmt(sub)}</p>
+      <p><strong>Taxes :</strong> ${fmt(totalTax)}</p>
       <hr>
-      <p><strong>Total à payer :</strong> ${effectiveTotalFormatted}</p>
+      <p><strong>Total à payer :</strong> ${fmt(eff)}</p>
       <hr>
       <p><strong>Échéancier de paiement :</strong></p>
       <ul>
-        <li>Paiement 1 (aujourd'hui) : ${payment1Formatted}</li>
-        ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2DateFormatted}) : ${payment2Formatted}
+        <li>Paiement 1 (aujourd'hui) : ${fmt(p1)}</li>
+        ${p2>0?`<li>Paiement 2 (le ${dateFmt(p2d)}) : ${fmt(p2)}
           <div class="tooltip-container">
             <button type="button" class="info-button" aria-label="Plus d'informations">i</button>
-            <div class="tooltip">14 jours avant votre arrivée</div>
-          </div></li>` : ""}
+            <div class="tooltip">14 jours avant votre arrivée</div>
+          </div></li>`:""}
       </ul>
     `;
   }
-  
   updateSummary();
-  
-  continueButton.addEventListener("click", () => {
-    if (!validateEmail()) {
-      return;
-    }
-    
-    const checkin = new Date(bookingData.checkin + "T00:00:00");
-    const checkout = new Date(bookingData.checkout + "T00:00:00");
-    const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
-    const adjustedSubtotal = bookingData.currentTotalPreTax;
-    const effectiveTotal = adjustedSubtotal +
-         (adjustedSubtotal * (GST_RATE / 100)) +
-         (adjustedSubtotal * (QST_RATE / 100)) +
-         ((adjustedSubtotal - 150) * (LODGING_TAX_RATE / 100));
 
+  continueButton.addEventListener("click", ()=>{
+    if(!validateEmail()) return;
+    const inD = new Date(bookingData.checkin+"T00:00:00");
+    const outD = new Date(bookingData.checkout+"T00:00:00");
+    const nights = (outD-inD)/(1000*60*60*24);
+    const sub = bookingData.currentTotalPreTax;
+    const gst = sub*(GST_RATE/100);
+    const qst = sub*(QST_RATE/100);
+    const lodg = (sub-150)*(LODGING_TAX_RATE/100);
+    const eff = sub+gst+qst+lodg;
     const guestData = {
       email: emailInput.value,
       firstName: document.getElementById("firstName").value,
@@ -734,7 +582,7 @@
       guests: bookingData.guests,
       hasDog: bookingData.hasDog,
       booking: bookingData,
-      totalAmount: effectiveTotal,
+      totalAmount: eff,
       payment1: null,
       payment2: null,
       payment2Date: null,
@@ -742,19 +590,17 @@
       age2_17: document.getElementById("age_2_17").value,
       age0_2: document.getElementById("age_0_2").value
     };
-
     const today = new Date();
-    const diffDays = Math.ceil((checkin - today) / (1000 * 60 * 60 * 24));
-    if (diffDays > 14) {
-      guestData.payment1 = effectiveTotal / 2;
-      guestData.payment2 = effectiveTotal - guestData.payment1;
-      const payment2Date = new Date(checkin);
-      payment2Date.setDate(payment2Date.getDate() - 14);
-      guestData.payment2Date = payment2Date.toISOString().split("T")[0];
+    const diff = Math.ceil((inD-today)/(1000*60*60*24));
+    if(diff>14){
+      guestData.payment1 = eff/2;
+      guestData.payment2 = eff-guestData.payment1;
+      const p2d = new Date(inD);
+      p2d.setDate(p2d.getDate()-14);
+      guestData.payment2Date = p2d.toISOString().split("T")[0];
     } else {
-      guestData.payment1 = effectiveTotal;
+      guestData.payment1 = eff;
     }
-
     localStorage.setItem("reservationData", JSON.stringify(guestData));
     window.location.href = "confirmation.html";
   });
