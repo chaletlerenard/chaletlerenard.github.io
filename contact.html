@@ -440,13 +440,33 @@
   // Validation formulaire
   const fields = ["email", "firstName", "lastName", "country", "language", "guests"];
   const continueButton = document.getElementById("continueButton");
+  const emailInput = document.getElementById("email");
+  const emailError = document.getElementById("emailError");
+
+  function isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+
+  function validateEmail() {
+    if (emailInput.value.trim() !== "" && !isValidEmail(emailInput.value)) {
+      emailError.style.display = "block";
+      emailInput.style.borderColor = "var(--error-color)";
+      return false;
+    } else {
+      emailError.style.display = "none";
+      emailInput.style.borderColor = emailInput.value.trim() !== "" ? "var(--success-color)" : "";
+      return true;
+    }
+  }
 
   function validateForm() {
     const allFieldsFilled = fields.every(id => document.getElementById(id).value.trim() !== "");
     const phoneValid = phoneInput.value && iti.isValidNumber();
     const allChecked = document.getElementById("acceptContract").checked && document.getElementById("acceptPrivacy").checked;
+    const emailValid = validateEmail();
 
-    continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked);
+    continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked && emailValid);
     
     if (phoneInput.value) {
       phoneInput.style.borderColor = phoneValid ? "var(--success-color)" : "var(--error-color)";
@@ -455,7 +475,28 @@
     }
   }
 
-  fields.forEach(id => document.getElementById(id).addEventListener("input", validateForm));
+  // Event listeners for all fields
+  fields.forEach(id => {
+    if (id !== "email") {
+      document.getElementById(id).addEventListener("input", validateForm);
+    }
+  });
+  
+  // Specific email validation - only check on blur or when continuing
+  emailInput.addEventListener("blur", function() {
+    validateEmail();
+    validateForm();
+  });
+
+  // Don't show error while typing, only validate on blur
+  emailInput.addEventListener("input", function() {
+    // Only check if error is already visible
+    if (emailError.style.display === "block") {
+      validateEmail();
+    }
+    validateForm();
+  });
+
   document.getElementById("acceptContract").addEventListener("change", validateForm);
   document.getElementById("acceptPrivacy").addEventListener("change", validateForm);
   phoneInput.addEventListener("input", validateForm);
@@ -465,30 +506,6 @@
     setTimeout(function() {
       window.dispatchEvent(new Event("resize"));
     }, 100);
-  });
-
-  // Email format validation
-  function isValidEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  }
-  
-  // Modified email input listener
-  document.getElementById("email").addEventListener("blur", function() {
-    if (this.value.trim() !== "" && !isValidEmail(this.value)) {
-      document.getElementById("emailError").style.display = "block";
-    } else {
-      document.getElementById("emailError").style.display = "none";
-    }
-  });
-
-  // Add separate input event listener for real-time feedback
-  document.getElementById("email").addEventListener("input", function() {
-    if (this.value.trim() === "" || isValidEmail(this.value)) {
-      document.getElementById("emailError").style.display = "none";
-    } else {
-      document.getElementById("emailError").style.display = "block";
-    }
   });
 
   // Initialiser le champ invités avec les données récupérées
@@ -576,6 +593,11 @@
   
   // Envoi du formulaire
   continueButton.addEventListener("click", () => {
+    // Final validation before form submission
+    if (!validateEmail()) {
+      return;
+    }
+    
     const checkin = new Date(bookingData.checkin + "T00:00:00");
     const checkout = new Date(bookingData.checkout + "T00:00:00");
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
