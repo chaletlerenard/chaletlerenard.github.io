@@ -343,17 +343,6 @@
 
     <label for="lastName">Nom</label>
     <input type="text" id="lastName" required>
-    
-    <!-- Dropdown for number of guests -->
-    <label for="guests">Nombre de voyageurs</label>
-    <select id="guests" required>
-      <option value="1" selected>1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5">5</option>
-      <option value="6">6</option>
-    </select>
 
     <label for="country">Pays</label>
     <select id="country"></select>
@@ -414,9 +403,6 @@
     hasDog: false
   };
 
-  // Conserver le nombre de voyageurs initial pour d'autres usages si nécessaire
-  const initialGuests = bookingData.guests;
-
   // Champ téléphone avec validation
   const phoneInput = document.getElementById("phone");
   const iti = window.intlTelInput(phoneInput, {
@@ -447,8 +433,9 @@
     }
   });
 
-  // Validation formulaire
-  const fields = ["email", "firstName", "lastName", "country", "language", "guests"];
+  // Validation du formulaire
+  // "guests" a été retiré de la liste des champs requis
+  const fields = ["email", "firstName", "lastName", "country", "language"];
   const continueButton = document.getElementById("continueButton");
   const emailInput = document.getElementById("email");
   const emailError = document.getElementById("emailError");
@@ -499,14 +486,12 @@
     continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked && emailValid);
   }
 
-  // Event listeners for all fields (except email and phone already handled)
+  // Écouteurs d'événements pour les champs requis
   fields.forEach(id => {
-    if (id !== "email") {
-      document.getElementById(id).addEventListener("input", validateForm);
-    }
+    document.getElementById(id).addEventListener("input", validateForm);
   });
   
-  // Specific email validation - only check error after field has been blurred
+  // Validation spécifique pour le courriel
   emailInput.addEventListener("blur", function() {
     emailTouched = true;
     validateEmail();
@@ -519,11 +504,11 @@
     validateForm();
   });
 
-  // Specific phone validation - only check error after field has been blurred and auto-format the number
+  // Validation spécifique pour le téléphone et auto-formatage sur le blur
   phoneInput.addEventListener("blur", function() {
     phoneTouched = true;
     if (iti.isValidNumber()) {
-      // Auto-format the number using the NATIONAL format
+      // Auto-formatter le numéro selon le format NATIONAL
       const formattedNumber = iti.getNumber(intlTelInputUtils.numberFormat.NATIONAL);
       phoneInput.value = formattedNumber;
     }
@@ -547,9 +532,6 @@
     }, 100);
   });
 
-  // Initialiser le champ invités avec les données récupérées
-  document.getElementById("guests").value = bookingData.guests || 1;
-
   // Mise à jour dynamique du résumé
   function updateSummary() {
     // Calculer le nombre de nuits
@@ -557,7 +539,7 @@
     const checkout = new Date(bookingData.checkout + "T00:00:00");
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
     
-    // Utiliser directement bookingData.currentTotalPreTax car il inclut déjà le calcul en fonction du nombre de voyageurs
+    // Utiliser directement bookingData.currentTotalPreTax
     const adjustedSubtotal = bookingData.currentTotalPreTax;
 
     // Calcul des taxes basées sur le sous-total ajusté
@@ -567,7 +549,7 @@
     const totalTaxAmount = gstAmount + qstAmount + lodgingTaxAmount;
     const effectiveTotal = adjustedSubtotal + totalTaxAmount;
     
-    // Calcul du prix par nuit basé sur le sous-total ajusté (moins les frais de ménage)
+    // Calcul du prix par nuit (moins les frais de ménage)
     const pricePerNight = (adjustedSubtotal - 150) / nights;
     
     // Formatage des montants en dollars (français canadien)
@@ -577,13 +559,13 @@
     const pricePerNightFormatted = pricePerNight.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
     const checkinFormatted = checkin.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
     const checkoutFormatted = checkout.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
-
+    
     // Échéancier de paiement
-    const today = new Date();
-    const diffDays = Math.ceil((checkin - today) / (1000 * 60 * 60 * 24));
     let payment1 = effectiveTotal;
     let payment2 = 0;
     let payment2Date = null;
+    const today = new Date();
+    const diffDays = Math.ceil((checkin - today) / (1000 * 60 * 60 * 24));
     if (diffDays > 14) {
       payment1 = effectiveTotal / 2;
       payment2 = effectiveTotal - payment1;
@@ -594,15 +576,14 @@
     const payment2Formatted = payment2.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
     const payment2DateFormatted = payment2Date ? payment2Date.toLocaleDateString("fr-CA") : "";
     
-    // Mettre à jour le contenu du résumé
-    const guests = document.getElementById("guests").value;
+    // Mise à jour du contenu du résumé incluant le nombre de voyageurs depuis bookingData
     const summaryContent = document.getElementById("summaryContent");
     summaryContent.innerHTML = `
       <p><strong>Date d'arrivée :</strong> ${checkinFormatted}</p>
       <p><i>Heure d'arrivée : à partir de 16h</i></p>
       <p><strong>Date de départ :</strong> ${checkoutFormatted}</p>
       <p><i>Heure de départ : au plus tard 11h</i></p>
-      <p><strong>Nombre de voyageurs :</strong> ${guests}</p>
+      <p><strong>Nombre de voyageurs :</strong> ${bookingData.guests}</p>
       <p><strong>Durée du séjour :</strong> ${nights} nuits</p>
       <p><strong>Chien :</strong> ${bookingData.hasDog ? "Oui" : "Non"}</p>
       <p><strong>Prix par nuit :</strong> ${pricePerNightFormatted}</p>
@@ -616,7 +597,7 @@
       <p><strong>Échéancier de paiement :</strong></p>
       <ul>
         <li>Paiement 1 (aujourd'hui) : ${payment1Formatted}</li>
-        ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2DateFormatted}) : ${payment2Formatted} 
+        ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2DateFormatted}) : ${payment2Formatted}
           <div class="tooltip-container">
             <button type="button" class="info-button" aria-label="Plus d'informations">i</button>
             <div class="tooltip">14 jours avant votre arrivée</div>
@@ -625,13 +606,12 @@
     `;
   }
   
-  // Appeler updateSummary initialement et lors des changements du nombre de voyageurs
+  // Appeler updateSummary initialement
   updateSummary();
-  document.getElementById("guests").addEventListener("input", updateSummary);
   
   // Envoi du formulaire
   continueButton.addEventListener("click", () => {
-    // Final validation before form submission
+    // Validation finale avant envoi
     if (!validateEmail()) {
       return;
     }
@@ -639,7 +619,6 @@
     const checkin = new Date(bookingData.checkin + "T00:00:00");
     const checkout = new Date(bookingData.checkout + "T00:00:00");
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
-    // Utiliser directement bookingData.currentTotalPreTax puisque celui-ci est déjà mis à jour
     const adjustedSubtotal = bookingData.currentTotalPreTax;
     const effectiveTotal = adjustedSubtotal +
          (adjustedSubtotal * (GST_RATE / 100)) +
@@ -647,14 +626,14 @@
          ((adjustedSubtotal - 150) * (LODGING_TAX_RATE / 100));
 
     const guestData = {
-      email: document.getElementById("email").value,
+      email: emailInput.value,
       firstName: document.getElementById("firstName").value,
       lastName: document.getElementById("lastName").value,
       country: document.getElementById("country").value,
       language: document.getElementById("language").value,
       phone: iti.getNumber(intlTelInputUtils.numberFormat.E164),
       comments: document.getElementById("comments").value,
-      guests: document.getElementById("guests").value,
+      guests: bookingData.guests,
       hasDog: bookingData.hasDog,
       booking: bookingData,
       totalAmount: effectiveTotal,
@@ -675,7 +654,7 @@
       guestData.payment1 = effectiveTotal;
     }
 
-    // Store reservation data and redirect to confirmation page
+    // Stocker les données et rediriger vers la page de confirmation
     localStorage.setItem("reservationData", JSON.stringify(guestData));
     window.location.href = "confirmation.html";
   });
