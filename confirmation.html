@@ -22,86 +22,46 @@
       --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       --border-radius: 8px;
     }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Montserrat', sans-serif;
       line-height: 1.6;
       color: var(--text-color);
       background-color: var(--light-bg);
-      padding: 0;
-      margin: 0;
     }
     .container {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem 1rem;
-      display: flex;
-      justify-content: center;
+      width: 100%; max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;
+      display: flex; justify-content: center;
     }
     .summary-section {
-      width: 100%;
-      max-width: 600px;
-      background-color: white;
-      padding: 2rem;
+      width: 100%; max-width: 600px;
+      background-color: white; padding: 2rem;
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
     }
-    h2 {
-      color: var(--primary-color);
-      margin-bottom: 1.5rem;
-      font-weight: 600;
-    }
-    p {
-      margin-bottom: 0.75rem;
-    }
-    hr {
-      margin: 1rem 0;
-      border: none;
-      border-top: 1px solid var(--border-color);
-    }
+    h2 { color: var(--primary-color); margin-bottom: 1.5rem; font-weight: 600; }
+    p { margin-bottom: 0.75rem; }
+    hr { margin: 1rem 0; border: none; border-top: 1px solid var(--border-color); }
     .button {
       background-color: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: var(--border-radius);
-      cursor: pointer;
+      color: white; border: none; padding: 1rem 2rem;
+      font-size: 1rem; font-weight: 600;
+      border-radius: var(--border-radius); cursor: pointer;
+      width: 100%; margin-top: 1rem;
       transition: background-color 0.3s ease;
-      width: 100%;
-      margin-top: 1rem;
-      font-family: 'Montserrat', sans-serif;
     }
-    .button:hover:not(:disabled) {
-      background-color: var(--secondary-color);
-    }
-    .g-recaptcha {
-      margin: 1rem 0;
-      display: none;
-      justify-content: center;
-    }
+    .button:hover:not(:disabled) { background-color: var(--secondary-color); }
+    .g-recaptcha { margin: 1rem 0; display: none; justify-content: center; }
     @media (max-width: 480px) {
-      .summary-section {
-        padding: 1.5rem;
-      }
-      .button {
-        padding: 0.75rem 1.5rem;
-      }
+      .summary-section { padding: 1.5rem; }
+      .button { padding: 0.75rem 1.5rem; }
     }
   </style>
   
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script type="text/javascript">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
     (function(){
-      emailjs.init({
-        publicKey: "SCAOdpzoDJmL3DdLn",
-      });
+      emailjs.init({ publicKey: "SCAOdpzoDJmL3DdLn" });
     })();
   </script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -111,70 +71,72 @@
     <div class="summary-section">
       <h2>Confirmation de la réservation</h2>
       <div id="confirmationContent"></div>
-      
       <div class="g-recaptcha" id="recaptchaContainer" data-sitekey="6LdeQwwrAAAAAC3EegglIilhKI5TVVWw47xC_fZi"></div>
       <button class="button" id="sendRequestButton">Envoyer la demande</button>
     </div>
   </div>
-  
+
   <script>
     let submissionCount = 0;
     const reservationData = JSON.parse(localStorage.getItem("reservationData"));
-    
+
     if (!reservationData) {
       document.getElementById("confirmationContent").innerHTML = "<p>Aucune donnée de réservation disponible.</p>";
     } else {
-      const GST_RATE = 5;
-      const QST_RATE = 9.975;
-      const LODGING_TAX_RATE = 3.5;
-      const cleaningFee = 150;
-      const dogFee = reservationData.booking.hasDog ? 75 : 0;
-      
+      const GST_RATE = 5, QST_RATE = 9.975, LODGING_TAX_RATE = 3.5;
+      const cleaningFee = 150, dogFee = reservationData.booking.hasDog ? 75 : 0;
+
       const checkin = new Date(reservationData.booking.checkin + "T00:00:00");
       const checkout = new Date(reservationData.booking.checkout + "T00:00:00");
       const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
-      const checkinFormatted = checkin.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
-      const checkoutFormatted = checkout.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
-      
-      const adjustedSubtotal = reservationData.booking.currentTotalPreTax;
-      const gstAmount = adjustedSubtotal * (GST_RATE / 100);
-      const qstAmount = adjustedSubtotal * (QST_RATE / 100);
-      const lodgingTaxAmount = (adjustedSubtotal - cleaningFee - dogFee) * (LODGING_TAX_RATE / 100);
-      const totalTaxAmount = gstAmount + qstAmount + lodgingTaxAmount;
-      const effectiveTotal = adjustedSubtotal + totalTaxAmount + dogFee;
-      
-      const fmt = v => v.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-      const payment1Formatted = Number(reservationData.payment1).toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
-      const payment2Formatted = reservationData.payment2
-        ? Number(reservationData.payment2).toLocaleString("fr-CA", { style: "currency", currency: "CAD" })
-        : "";
+      const fmtDate = d => d.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
+      const checkinFormatted = fmtDate(checkin), checkoutFormatted = fmtDate(checkout);
+
+      const sub = reservationData.booking.currentTotalPreTax;
+      const gstAmount = sub * (GST_RATE/100);
+      const qstAmount = sub * (QST_RATE/100);
+      const lodgingTaxAmount = (sub - cleaningFee - dogFee) * (LODGING_TAX_RATE/100);
+      const totalTax = gstAmount + qstAmount + lodgingTaxAmount;
+      const effTotal = sub + totalTax + dogFee;
+      const fmtMoney = v => v.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+
+      const p1 = Number(reservationData.payment1);
+      const p2 = reservationData.payment2 ? Number(reservationData.payment2) : null;
+
+      // Construire les lignes conditionnelles
+      let travellersInfo = "";
+      if (parseInt(reservationData.adultes) > 0) {
+        travellersInfo += `<p><strong>Adultes :</strong> ${reservationData.adultes}</p>`;
+      }
+      if (parseInt(reservationData.age2_17) > 0) {
+        travellersInfo += `<p><strong>2‑17 ans :</strong> ${reservationData.age2_17}</p>`;
+      }
+      if (parseInt(reservationData.age0_2) > 0) {
+        travellersInfo += `<p><strong>0‑2 ans :</strong> ${reservationData.age0_2}</p>`;
+      }
 
       const summaryHTML = `
-        <p><strong>Courriel :</strong> ${reservationData.email}</p>
-        <p><strong>Prénom :</strong> ${reservationData.firstName}</p>
-        <p><strong>Nom :</strong> ${reservationData.lastName}</p>
-        <p><strong>Pays :</strong> ${reservationData.country}</p>
-        <p><strong>Langue de préférence :</strong> ${reservationData.language}</p>
-        <p><strong>Numéro de téléphone :</strong> ${reservationData.phone}</p>
-        <p><strong>Commentaires :</strong> ${reservationData.comments || "Aucun"}</p>
+        <p><strong>Courriel :</strong> ${reservationData.email}</p>
+        <p><strong>Prénom :</strong> ${reservationData.firstName}</p>
+        <p><strong>Nom :</strong> ${reservationData.lastName}</p>
+        <p><strong>Pays :</strong> ${reservationData.country}</p>
+        <p><strong>Langue :</strong> ${reservationData.language}</p>
+        <p><strong>Téléphone :</strong> ${reservationData.phone}</p>
+        <p><strong>Commentaires :</strong> ${reservationData.comments || "Aucun"}</p>
         <hr>
-        <p><strong>Date d'arrivée :</strong> ${checkinFormatted}</p>
-        <p><strong>Date de départ :</strong> ${checkoutFormatted}</p>
-        <p><strong>Nombre de voyageurs :</strong> ${reservationData.guests}</p>
-        <p><strong>Adultes :</strong> ${reservationData.adultes}</p>
-        <p><strong>2‑17 ans :</strong> ${reservationData.age2_17}</p>
-        <p><strong>0‑2 ans :</strong> ${reservationData.age0_2}</p>
-        <p><strong>Chien :</strong> ${reservationData.hasDog ? "Oui" : "Non"}</p>
+        <p><strong>Date d'arrivée :</strong> ${checkinFormatted}</p>
+        <p><strong>Date de départ :</strong> ${checkoutFormatted}</p>
+        <p><strong>Nombre de voyageurs :</strong> ${reservationData.guests}</p>
+        ${travellersInfo}
+        <p><strong>Chien :</strong> ${reservationData.hasDog ? "Oui" : "Non"}</p>
         <hr>
-        <p><strong>Sous-total (avant taxes) :</strong> ${fmt(adjustedSubtotal)}</p>
-        <p><strong>Taxes :</strong> ${fmt(totalTaxAmount)}</p>
+        <p><strong>Sous-total (avant taxes) :</strong> ${fmtMoney(sub)}</p>
+        <p><strong>Taxes :</strong> ${fmtMoney(totalTax)}</p>
         <hr>
-        <p><strong>Total à payer :</strong> ${fmt(effectiveTotal)}</p>
+        <p><strong>Total à payer :</strong> ${fmtMoney(effTotal)}</p>
         <hr>
-        <p><strong>Paiement 1 :</strong> ${payment1Formatted}</p>
-        ${ reservationData.payment2 
-           ? `<p><strong>Paiement 2 (le ${reservationData.payment2Date}) :</strong> ${payment2Formatted}</p>` 
-           : "" }
+        <p><strong>Paiement 1 :</strong> ${fmtMoney(p1)}</p>
+        ${p2 !== null ? `<p><strong>Paiement 2 (le ${reservationData.payment2Date}) :</strong> ${fmtMoney(p2)}</p>` : ""}
       `;
       document.getElementById("confirmationContent").innerHTML = summaryHTML;
 
@@ -182,20 +144,20 @@
         ...reservationData,
         checkinFormatted,
         checkoutFormatted,
-        adjustedSubtotal: fmt(adjustedSubtotal),
-        taxes: fmt(totalTaxAmount),
-        effectiveTotal: fmt(effectiveTotal),
-        payment1: payment1Formatted,
-        payment2: reservationData.payment2 ? payment2Formatted : "N/A"
+        adjustedSubtotal: fmtMoney(sub),
+        taxes: fmtMoney(totalTax),
+        effectiveTotal: fmtMoney(effTotal),
+        payment1: fmtMoney(p1),
+        payment2: p2 !== null ? fmtMoney(p2) : "N/A"
       };
     }
-    
+
     document.getElementById("sendRequestButton").addEventListener("click", () => {
       submissionCount++;
       if (submissionCount > 1) {
         document.getElementById("recaptchaContainer").style.display = "flex";
         if (grecaptcha.getResponse() === "") {
-          alert("Veuillez vérifier que vous n'êtes pas un robot.");
+          alert("Veuillez vérifier que vous n’êtes pas un robot.");
           return;
         }
       }
@@ -207,7 +169,7 @@
         .then(() => {
           alert("La demande a été envoyée avec succès.");
           localStorage.removeItem("reservationData");
-        }, (error) => {
+        }, error => {
           console.log("FAILED...", error);
           alert("Erreur lors de l'envoi de la demande.");
         });
