@@ -360,6 +360,19 @@
       <option value="anglais">Anglais</option>
     </select>
 
+    <!-- New Traveler Information Section -->
+    <h3>Information sur les voyageurs</h3>
+    <label for="adults">Adultes</label>
+    <input type="text" id="adults" readonly style="background-color: #f9f9f9;">
+    <label for="age_2_17">2-17 ans</label>
+    <select id="age_2_17" required>
+      <option value="">Sélectionner</option>
+    </select>
+    <label for="age_0_2">0-2 ans</label>
+    <select id="age_0_2" required>
+      <option value="">Sélectionner</option>
+    </select>
+
     <label for="comments">Commentaires (optionnel)</label>
     <textarea id="comments" placeholder="Ajoutez vos commentaires ici..."></textarea>
 
@@ -403,7 +416,7 @@
     hasDog: false
   };
 
-  // Champ téléphone avec validation
+  // Initialiser le champ téléphone avec validation
   const phoneInput = document.getElementById("phone");
   const iti = window.intlTelInput(phoneInput, {
     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
@@ -434,7 +447,7 @@
   });
 
   // Validation du formulaire
-  // "guests" a été retiré de la liste des champs requis
+  // Champs obligatoires existants
   const fields = ["email", "firstName", "lastName", "country", "language"];
   const continueButton = document.getElementById("continueButton");
   const emailInput = document.getElementById("email");
@@ -477,21 +490,65 @@
     }
   }
 
+  // --- New: Traveler Information Functions ---
+  function updateAgeOptions() {
+    // Utiliser le nombre de voyageurs provenant de bookingData
+    const totalGuests = bookingData.guests;
+    const maxVal = totalGuests - 1; // Au moins un adulte requis
+    const age0_2 = document.getElementById("age_0_2");
+    const age2_17 = document.getElementById("age_2_17");
+    
+    // Réinitialiser les options avec un placeholder
+    age0_2.innerHTML = '<option value="">Sélectionner</option>';
+    age2_17.innerHTML = '<option value="">Sélectionner</option>';
+    
+    for (let i = 0; i <= maxVal; i++) {
+      const option0 = document.createElement("option");
+      option0.value = i;
+      option0.textContent = i;
+      age0_2.appendChild(option0);
+      
+      const option2 = document.createElement("option");
+      option2.value = i;
+      option2.textContent = i;
+      age2_17.appendChild(option2);
+    }
+  }
+
+  function updateAdults() {
+    const totalGuests = bookingData.guests;
+    const age0Val = document.getElementById("age_0_2").value;
+    const age2Val = document.getElementById("age_2_17").value;
+    if (age0Val === "" || age2Val === "") {
+      document.getElementById("adults").value = "";
+      return;
+    }
+    const num0 = parseInt(age0Val);
+    const num2 = parseInt(age2Val);
+    const adultsCount = totalGuests - num0 - num2;
+    document.getElementById("adults").value = adultsCount;
+  }
+  // --- End New Traveler Information Functions ---
+
   function validateForm() {
     const allFieldsFilled = fields.every(id => document.getElementById(id).value.trim() !== "");
     const emailValid = validateEmail();
     const phoneValid = validatePhone();
     const allChecked = document.getElementById("acceptContract").checked && document.getElementById("acceptPrivacy").checked;
-
-    continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked && emailValid);
+    // Vérifier que les informations sur les voyageurs ont été renseignées
+    const travelerInfoFilled = document.getElementById("age_0_2").value.trim() !== "" && document.getElementById("age_2_17").value.trim() !== "";
+    const adultsValue = document.getElementById("adults").value.trim();
+    const adultsValid = adultsValue !== "" && parseInt(adultsValue) >= 1;
+    
+    continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked && emailValid && travelerInfoFilled && adultsValid);
   }
 
-  // Écouteurs d'événements pour les champs requis
+  // Écouteurs d'événements pour les champs existants
   fields.forEach(id => {
     document.getElementById(id).addEventListener("input", validateForm);
   });
   
-  // Validation spécifique pour le courriel
+  // Écouteurs pour la validation du courriel
   emailInput.addEventListener("blur", function() {
     emailTouched = true;
     validateEmail();
@@ -504,7 +561,7 @@
     validateForm();
   });
 
-  // Validation spécifique pour le téléphone et auto-formatage sur le blur
+  // Écouteurs pour la validation du téléphone
   phoneInput.addEventListener("blur", function() {
     phoneTouched = true;
     if (iti.isValidNumber()) {
@@ -526,10 +583,22 @@
   document.getElementById("acceptContract").addEventListener("change", validateForm);
   document.getElementById("acceptPrivacy").addEventListener("change", validateForm);
 
+  // Ajouter des écouteurs pour les nouveaux champs de l'information sur les voyageurs
+  document.getElementById("age_0_2").addEventListener("change", function() {
+      updateAdults();
+      validateForm();
+  });
+  document.getElementById("age_2_17").addEventListener("change", function() {
+      updateAdults();
+      validateForm();
+  });
+
   document.addEventListener("DOMContentLoaded", function() {
     setTimeout(function() {
       window.dispatchEvent(new Event("resize"));
     }, 100);
+    // Initialiser les options pour les âges dès le chargement
+    updateAgeOptions();
   });
 
   // Mise à jour dynamique du résumé
@@ -639,7 +708,10 @@
       totalAmount: effectiveTotal,
       payment1: null,
       payment2: null,
-      payment2Date: null
+      payment2Date: null,
+      age0_2: document.getElementById("age_0_2").value,
+      age2_17: document.getElementById("age_2_17").value,
+      adults: document.getElementById("adults").value
     };
 
     const today = new Date();
