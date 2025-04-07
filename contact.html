@@ -360,18 +360,28 @@
       <option value="anglais">Anglais</option>
     </select>
 
-    <!-- New Traveler Information Section -->
-    <h3>Information sur les voyageurs</h3>
-    <label for="adults">Adultes</label>
-    <input type="text" id="adults" readonly style="background-color: #f9f9f9;">
-    <label for="age_2_17">2-17 ans</label>
-    <select id="age_2_17" required>
-      <option value="">Sélectionner</option>
-    </select>
-    <label for="age_0_2">0-2 ans</label>
-    <select id="age_0_2" required>
-      <option value="">Sélectionner</option>
-    </select>
+    <!-- Separate Traveler Information Section -->
+    <fieldset style="border: 1px solid var(--border-color); padding: 1rem; margin-bottom: 1rem;">
+      <legend style="font-weight:600; color: var(--primary-color);">Information sur les voyageurs</legend>
+      
+      <label for="adults">Adultes</label>
+      <select id="adults" required>
+        <option value="">Sélectionner</option>
+      </select>
+      
+      <label for="age_2_17">2-17 ans</label>
+      <select id="age_2_17" required>
+        <option value="">Sélectionner</option>
+      </select>
+      
+      <label for="age_0_2">0-2 ans</label>
+      <select id="age_0_2" required>
+        <option value="">Sélectionner</option>
+      </select>
+      
+      <!-- Error message for traveler info validation -->
+      <div id="travelerError" style="color: var(--error-color); font-size: 0.9rem; display: none;"></div>
+    </fieldset>
 
     <label for="comments">Commentaires (optionnel)</label>
     <textarea id="comments" placeholder="Ajoutez vos commentaires ici..."></textarea>
@@ -446,8 +456,7 @@
     }
   });
 
-  // Validation du formulaire
-  // Champs obligatoires existants
+  // Validation du formulaire (champs obligatoires existants)
   const fields = ["email", "firstName", "lastName", "country", "language"];
   const continueButton = document.getElementById("continueButton");
   const emailInput = document.getElementById("email");
@@ -490,43 +499,70 @@
     }
   }
 
-  // --- New: Traveler Information Functions ---
-  function updateAgeOptions() {
-    // Utiliser le nombre de voyageurs provenant de bookingData
+  // --- New Traveler Information Functions ---
+  function updateTravelerOptions() {
     const totalGuests = bookingData.guests;
-    const maxVal = totalGuests - 1; // Au moins un adulte requis
-    const age0_2 = document.getElementById("age_0_2");
-    const age2_17 = document.getElementById("age_2_17");
-    
-    // Réinitialiser les options avec un placeholder
-    age0_2.innerHTML = '<option value="">Sélectionner</option>';
-    age2_17.innerHTML = '<option value="">Sélectionner</option>';
-    
-    for (let i = 0; i <= maxVal; i++) {
-      const option0 = document.createElement("option");
-      option0.value = i;
-      option0.textContent = i;
-      age0_2.appendChild(option0);
-      
-      const option2 = document.createElement("option");
-      option2.value = i;
-      option2.textContent = i;
-      age2_17.appendChild(option2);
+    // Update Adultes (options from 1 to totalGuests)
+    const adultsSelect = document.getElementById("adults");
+    adultsSelect.innerHTML = '<option value="">Sélectionner</option>';
+    for (let i = 1; i <= totalGuests; i++) {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = i;
+      adultsSelect.appendChild(option);
+    }
+    // Update 2-17 ans (options from 0 to totalGuests - 1)
+    const age2_17Select = document.getElementById("age_2_17");
+    age2_17Select.innerHTML = '<option value="">Sélectionner</option>';
+    for (let i = 0; i <= totalGuests - 1; i++) {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = i;
+      age2_17Select.appendChild(option);
+    }
+    // Update 0-2 ans (options from 0 to totalGuests - 1)
+    const age0_2Select = document.getElementById("age_0_2");
+    age0_2Select.innerHTML = '<option value="">Sélectionner</option>';
+    for (let i = 0; i <= totalGuests - 1; i++) {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = i;
+      age0_2Select.appendChild(option);
     }
   }
 
-  function updateAdults() {
-    const totalGuests = bookingData.guests;
-    const age0Val = document.getElementById("age_0_2").value;
-    const age2Val = document.getElementById("age_2_17").value;
-    if (age0Val === "" || age2Val === "") {
-      document.getElementById("adults").value = "";
-      return;
+  function validateTravelerInfo() {
+    const adultsVal = document.getElementById("adults").value;
+    const age2_17Val = document.getElementById("age_2_17").value;
+    const age0_2Val = document.getElementById("age_0_2").value;
+    const errorDiv = document.getElementById("travelerError");
+
+    // Ensure all fields are selected
+    if (adultsVal === "" || age2_17Val === "" || age0_2Val === "") {
+      errorDiv.textContent = "";
+      errorDiv.style.display = "none";
+      return false;
     }
-    const num0 = parseInt(age0Val);
-    const num2 = parseInt(age2Val);
-    const adultsCount = totalGuests - num0 - num2;
-    document.getElementById("adults").value = adultsCount;
+
+    const A = parseInt(adultsVal);
+    const B = parseInt(age2_17Val);
+    const C = parseInt(age0_2Val);
+
+    // Condition 1: The sum of Adultes and 2-17 must not exceed the total guests
+    if (A + B > bookingData.guests) {
+      errorDiv.textContent = "La somme des adultes et des 2‑17 ne doit pas dépasser le nombre total de voyageurs (" + bookingData.guests + ").";
+      errorDiv.style.display = "block";
+      return false;
+    }
+    // Condition 2: The overall total (Adultes + 2‑17 + 0‑2) must be at least equal to the total guests
+    if (A + B + C < bookingData.guests) {
+      errorDiv.textContent = "Le total des voyageurs (Adultes + 2‑17 ans + 0‑2 ans) doit être au moins égal au nombre total de voyageurs (" + bookingData.guests + ").";
+      errorDiv.style.display = "block";
+      return false;
+    }
+    errorDiv.textContent = "";
+    errorDiv.style.display = "none";
+    return true;
   }
   // --- End New Traveler Information Functions ---
 
@@ -535,12 +571,14 @@
     const emailValid = validateEmail();
     const phoneValid = validatePhone();
     const allChecked = document.getElementById("acceptContract").checked && document.getElementById("acceptPrivacy").checked;
-    // Vérifier que les informations sur les voyageurs ont été renseignées
-    const travelerInfoFilled = document.getElementById("age_0_2").value.trim() !== "" && document.getElementById("age_2_17").value.trim() !== "";
-    const adultsValue = document.getElementById("adults").value.trim();
-    const adultsValid = adultsValue !== "" && parseInt(adultsValue) >= 1;
+    // Vérifier que tous les champs de l'information sur les voyageurs sont renseignés
+    const travelerFieldsFilled =
+      document.getElementById("adults").value.trim() !== "" &&
+      document.getElementById("age_2_17").value.trim() !== "" &&
+      document.getElementById("age_0_2").value.trim() !== "";
+    const travelerValid = validateTravelerInfo();
     
-    continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked && emailValid && travelerInfoFilled && adultsValid);
+    continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked && emailValid && travelerFieldsFilled && travelerValid);
   }
 
   // Écouteurs d'événements pour les champs existants
@@ -565,7 +603,6 @@
   phoneInput.addEventListener("blur", function() {
     phoneTouched = true;
     if (iti.isValidNumber()) {
-      // Auto-formatter le numéro selon le format NATIONAL
       const formattedNumber = iti.getNumber(intlTelInputUtils.numberFormat.NATIONAL);
       phoneInput.value = formattedNumber;
     }
@@ -580,48 +617,45 @@
   });
   phoneInput.addEventListener("countrychange", validateForm);
 
-  document.getElementById("acceptContract").addEventListener("change", validateForm);
-  document.getElementById("acceptPrivacy").addEventListener("change", validateForm);
-
-  // Ajouter des écouteurs pour les nouveaux champs de l'information sur les voyageurs
-  document.getElementById("age_0_2").addEventListener("change", function() {
-      updateAdults();
-      validateForm();
+  // Écouteurs pour les nouveaux champs de l'information sur les voyageurs
+  document.getElementById("adults").addEventListener("change", function() {
+    validateTravelerInfo();
+    validateForm();
   });
   document.getElementById("age_2_17").addEventListener("change", function() {
-      updateAdults();
-      validateForm();
+    validateTravelerInfo();
+    validateForm();
   });
+  document.getElementById("age_0_2").addEventListener("change", function() {
+    validateTravelerInfo();
+    validateForm();
+  });
+
+  document.getElementById("acceptContract").addEventListener("change", validateForm);
+  document.getElementById("acceptPrivacy").addEventListener("change", validateForm);
 
   document.addEventListener("DOMContentLoaded", function() {
     setTimeout(function() {
       window.dispatchEvent(new Event("resize"));
     }, 100);
-    // Initialiser les options pour les âges dès le chargement
-    updateAgeOptions();
+    // Initialiser les options pour les informations sur les voyageurs dès le chargement
+    updateTravelerOptions();
   });
 
   // Mise à jour dynamique du résumé
   function updateSummary() {
-    // Calculer le nombre de nuits
     const checkin = new Date(bookingData.checkin + "T00:00:00");
     const checkout = new Date(bookingData.checkout + "T00:00:00");
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
     
-    // Utiliser directement bookingData.currentTotalPreTax
     const adjustedSubtotal = bookingData.currentTotalPreTax;
-
-    // Calcul des taxes basées sur le sous-total ajusté
     const gstAmount = adjustedSubtotal * (GST_RATE / 100);
     const qstAmount = adjustedSubtotal * (QST_RATE / 100);
     const lodgingTaxAmount = (adjustedSubtotal - 150) * (LODGING_TAX_RATE / 100);
     const totalTaxAmount = gstAmount + qstAmount + lodgingTaxAmount;
     const effectiveTotal = adjustedSubtotal + totalTaxAmount;
-    
-    // Calcul du prix par nuit (moins les frais de ménage)
     const pricePerNight = (adjustedSubtotal - 150) / nights;
     
-    // Formatage des montants en dollars (français canadien)
     const adjustedSubtotalFormatted = adjustedSubtotal.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
     const totalTaxFormatted = totalTaxAmount.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
     const effectiveTotalFormatted = effectiveTotal.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
@@ -629,7 +663,6 @@
     const checkinFormatted = checkin.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
     const checkoutFormatted = checkout.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
     
-    // Échéancier de paiement
     let payment1 = effectiveTotal;
     let payment2 = 0;
     let payment2Date = null;
@@ -645,7 +678,6 @@
     const payment2Formatted = payment2.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
     const payment2DateFormatted = payment2Date ? payment2Date.toLocaleDateString("fr-CA") : "";
     
-    // Mise à jour du contenu du résumé incluant le nombre de voyageurs depuis bookingData
     const summaryContent = document.getElementById("summaryContent");
     summaryContent.innerHTML = `
       <p><strong>Date d'arrivée :</strong> ${checkinFormatted}</p>
@@ -675,12 +707,9 @@
     `;
   }
   
-  // Appeler updateSummary initialement
   updateSummary();
   
-  // Envoi du formulaire
   continueButton.addEventListener("click", () => {
-    // Validation finale avant envoi
     if (!validateEmail()) {
       return;
     }
@@ -709,9 +738,9 @@
       payment1: null,
       payment2: null,
       payment2Date: null,
-      age0_2: document.getElementById("age_0_2").value,
+      adultes: document.getElementById("adults").value,
       age2_17: document.getElementById("age_2_17").value,
-      adults: document.getElementById("adults").value
+      age0_2: document.getElementById("age_0_2").value
     };
 
     const today = new Date();
@@ -726,7 +755,6 @@
       guestData.payment1 = effectiveTotal;
     }
 
-    // Stocker les données et rediriger vers la page de confirmation
     localStorage.setItem("reservationData", JSON.stringify(guestData));
     window.location.href = "confirmation.html";
   });
