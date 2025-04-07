@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -358,6 +358,8 @@
 
     <label for="phone">Numéro de téléphone</label>
     <input type="tel" id="phone" required>
+    <!-- Added error message element for phone format -->
+    <div id="phoneError" style="color: var(--error-color); font-size: 0.9rem; margin-bottom: 1rem; display: none;">Numéro de téléphone invalide.</div>
 
     <label for="language">Langue de préférence</label>
     <select id="language" required>
@@ -442,6 +444,10 @@
   const continueButton = document.getElementById("continueButton");
   const emailInput = document.getElementById("email");
   const emailError = document.getElementById("emailError");
+  const phoneError = document.getElementById("phoneError");
+
+  let emailTouched = false;
+  let phoneTouched = false;
 
   function isValidEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -450,8 +456,10 @@
 
   function validateEmail() {
     if (emailInput.value.trim() !== "" && !isValidEmail(emailInput.value)) {
-      emailError.style.display = "block";
-      emailInput.style.borderColor = "var(--error-color)";
+      if (emailTouched) {
+        emailError.style.display = "block";
+        emailInput.style.borderColor = "var(--error-color)";
+      }
       return false;
     } else {
       emailError.style.display = "none";
@@ -460,47 +468,65 @@
     }
   }
 
-  function validateForm() {
-    const allFieldsFilled = fields.every(id => document.getElementById(id).value.trim() !== "");
-    const phoneValid = phoneInput.value && iti.isValidNumber();
-    const allChecked = document.getElementById("acceptContract").checked && document.getElementById("acceptPrivacy").checked;
-    const emailValid = validateEmail();
-
-    continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked && emailValid);
-    
-    if (phoneInput.value) {
-      phoneInput.style.borderColor = phoneValid ? "var(--success-color)" : "var(--error-color)";
+  function validatePhone() {
+    if (phoneInput.value.trim() !== "" && !iti.isValidNumber()) {
+      if (phoneTouched) {
+        phoneError.style.display = "block";
+        phoneInput.style.borderColor = "var(--error-color)";
+      }
+      return false;
     } else {
-      phoneInput.style.borderColor = '';
+      phoneError.style.display = "none";
+      phoneInput.style.borderColor = phoneInput.value.trim() !== "" ? "var(--success-color)" : "";
+      return true;
     }
   }
 
-  // Event listeners for all fields
+  function validateForm() {
+    const allFieldsFilled = fields.every(id => document.getElementById(id).value.trim() !== "");
+    const emailValid = validateEmail();
+    const phoneValid = validatePhone();
+    const allChecked = document.getElementById("acceptContract").checked && document.getElementById("acceptPrivacy").checked;
+
+    continueButton.disabled = !(allFieldsFilled && phoneValid && allChecked && emailValid);
+  }
+
+  // Event listeners for all fields (except email and phone already handled)
   fields.forEach(id => {
     if (id !== "email") {
       document.getElementById(id).addEventListener("input", validateForm);
     }
   });
   
-  // Specific email validation - only check on blur or when continuing
+  // Specific email validation - only check error after field has been blurred
   emailInput.addEventListener("blur", function() {
+    emailTouched = true;
     validateEmail();
     validateForm();
   });
-
-  // Don't show error while typing, only validate on blur
   emailInput.addEventListener("input", function() {
-    // Only check if error is already visible
-    if (emailError.style.display === "block") {
+    if (emailTouched) {
       validateEmail();
     }
     validateForm();
   });
 
+  // Specific phone validation - only check error after field has been blurred
+  phoneInput.addEventListener("blur", function() {
+    phoneTouched = true;
+    validatePhone();
+    validateForm();
+  });
+  phoneInput.addEventListener("input", function() {
+    if (phoneTouched) {
+      validatePhone();
+    }
+    validateForm();
+  });
+  phoneInput.addEventListener("countrychange", validateForm);
+
   document.getElementById("acceptContract").addEventListener("change", validateForm);
   document.getElementById("acceptPrivacy").addEventListener("change", validateForm);
-  phoneInput.addEventListener("input", validateForm);
-  phoneInput.addEventListener("countrychange", validateForm);
 
   document.addEventListener("DOMContentLoaded", function() {
     setTimeout(function() {
@@ -521,7 +547,6 @@
     // Utiliser directement bookingData.currentTotalPreTax car il inclut déjà le calcul en fonction du nombre de voyageurs
     const adjustedSubtotal = bookingData.currentTotalPreTax;
 
-    // Frais chien affiché uniquement, sans modification du prix
     // Calcul des taxes basées sur le sous-total ajusté
     const gstAmount = adjustedSubtotal * (GST_RATE / 100);
     const qstAmount = adjustedSubtotal * (QST_RATE / 100);
