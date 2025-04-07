@@ -333,6 +333,8 @@
 
     <label for="email">Courriel</label>
     <input type="email" id="email" required>
+    <!-- Added error message element for email format -->
+    <div id="emailError" style="color: var(--error-color); font-size: 0.9rem; margin-bottom: 1rem; display: none;">Format de courriel invalide.</div>
 
     <label for="firstName">Prénom</label>
     <input type="text" id="firstName" required>
@@ -465,6 +467,26 @@
     }, 100);
   });
 
+  // Email format validation
+  function isValidEmail(email) {
+    const re = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+    return re.test(email);
+  }
+  
+  document.getElementById("email").addEventListener("blur", function() {
+    if (this.value.trim() !== "" && !isValidEmail(this.value)) {
+      document.getElementById("emailError").style.display = "block";
+    } else {
+      document.getElementById("emailError").style.display = "none";
+    }
+  });
+  
+  document.getElementById("email").addEventListener("input", function() {
+    if (isValidEmail(this.value)) {
+      document.getElementById("emailError").style.display = "none";
+    }
+  });
+
   // Initialiser le champ invités avec les données récupérées
   document.getElementById("guests").value = bookingData.guests || 1;
 
@@ -478,15 +500,13 @@
     // Utiliser directement bookingData.currentTotalPreTax car il inclut déjà le calcul en fonction du nombre de voyageurs
     const adjustedSubtotal = bookingData.currentTotalPreTax;
 
-    // Frais chien (75 $ ajoutés si applicable)
-    const dogFee = bookingData.hasDog ? 75 : 0;
-    
+    // Frais chien affiché uniquement, sans modification du prix
     // Calcul des taxes basées sur le sous-total ajusté
     const gstAmount = adjustedSubtotal * (GST_RATE / 100);
     const qstAmount = adjustedSubtotal * (QST_RATE / 100);
-    const lodgingTaxAmount = (adjustedSubtotal - 150 - dogFee) * (LODGING_TAX_RATE / 100);
+    const lodgingTaxAmount = (adjustedSubtotal - 150) * (LODGING_TAX_RATE / 100);
     const totalTaxAmount = gstAmount + qstAmount + lodgingTaxAmount;
-    const effectiveTotal = adjustedSubtotal + totalTaxAmount + dogFee;
+    const effectiveTotal = adjustedSubtotal + totalTaxAmount;
     
     // Calcul du prix par nuit basé sur le sous-total ajusté (moins les frais de ménage)
     const pricePerNight = (adjustedSubtotal - 150) / nights;
@@ -555,14 +575,12 @@
     const checkin = new Date(bookingData.checkin + "T00:00:00");
     const checkout = new Date(bookingData.checkout + "T00:00:00");
     const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
-    const dogFee = bookingData.hasDog ? 75 : 0;
     // Utiliser directement bookingData.currentTotalPreTax puisque celui-ci est déjà mis à jour
     const adjustedSubtotal = bookingData.currentTotalPreTax;
     const effectiveTotal = adjustedSubtotal +
          (adjustedSubtotal * (GST_RATE / 100)) +
          (adjustedSubtotal * (QST_RATE / 100)) +
-         ((adjustedSubtotal - 150 - dogFee) * (LODGING_TAX_RATE / 100)) +
-         dogFee;
+         ((adjustedSubtotal - 150) * (LODGING_TAX_RATE / 100));
 
     const guestData = {
       email: document.getElementById("email").value,
