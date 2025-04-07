@@ -463,16 +463,17 @@
 
   document.addEventListener("DOMContentLoaded", function() {
     setTimeout(function() {
-      window.dispatchEvent(new Event('resize'));
+      window.dispatchEvent(new Event("resize"));
     }, 100);
   });
 
   // Email format validation
   function isValidEmail(email) {
-    const re = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
   }
   
+  // Modified email input listener
   document.getElementById("email").addEventListener("blur", function() {
     if (this.value.trim() !== "" && !isValidEmail(this.value)) {
       document.getElementById("emailError").style.display = "block";
@@ -480,10 +481,13 @@
       document.getElementById("emailError").style.display = "none";
     }
   });
-  
+
+  // Add separate input event listener for real-time feedback
   document.getElementById("email").addEventListener("input", function() {
-    if (isValidEmail(this.value)) {
+    if (this.value.trim() === "" || isValidEmail(this.value)) {
       document.getElementById("emailError").style.display = "none";
+    } else {
+      document.getElementById("emailError").style.display = "block";
     }
   });
 
@@ -512,12 +516,12 @@
     const pricePerNight = (adjustedSubtotal - 150) / nights;
     
     // Formatage des montants en dollars (français canadien)
-    const adjustedSubtotalFormatted = adjustedSubtotal.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
-    const totalTaxFormatted = totalTaxAmount.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
-    const effectiveTotalFormatted = effectiveTotal.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
-    const pricePerNightFormatted = pricePerNight.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
-    const checkinFormatted = checkin.toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
-    const checkoutFormatted = checkout.toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+    const adjustedSubtotalFormatted = adjustedSubtotal.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+    const totalTaxFormatted = totalTaxAmount.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+    const effectiveTotalFormatted = effectiveTotal.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+    const pricePerNightFormatted = pricePerNight.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+    const checkinFormatted = checkin.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
+    const checkoutFormatted = checkout.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
 
     // Échéancier de paiement
     const today = new Date();
@@ -531,9 +535,9 @@
       payment2Date = new Date(checkin);
       payment2Date.setDate(payment2Date.getDate() - 14);
     }
-    const payment1Formatted = payment1.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
-    const payment2Formatted = payment2.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' });
-    const payment2DateFormatted = payment2Date ? payment2Date.toLocaleDateString('fr-CA') : "";
+    const payment1Formatted = payment1.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+    const payment2Formatted = payment2.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+    const payment2DateFormatted = payment2Date ? payment2Date.toLocaleDateString("fr-CA") : "";
     
     // Mettre à jour le contenu du résumé
     const guests = document.getElementById("guests").value;
@@ -556,12 +560,12 @@
       <hr>
       <p><strong>Échéancier de paiement :</strong></p>
       <ul>
-        <li>Paiement 1 (dû lors de l'acceptation de votre demande) : ${payment1Formatted}</li>
+        <li>Paiement 1 (aujourd'hui) : ${payment1Formatted}</li>
         ${payment2 > 0 ? `<li>Paiement 2 (le ${payment2DateFormatted}) : ${payment2Formatted} 
           <div class="tooltip-container">
             <button type="button" class="info-button" aria-label="Plus d'informations">i</button>
             <div class="tooltip">14 jours avant votre arrivée</div>
-          </div></li>` : ''}
+          </div></li>` : ""}
       </ul>
     `;
   }
