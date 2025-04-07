@@ -333,8 +333,10 @@
 
     <label for="email">Courriel</label>
     <input type="email" id="email" required>
-    <!-- Added error message element for email format -->
-    <div id="emailError" style="color: var(--error-color); font-size: 0.9rem; margin-bottom: 1rem; display: none;">Format de courriel invalide.</div>
+    <!-- Error message element for email format -->
+    <div id="emailError" style="color: var(--error-color); font-size: 0.9rem; margin-bottom: 1rem; display: none;">
+      Format de courriel invalide.
+    </div>
 
     <label for="firstName">Prénom</label>
     <input type="text" id="firstName" required>
@@ -342,7 +344,7 @@
     <label for="lastName">Nom</label>
     <input type="text" id="lastName" required>
     
-    <!-- New dropdown for number of guests -->
+    <!-- Dropdown for number of guests -->
     <label for="guests">Nombre de voyageurs</label>
     <select id="guests" required>
       <option value="1" selected>1</option>
@@ -358,8 +360,10 @@
 
     <label for="phone">Numéro de téléphone</label>
     <input type="tel" id="phone" required>
-    <!-- Added error message element for phone format -->
-    <div id="phoneError" style="color: var(--error-color); font-size: 0.9rem; margin-bottom: 1rem; display: none;">Numéro de téléphone invalide.</div>
+    <!-- Error message element for phone format -->
+    <div id="phoneError" style="color: var(--error-color); font-size: 0.9rem; margin-bottom: 1rem; display: none;">
+      Numéro de téléphone invalide.
+    </div>
 
     <label for="language">Langue de préférence</label>
     <select id="language" required>
@@ -372,12 +376,16 @@
 
     <div class="checkbox-group">
       <input type="checkbox" id="acceptContract">
-      <label for="acceptContract">J'ai lu et j'accepte le <a href="rental-agreement.html" target="_blank">contrat de location</a></label>
+      <label for="acceptContract">
+        J'ai lu et j'accepte le <a href="rental-agreement.html" target="_blank">contrat de location</a>
+      </label>
     </div>
 
     <div class="checkbox-group">
       <input type="checkbox" id="acceptPrivacy">
-      <label for="acceptPrivacy">J'ai lu et j'accepte la <a href="politiquePRP.html" target="_blank">politique de vie privée</a></label>
+      <label for="acceptPrivacy">
+        J'ai lu et j'accepte la <a href="politiquePRP.html" target="_blank">politique de vie privée</a>
+      </label>
     </div>
 
     <button class="button" id="continueButton" disabled>Continuer</button>
@@ -515,12 +523,8 @@
   phoneInput.addEventListener("blur", function() {
     phoneTouched = true;
     if (iti.isValidNumber()) {
-      // Auto-format the number according to the national format of the selected country
-      const formattedNumber = intlTelInputUtils.formatNumber(
-        iti.getNumber(),
-        iti.getSelectedCountryData().iso2,
-        intlTelInputUtils.numberFormat.NATIONAL
-      );
+      // Auto-format the number using the NATIONAL format
+      const formattedNumber = iti.getNumber(intlTelInputUtils.numberFormat.NATIONAL);
       phoneInput.value = formattedNumber;
     }
     validatePhone();
