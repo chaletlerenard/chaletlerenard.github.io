@@ -141,7 +141,9 @@
           const checkinDate = selectedDates[0];
           let minStay = 1;
           const record = latestJsonData.find(day => day.Date === checkinDate.toISOString().split("T")[0]);
-          if (record && record["Min Stay"]) minStay = parseInt(record["Min Stay"]);
+          if (record && record["Min Stay"]) {
+            minStay = parseInt(record["Min Stay"]);
+          }
           const minCheckoutDate = new Date(checkinDate);
           minCheckoutDate.setDate(minCheckoutDate.getDate() + minStay);
           checkoutPicker.set("minDate", minCheckoutDate);
@@ -304,5 +306,26 @@
     }
     return dates;
   }
+
+  // New pageshow event to reset button state upon returning to the page
+  window.addEventListener("pageshow", (event) => {
+    const searchButton = document.getElementById("searchButton");
+    if (searchButton) {
+      searchButton.classList.remove("pulsing");
+
+      // Check if both dates have values
+      const checkinValue = document.getElementById("checkin").value;
+      const checkoutValue = document.getElementById("checkout").value;
+      if (checkinValue && checkoutValue) {
+        checkDates();
+      } else {
+        searchButton.innerText = "Réserver";
+        searchButton.disabled = true;
+        searchButton.style.backgroundColor = "#ccc";
+        searchButton.style.color = "#fff";
+        searchButton.style.cursor = "not-allowed";
+      }
+    }
+  });
 </script>
 <!-- End of Chalet Le Renard Booking Section -->
