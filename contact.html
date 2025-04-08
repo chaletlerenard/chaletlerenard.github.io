@@ -491,33 +491,50 @@
   function updateSummary(){
     const inD = new Date(bookingData.checkin+"T00:00:00");
     const outD = new Date(bookingData.checkout+"T00:00:00");
-    const nights = (outD-inD)/(1000*60*60*24);
+    const nights = (outD - inD) / (1000 * 60 * 60 * 24);
     const sub = bookingData.currentTotalPreTax;
-    const gst = sub*(GST_RATE/100);
-    const qst = sub*(QST_RATE/100);
-    const lodg = (sub-150)*(LODGING_TAX_RATE/100);
-    const totalTax = gst+qst+lodg;
-    const eff = sub+totalTax;
-    const perNight = (sub-150)/nights;
-    const fmt = v=>v.toLocaleString("fr-CA",{style:"currency",currency:"CAD"});
-    const dFmt = d=>d.toLocaleDateString("fr-CA",{year:"numeric",month:"long",day:"numeric"});
-    let p1=eff, p2=0, p2d=null;
+    const gst = sub * (GST_RATE / 100);
+    const qst = sub * (QST_RATE / 100);
+    const lodg = (sub - 150) * (LODGING_TAX_RATE / 100);
+    const totalTax = gst + qst + lodg;
+    const eff = sub + totalTax;
+    const perNight = (sub - 150) / nights;
+    const fmt = v => v.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+    const dFmt = d => d.toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
+    
+    const inD_display = inD; // check-in date for display
     const today = new Date();
-    const diff = Math.ceil((inD-today)/(1000*60*60*24));
-    if(diff>14){
-      p1=eff/2; p2=eff-p1;
-      p2d=new Date(inD); p2d.setDate(p2d.getDate()-14);
+    const diff = Math.ceil((inD - today) / (1000 * 60 * 60 * 24));
+    
+    // Build the payment summary based on the condition.
+    let htmlPayment = "";
+    if(diff > 14){
+      const p1 = eff / 2;
+      const p2 = eff - p1;
+      const p2d = new Date(inD);
+      p2d.setDate(p2d.getDate() - 14);
+      htmlPayment = `
+        <li>Paiement 1 (aujourd'hui) : ${fmt(p1)}</li>
+        <li>Paiement 2 (le ${dFmt(p2d)}) : ${fmt(p2)}
+          <div class="tooltip-container">
+            <button type="button" class="info-button" aria-label="Plus d'informations">i</button>
+            <div class="tooltip">14 jours avant votre arrivée</div>
+          </div>
+        </li>`;
+    } else {
+      htmlPayment = `<li>Le paiement total est dû dans les 48 heures suivant la soumission de la réservation : ${fmt(eff)}</li>`;
     }
+    
     document.getElementById("summaryContent").innerHTML = `
-      <p><strong>Date d'arrivée :</strong> ${dFmt(inD)}</p>
+      <p><strong>Date d'arrivée :</strong> ${dFmt(inD_display)}</p>
       <p><i>Heure d'arrivée : à partir de 16h</i></p>
       <p><strong>Date de départ :</strong> ${dFmt(outD)}</p>
       <p><i>Heure de départ : au plus tard 11h</i></p>
       <p><strong>Nombre de voyageurs :</strong> ${bookingData.guests}</p>
       <p><strong>Durée du séjour :</strong> ${nights} nuits</p>
-      <p><strong>Chien :</strong> ${bookingData.hasDog?"Oui":"Non"}</p>
+      <p><strong>Chien :</strong> ${bookingData.hasDog ? "Oui" : "Non"}</p>
       <p><strong>Prix par nuit :</strong> ${fmt(perNight)}</p>
-      <p><strong>Frais de ménage :</strong> 150 $</p>
+      <p><strong>Frais de ménage :</strong> 150&nbsp;$</p>
       <hr>
       <p><strong>Sous-total (avant taxes) :</strong> ${fmt(sub)}</p>
       <p><strong>Taxes :</strong> ${fmt(totalTax)}</p>
@@ -526,12 +543,7 @@
       <hr>
       <p><strong>Échéancier de paiement :</strong></p>
       <ul>
-        <li>Paiement 1 (aujourd'hui) : ${fmt(p1)}</li>
-        ${p2>0?`<li>Paiement 2 (le ${dFmt(p2d)}) : ${fmt(p2)}
-          <div class="tooltip-container">
-            <button type="button" class="info-button" aria-label="Plus d'informations">i</button>
-            <div class="tooltip">14 jours avant votre arrivée</div>
-          </div></li>`:""}
+        ${htmlPayment}
       </ul>
     `;
   }
@@ -540,12 +552,14 @@
     if(!validateEmail()) return;
     const inD = new Date(bookingData.checkin+"T00:00:00");
     const outD = new Date(bookingData.checkout+"T00:00:00");
-    const nights = (outD-inD)/(1000*60*60*24);
+    const nights = (outD - inD) / (1000 * 60 * 60 * 24);
     const sub = bookingData.currentTotalPreTax;
-    const gst = sub*(GST_RATE/100);
-    const qst = sub*(QST_RATE/100);
-    const lodg = (sub-150)*(LODGING_TAX_RATE/100);
-    const eff = sub+gst+qst+lodg;
+    const gst = sub * (GST_RATE / 100);
+    const qst = sub * (QST_RATE / 100);
+    const lodg = (sub - 150) * (LODGING_TAX_RATE / 100);
+    const eff = sub + gst + qst + lodg;
+    
+    // Build guestData without presetting payment2 properties.
     const guestData = {
       email: emailInput.value,
       firstName: document.getElementById("firstName").value,
@@ -558,23 +572,22 @@
       hasDog: bookingData.hasDog,
       booking: bookingData,
       totalAmount: eff,
-      payment1: null,
-      payment2: null,
-      payment2Date: null,
       adultes: document.getElementById("adults").value,
       age2_17: document.getElementById("age_2_17").value,
       age0_2: document.getElementById("age_0_2").value
     };
+    
     const today = new Date();
-    const diff = Math.ceil((inD-today)/(1000*60*60*24));
-    if(diff>14){
-      guestData.payment1 = eff/2;
-      guestData.payment2 = eff-guestData.payment1;
+    const diff = Math.ceil((inD - today) / (1000 * 60 * 60 * 24));
+    if(diff > 14){
+      guestData.payment1 = eff / 2;
+      guestData.payment2 = eff - guestData.payment1;
       const p2d = new Date(inD);
-      p2d.setDate(p2d.getDate()-14);
+      p2d.setDate(p2d.getDate() - 14);
       guestData.payment2Date = p2d.toISOString().split("T")[0];
     } else {
       guestData.payment1 = eff;
+      // payment2 and payment2Date are not set when full payment is required.
     }
     localStorage.setItem("reservationData", JSON.stringify(guestData));
     window.location.href = "confirmation.html";
