@@ -422,17 +422,17 @@
     }
     if(A + B > bookingData.guests){
       err.textContent =
-        "La somme des adultes et des 2‑17 ans ne doit pas dépasser le nombre total de voyageurs ("+
+        "Êtes vous certain que cela soit exact? La nombre total d'adultes et d'enfants dépasse le nombre total de voyageurs ("+
         bookingData.guests+
-        "). Pour changer le nombre total de voyageurs, veuillez revenir à l’étape précédente.";
+        "). Pour changer le nombre total de voyageurs, revenez à l’étape précédente.";
       err.style.display = "block";
       return false;
     }
     if(A + B + C < bookingData.guests){
       err.textContent =
-        "Le total des voyageurs (Adultes + 2‑17 ans + 0‑2 ans) doit être au moins égal au nombre total de voyageurs ("+
+        "Êtes vous certain que cela soit exact? La nombre total de voyageurs est inférieur au nombre total de voyageurs que vous avez précédemment indiqué ("+
         bookingData.guests+
-        "). Pour changer le nombre total de voyageurs, veuillez revenir à l’étape précédente.";
+        "). Pour changer le nombre total de voyageurs, revenez à l’étape précédente.";
       err.style.display = "block";
       return false;
     }
@@ -514,7 +514,7 @@
       const p2d = new Date(inD);
       p2d.setDate(p2d.getDate() - 14);
       htmlPayment = `
-        <li>Paiement 1 (aujourd'hui) : ${fmt(p1)}</li>
+        <li>Paiement 1 (dans les 48h) : ${fmt(p1)}</li>
         <li>Paiement 2 (le ${dFmt(p2d)}) : ${fmt(p2)}
           <div class="tooltip-container">
             <button type="button" class="info-button" aria-label="Plus d'informations">i</button>
