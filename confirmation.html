@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Confirmation de la réservation - Chalet Le Renard</title>
+  <title>Vérification des renseignements: c'est la dernière étape pour confirmer votre réservation.</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -141,13 +141,13 @@
         <hr>
         <p><strong>Total à payer :</strong> ${fmtMoney(effTotal)}</p>
         <hr>
-        <p><strong>Paiement 1 :</strong> ${fmtMoney(p1)}</p>
-        ${p2 !== null ? `<p><strong>Paiement 2 (le ${reservationData.payment2Date}) :</strong> ${fmtMoney(p2)}</p>` : ""}
+        <p><strong>Paiement 1 (à régler sous 48 heures):</strong> ${fmtMoney(p1)}</p>
+        ${p2 !== null 
+          ? `<p><strong>Paiement 2 (le ${reservationData.payment2Date}) :</strong> ${fmtMoney(p2)}</p>` 
+          : ""}
         <hr>
         <p><strong>Politique d’annulation :</strong> Les annulations sont permises dans un délai de 7 jours suivant l’acceptation de la demande, lorsque le séjour est prévu dans plus de 30 jours. Dans les autres cas, un délai de 48 heures suivant l’acceptation de la demande s’applique. Aucune annulation n’est possible lorsque la demande est effectuée à moins de 14 jours du début du séjour.</p>
-
         <p><strong>Modalités de paiement :</strong> Le paiement s’effectue par carte de crédit, via notre partenaire de paiement sécurisé Stripe, une fois la demande acceptée. Nous acceptons également les virements Interac.</p>
-
         <p><strong>Traitement de la demande :</strong> Toutes les demandes sont confirmées en moins de 24 heures.</p>
       `;
       document.getElementById("confirmationContent").innerHTML = summaryHTML;
@@ -184,7 +184,7 @@
           // Ensuite, envoi vers le client
           const clientParams = {
             ...window._emailParams,
-            email: reservationData.email // utilisé comme destinataire dans le template
+            email: reservationData.email
           };
 
           emailjs.send("service_9opr6js", "template_bookingconfirm", clientParams)
