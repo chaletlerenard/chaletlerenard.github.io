@@ -37,8 +37,11 @@ layout: none
     header::before {
       content: "";
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(0, 0, 0, 0.4); /* Optional dark overlay for readability */
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.4);
       z-index: 1;
     }
 
@@ -48,7 +51,6 @@ layout: none
       z-index: 2;
     }
 
-    /* Ensure header content scales well on different screens */
     header h1 {
       font-size: 3rem;
     }
@@ -61,7 +63,7 @@ layout: none
     /* Responsive adjustments */
     @media (max-width: 768px) {
       header {
-        background-attachment: scroll; /* fallback for mobile */
+        background-attachment: scroll;
         height: 70vh;
       }
 
@@ -91,17 +93,7 @@ layout: none
 </head>
 
 <body>
-  <!-- Navigation Bar -->
-  <nav id="navbar">
-    <div class="mobile-nav-toggle"><i class="fas fa-bars"></i></div>
-    <div class="nav-links">
-      <a href="#about">À Propos</a>
-      <a href="#gallery-section">Photos</a>
-      <a href="#amenities">Équipements</a>
-      <a href="#pets">Animaux</a>
-      <a href="#booking">Réserver</a>
-    </div>
-  </nav>
+  {% include navbar.html %}
 
   <!-- Header Section with Parallax -->
   <header>
@@ -127,8 +119,8 @@ layout: none
   <!-- Amenities Section (included via Liquid) -->
   {% include amenities.html %}
 
- <!-- Footer Section (included via Liquid)-->
-   {% include footer.html %}
+  <!-- Footer Section (included via Liquid)-->
+  {% include footer.html %}
 
   <!-- FULLSCREEN CAROUSEL OVERLAY -->
   <div id="carouselOverlay" class="carousel-overlay">
@@ -185,25 +177,6 @@ layout: none
       if (e.target === carouselOverlay) {
         closeCarousel();
       }
-    });
-
-    const navbar = document.getElementById("navbar");
-    const header = document.querySelector("header");
-
-    window.addEventListener("scroll", function() {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      if (scrollTop >= header.offsetHeight) {
-        navbar.classList.add("nav-hidden");
-      } else {
-        navbar.classList.remove("nav-hidden");
-      }
-    });
-
-    document.addEventListener("DOMContentLoaded", function() {
-      const mobileToggle = document.querySelector(".mobile-nav-toggle");
-      mobileToggle.addEventListener("click", function() {
-        navbar.classList.toggle("nav-open");
-      });
     });
   </script>
 </body>
