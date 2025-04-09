@@ -42,6 +42,7 @@
     .header {
       text-align: center;
       margin-bottom: 2rem;
+      position: relative;
     }
     
     .card {
@@ -54,15 +55,20 @@
     
     .welcome-message {
       text-align: center;
-      margin-bottom: 2rem;
+      margin: 2rem auto;
       font-size: 1.1rem;
       color: var(--dark-color);
+      max-width: 80%;
+      line-height: 1.8;
+      padding: 1.5rem;
+      background-color: rgba(163, 177, 138, 0.1);
+      border-radius: var(--border-radius);
     }
     
     h1 {
       color: var(--primary-color);
       font-size: 2.2rem;
-      margin-bottom: 0.5rem;
+      margin: 1rem 0;
       font-weight: 700;
       position: relative;
       display: inline-block;
@@ -147,9 +153,73 @@
       border-radius: var(--border-radius);
     }
     
-    .logo {
-      font-size: 2rem;
-      margin-bottom: 1rem;
+    /* New styles for improved header */
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1rem 0 2rem;
+    }
+    
+    .logo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 1.5rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .logo-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .logo-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(88, 129, 87, 0.3);
+    }
+    
+    .logo-text {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--dark-color);
+    }
+    
+    .header-banner {
+      background: linear-gradient(135deg, rgba(58, 90, 64, 0.9), rgba(88, 129, 87, 0.8)), url('https://cdnjs.cloudflare.com/ajax/libs/placeholder-pics/1.jpg');
+      background-size: cover;
+      background-position: center;
+      padding: 2rem;
+      margin: -2.5rem -2.5rem 2rem;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+    
+    .header-title {
+      color: white;
+      margin-bottom: 0;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .header-title::after {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .header-subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+      font-weight: 300;
     }
     
     @media (min-width: 768px) {
@@ -171,6 +241,25 @@
         margin-left: 0;
         margin-top: 0.5rem;
       }
+      
+      .logo-container {
+        flex-wrap: wrap;
+      }
+      
+      .logo-item {
+        margin: 0.5rem;
+      }
+      
+      .logo-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+      }
+      
+      .header-banner {
+        padding: 1.5rem;
+        margin: -1.5rem -1.5rem 1.5rem;
+      }
     }
   </style>
 </head>
@@ -179,10 +268,33 @@
   <div class="container">
     <div class="card">
       <div class="header">
-        <div class="logo">
-          <i class="fas fa-hot-tub"></i> <i class="fas fa-fox"></i> <i class="fas fa-tree"></i>
+        <div class="header-banner">
+          <h1 class="header-title">Spa - Bienvenue au Renard</h1>
+          <p class="header-subtitle">Détente et sérénité au cœur de la nature</p>
         </div>
-        <h1>Spa - Bienvenue au Renard !</h1>
+        
+        <div class="logo-container">
+          <div class="logo-item">
+            <div class="logo-icon">
+              <i class="fas fa-hot-tub"></i>
+            </div>
+            <span class="logo-text">Spa Relaxant</span>
+          </div>
+          
+          <div class="logo-item">
+            <div class="logo-icon">
+              <i class="fas fa-fox"></i>
+            </div>
+            <span class="logo-text">Le Renard</span>
+          </div>
+          
+          <div class="logo-item">
+            <div class="logo-icon">
+              <i class="fas fa-tree"></i>
+            </div>
+            <span class="logo-text">Pleine Nature</span>
+          </div>
+        </div>
       </div>
       
       <p class="welcome-message">
