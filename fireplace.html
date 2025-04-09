@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foyer - Bienvenue au Renard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
+  <style>
+    :root {
+      --primary-color: #3a5a40;
+      --secondary-color: #588157;
+      --accent-color: #a3b18a;
+      --light-color: #f8f9fa;
+      --dark-color: #333;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --border-radius: 12px;
+    }
+    body {
+      font-family: "Montserrat", sans-serif;
+      background-color: var(--light-color);
+      color: var(--dark-color);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .card {
+      background-color: #fff;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+    }
+    .header-banner {
+      background: linear-gradient(135deg, rgba(58, 90, 64, 0.9), rgba(88, 129, 87, 0.8));
+      padding: 2rem;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+      color: white;
+      text-align: center;
+    }
+    .welcome-message {
+      background-color: rgba(163, 177, 138, 0.1);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      margin: 2rem auto;
+      text-align: center;
+    }
+    h1, h2 { margin-bottom: 1rem; }
+    .tips-container {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    .tip-item {
+      background-color: rgba(163, 177, 138, 0.1);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      border-left: 4px solid var(--accent-color);
+    }
+    .tip-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .tip-icon {
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      background-color: rgba(88, 129, 87, 0.1);
+      border-radius: 50%;
+      height: 40px;
+      width: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--primary-color);
+    }
+    .farewell {
+      text-align: center;
+      font-style: italic;
+      background-color: rgba(163, 177, 138, 0.1);
+      padding: 1rem;
+      border-radius: var(--border-radius);
+    }
+  </style>
+</head>
+<body>
+{% include navbar.html %}
+<div class="container">
+  <div class="card">
+    <div class="header-banner">
+      <h1>Foyer - Bienvenue au Renard</h1>
+      <p>Détente et chaleur au cœur de la nature</p>
+    </div>
+    <p class="welcome-message">Nous sommes vraiment heureux de vous accueillir. Merci d'avoir choisi notre chalet pour passer un peu de temps en nature.</p>
+    <h2>Conseils pour profiter du foyer</h2>
+    <div class="tips-container">
+      <div class="tip-item">
+        <div class="tip-header">
+          <div class="tip-icon"><i class="fas fa-fire"></i></div>
+          <h3>Réglage de la manivelle</h3>
+        </div>
+        <p>Placez la manivelle devant la lettre « H » pour un allumage rapide et efficace. Évitez la lettre « L » pour une combustion propre.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-header">
+          <div class="tip-icon"><i class="fas fa-shopping-cart"></i></div>
+          <h3>Approvisionnement</h3>
+        </div>
+        <p>Papier, bois d’allumage et briquets disponibles à 4 minutes du chalet : <a href="https://bit.ly/42rbVM8">Voir la carte</a>.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-header">
+          <div class="tip-icon"><i class="fas fa-wood"></i></div>
+          <h3>Bois fourni</h3>
+        </div>
+        <p>Bois fourni pendant tout votre séjour, sauf le bois d’allumage.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-header">
+          <div class="tip-icon"><i class="fas fa-fire-extinguisher"></i></div>
+          <h3>En cas d'urgence</h3>
+        </div>
+        <p>Extincteur à droite du foyer. Une poubelle métallique extérieure est prévue pour les cendres froides.</p>
+      </div>
+    </div>
+    <div class="farewell">
+      <p>Merci d'avoir lu ces conseils. Excellent séjour et n'hésitez pas à nous contacter pour toute question.</p>
+    </div>
+  </div>
+</div>
+{% include footer.html %}
+</body>
+</html>
+
