@@ -1,0 +1,32 @@
+<nav id="navbar">
+  <div class="mobile-nav-toggle"><i class="fas fa-bars"></i></div>
+  <div class="nav-links">
+    <a href="#about">À Propos</a>
+    <a href="#gallery-section">Photos</a>
+    <a href="#amenities">Équipements</a>
+    <a href="#pets">Animaux</a>
+    <a href="#booking">Réserver</a>
+  </div>
+</nav>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const navbar = document.getElementById("navbar");
+    const header = document.querySelector("header");
+
+    // Mobile navigation toggle event
+    const mobileToggle = document.querySelector(".mobile-nav-toggle");
+    mobileToggle.addEventListener("click", function() {
+      navbar.classList.toggle("nav-open");
+    });
+
+    // Scroll event to hide or show the navbar based on header height
+    window.addEventListener("scroll", function() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      if (header && scrollTop >= header.offsetHeight) {
+        navbar.classList.add("nav-hidden");
+      } else {
+        navbar.classList.remove("nav-hidden");
+      }
+    });
+  });
+</script>
