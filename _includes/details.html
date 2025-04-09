@@ -19,7 +19,8 @@
 }
 
 .details-box {
-    max-width: 1000px;
+    /* Removed max-width so that the container width matches the rest of the webpage */
+    width: 100%;
     margin: 0 auto;
     background-color: #ffffff;
     padding: 32px;
@@ -44,7 +45,7 @@
 }
 
 .amenity-item i {
-    color: #3a86ff;
+    color: #588157;
     font-size: 18px;
 }
 
@@ -57,9 +58,20 @@
 .pet-policy {
     display: flex;
     align-items: center;
-    margin-bottom: 16px;
     gap: 8px;
-    color: #4a4a4a;
+    /* The following color property is removed so that the icon color is not overridden */
+    /* color: #4a4a4a; */
+}
+
+.pet-policy i {
+    color: #588157;
+    font-size: 18px;
+}
+
+.pet-policy span {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
 }
 
 .location {
@@ -69,6 +81,11 @@
     font-size: 15px;
     color: #666;
     font-weight: 500;
+}
+
+.location i {
+    color: #588157;
+    font-size: 18px;
 }
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </style>
@@ -91,11 +108,11 @@
                 <i class="fas fa-hot-tub"></i>
                 <span class="amenity-text">Spa privé</span>
             </div>
-        </div>
-        
-        <div class="pet-policy">
-            <i class="fas fa-dog"></i>
-            <span>Chiens acceptés</span>
+            <!-- Moved the pet-policy item inside the same row to keep alignment consistent -->
+            <div class="amenity-item pet-policy">
+                <i class="fas fa-dog"></i>
+                <span>Chiens acceptés</span>
+            </div>
         </div>
         
         <div class="location">
