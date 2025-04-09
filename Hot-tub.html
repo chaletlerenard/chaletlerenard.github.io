@@ -1,5 +1,3 @@
----
----
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,59 +8,166 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
 
   <style>
+    :root {
+      --primary-color: #3a5a40;
+      --secondary-color: #588157;
+      --accent-color: #a3b18a;
+      --light-color: #f8f9fa;
+      --dark-color: #333;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --border-radius: 12px;
+    }
+    
     body {
       font-family: "Montserrat", sans-serif;
-      background-color: #f8f9fa;
-      color: #333;
+      background-color: var(--light-color);
+      color: var(--dark-color);
       margin: 0;
       padding: 0;
+      line-height: 1.6;
     }
+    
     .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem 1rem;
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
     }
-    .card {
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      padding: 2rem;
+    
+    .header {
+      text-align: center;
       margin-bottom: 2rem;
     }
-    h1, h2 {
-      color: #3a5a40;
+    
+    .card {
+      background-color: #fff;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 2.5rem;
+      margin-bottom: 2rem;
     }
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
+    
+    .welcome-message {
       text-align: center;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+      color: var(--dark-color);
     }
-    h2 {
-      font-size: 1.5rem;
-      margin-top: 1.5rem;
+    
+    h1 {
+      color: var(--primary-color);
+      font-size: 2.2rem;
       margin-bottom: 0.5rem;
+      font-weight: 700;
+      position: relative;
+      display: inline-block;
+      padding-bottom: 0.5rem;
     }
-    p {
-      line-height: 1.6;
-      margin-bottom: 1rem;
+    
+    h1::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      right: 25%;
+      height: 3px;
+      background-color: var(--accent-color);
+      border-radius: 2px;
     }
-    ul {
-      list-style: none;
-      padding-left: 0;
+    
+    h2 {
+      color: var(--secondary-color);
+      font-size: 1.6rem;
+      margin: 1.5rem 0;
+      text-align: center;
+      font-weight: 600;
     }
-    li {
-      margin-bottom: 1.5rem;
+    
+    .tips-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
     }
+    
+    .tip-item {
+      background-color: rgba(163, 177, 138, 0.1);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      border-left: 4px solid var(--accent-color);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .tip-item:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+    
+    .tip-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    
+    .tip-icon {
+      color: var(--primary-color);
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(88, 129, 87, 0.1);
+      border-radius: 50%;
+    }
+    
     .tip-title {
       font-weight: 600;
-      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+      color: var(--secondary-color);
+      margin: 0;
     }
-    @media (max-width: 480px) {
+    
+    .tip-content {
+      margin-left: 3.5rem;
+      color: var(--dark-color);
+    }
+    
+    .farewell {
+      font-style: italic;
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: rgba(163, 177, 138, 0.1);
+      border-radius: var(--border-radius);
+    }
+    
+    .logo {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    @media (min-width: 768px) {
+      .tips-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
       .card {
         padding: 1.5rem;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .tip-content {
+        margin-left: 0;
+        margin-top: 0.5rem;
       }
     }
   </style>
@@ -70,64 +175,122 @@
 <body>
   <div class="container">
     <div class="card">
-      <h1>Spa - Bienvenue au Renard ! 🏠 🦊🌲</h1>
-      <p>
-        Nous sommes vraiment heureux de vous accueillir. Merci d’avoir choisi notre chalet pour passer un peu de temps en nature !
+      <div class="header">
+        <div class="logo">
+          <i class="fas fa-hot-tub"></i> <i class="fas fa-fox"></i> <i class="fas fa-tree"></i>
+        </div>
+        <h1>Spa - Bienvenue au Renard !</h1>
+      </div>
+      
+      <p class="welcome-message">
+        Nous sommes vraiment heureux de vous accueillir. Merci d'avoir choisi notre chalet pour passer un peu de temps en nature !
       </p>
-      <h2>Voici quelques conseils pour profiter du spa</h2>
-      <ul>
-        <li>
-          <div class="tip-title">Température</div>
-          <p>
-            L’hiver, lorsqu’il fait très froid, il est préférable d’augmenter la température du spa à la température désirée environ une heure avant l’utilisation, le couvercle devant être fermé. Lorsque le spa aura atteint la température souhaitée, préparez-vous à vous relaxer.
+      
+      <h2>Conseils pour profiter du spa</h2>
+      
+      <div class="tips-container">
+        <div class="tip-item">
+          <div class="tip-header">
+            <div class="tip-icon">
+              <i class="fas fa-temperature-high"></i>
+            </div>
+            <h3 class="tip-title">Température</h3>
+          </div>
+          <p class="tip-content">
+            L'hiver, lorsqu'il fait très froid, il est préférable d'augmenter la température du spa à la température désirée environ une heure avant l'utilisation, le couvercle devant être fermé. Lorsque le spa aura atteint la température souhaitée, préparez-vous à vous relaxer.
           </p>
-        </li>
-        <li>
-          <div class="tip-title">Boissons</div>
-          <p>
-            Si vous désirez prendre un verre dans le spa, assurez-vous d’utiliser des verres en plastique. Vous trouverez des coupes et des verres en plastique dans les armoires situées juste au-dessus de l’évier de la cuisine. Des supports pour les verres, de couleur orange, sont également installés sur les parois extérieures du spa.
+        </div>
+        
+        <div class="tip-item">
+          <div class="tip-header">
+            <div class="tip-icon">
+              <i class="fas fa-wine-glass-alt"></i>
+            </div>
+            <h3 class="tip-title">Boissons</h3>
+          </div>
+          <p class="tip-content">
+            Si vous désirez prendre un verre dans le spa, assurez-vous d'utiliser des verres en plastique. Vous trouverez des coupes et des verres en plastique dans les armoires situées juste au-dessus de l'évier de la cuisine. Des supports pour les verres, de couleur orange, sont également installés sur les parois extérieures du spa.
           </p>
-        </li>
-        <li>
-          <div class="tip-title">Avant usage</div>
-          <p>
-            Veuillez prendre une petite douche rapide avant d’entrer dans le spa. Il n’est pas nécessaire d’utiliser du savon. Cette précaution assurera que l’eau demeure cristalline pendant tout votre séjour.
+        </div>
+        
+        <div class="tip-item">
+          <div class="tip-header">
+            <div class="tip-icon">
+              <i class="fas fa-shower"></i>
+            </div>
+            <h3 class="tip-title">Avant usage</h3>
+          </div>
+          <p class="tip-content">
+            Veuillez prendre une petite douche rapide avant d'entrer dans le spa. Il n'est pas nécessaire d'utiliser du savon. Cette précaution assurera que l'eau demeure cristalline pendant tout votre séjour.
           </p>
-        </li>
-        <li>
-          <div class="tip-title">Après usage</div>
-          <p>
-            Une fois que vous avez fini d’utiliser le spa, ajustez la température à 98 degrés, replacez le flotteur de plastique dans l’eau et refermez le couvercle avec l’élastique. Veuillez noter que, sans cet élastique, le couvercle risque de s’ouvrir en cas de vent fort.
+        </div>
+        
+        <div class="tip-item">
+          <div class="tip-header">
+            <div class="tip-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="tip-title">Après usage</h3>
+          </div>
+          <p class="tip-content">
+            Une fois que vous avez fini d'utiliser le spa, ajustez la température à 98 degrés, replacez le flotteur de plastique dans l'eau et refermez le couvercle avec l'élastique. Veuillez noter que, sans cet élastique, le couvercle risque de s'ouvrir en cas de vent fort.
           </p>
-        </li>
-        <li>
-          <div class="tip-title">Hiver – sécurité</div>
-          <p>
+        </div>
+        
+        <div class="tip-item">
+          <div class="tip-header">
+            <div class="tip-icon">
+              <i class="fas fa-snowflake"></i>
+            </div>
+            <h3 class="tip-title">Hiver – sécurité</h3>
+          </div>
+          <p class="tip-content">
             Pour assurer votre sécurité en hiver, évitez les zones sous le toit susceptibles de recevoir des chutes de neige ou de glace, notamment lors des périodes de dégel.
           </p>
-        </li>
-        <li>
-          <div class="tip-title">Hiver – chute d’eau</div>
-          <p>
-            En hiver, laissez le contrôle de la petite chute d’eau du spa en position ouverte afin d’éviter que le mécanisme ne gèle.
+        </div>
+        
+        <div class="tip-item">
+          <div class="tip-header">
+            <div class="tip-icon">
+              <i class="fas fa-water"></i>
+            </div>
+            <h3 class="tip-title">Hiver – chute d'eau</h3>
+          </div>
+          <p class="tip-content">
+            En hiver, laissez le contrôle de la petite chute d'eau du spa en position ouverte afin d'éviter que le mécanisme ne gèle.
           </p>
-        </li>
-        <li>
-          <div class="tip-title">Niveau d’eau</div>
-          <p>
-            Au moment de votre départ, le niveau d’eau du spa devrait être similaire à celui de votre arrivée. Si de nombreuses entrées et sorties ont eu lieu ou si vous êtes nombreux à utiliser le spa, le niveau d’eau peut baisser. Pour votre confort et pour éviter d’endommager le spa, le niveau d’eau doit toujours se situer bien au-dessus de l’entrée du filtre. Si le niveau a baissé, vous pouvez le rétablir rapidement en utilisant le boyau situé sous l’évier de la cuisine (l’entrée d’eau est identifiée par un ruban jaune). Il n’y a aucun danger en cas de léger dépassement.
+        </div>
+        
+        <div class="tip-item">
+          <div class="tip-header">
+            <div class="tip-icon">
+              <i class="fas fa-tint"></i>
+            </div>
+            <h3 class="tip-title">Niveau d'eau</h3>
+          </div>
+          <p class="tip-content">
+            Au moment de votre départ, le niveau d'eau du spa devrait être similaire à celui de votre arrivée. Si de nombreuses entrées et sorties ont eu lieu ou si vous êtes nombreux à utiliser le spa, le niveau d'eau peut baisser. Pour votre confort et pour éviter d'endommager le spa, le niveau d'eau doit toujours se situer bien au-dessus de l'entrée du filtre. Si le niveau a baissé, vous pouvez le rétablir rapidement en utilisant le boyau situé sous l'évier de la cuisine (l'entrée d'eau est identifiée par un ruban jaune). Il n'y a aucun danger en cas de léger dépassement.
           </p>
-        </li>
-        <li>
-          <div class="tip-title">Heures d’utilisation</div>
-          <p>
+        </div>
+        
+        <div class="tip-item">
+          <div class="tip-header">
+            <div class="tip-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <h3 class="tip-title">Heures d'utilisation</h3>
+          </div>
+          <p class="tip-content">
             Le spa est accessible 24 heures sur 24. Par respect pour les voisins, veuillez faire attention au niveau sonore, particulièrement après 21h30.
           </p>
-        </li>
-      </ul>
-      <p>
-        Merci d’avoir pris le temps de lire ces conseils. Nous vous souhaitons un excellent séjour ! Si vous avez des questions durant votre séjour, n’hésitez pas à nous en faire part. Nous nous ferons un plaisir d’y répondre.
-      </p>
+        </div>
+      </div>
+      
+      <div class="farewell">
+        <p>
+          Merci d'avoir pris le temps de lire ces conseils. Nous vous souhaitons un excellent séjour ! Si vous avez des questions durant votre séjour, n'hésitez pas à nous en faire part. Nous nous ferons un plaisir d'y répondre.
+        </p>
+      </div>
     </div>
   </div>
 
