@@ -232,6 +232,51 @@
       visibility: visible;
       opacity: 1;
     }
+    
+    /* New CSS for number inputs and traveler input container */
+    .number-input {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .number-input input[type="number"] {
+      text-align: center;
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      width: 60px;
+      font-size: 1rem;
+    }
+    .number-input button {
+      border: none;
+      background-color: var(--secondary-color);
+      color: white;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+    }
+    .number-input button:hover {
+      background-color: var(--primary-color);
+    }
+    .traveler-input {
+      padding: 1rem;
+      border-bottom: 1px solid var(--accent-color);
+    }
+    .traveler-input:last-child {
+      border-bottom: none;
+    }
+    @media (max-width: 480px) {
+      .number-input button {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+      .number-input input[type="number"] {
+        padding: 0.5rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -241,20 +286,33 @@
 
     <div class="traveler-section">
       <h3>Information sur les voyageurs</h3>
-      <label for="adults">Adultes</label>
-      <select id="adults" required>
-        <option value="">Sélectionner</option>
-      </select>
+      
+      <div class="traveler-input">
+        <label for="adults">Adultes</label>
+        <div class="number-input">
+          <button type="button" onclick="this.parentNode.querySelector('input').stepDown(); validateTravelerInfo(); validateForm();" aria-label="Réduire le nombre">−</button>
+          <input type="number" id="adults" min="1" value="1" required readonly>
+          <button type="button" onclick="this.parentNode.querySelector('input').stepUp(); validateTravelerInfo(); validateForm();" aria-label="Augmenter le nombre">+</button>
+        </div>
+      </div>
 
-      <label for="age_2_17">Enfants (2-17 ans)</label>
-      <select id="age_2_17" required>
-        <option value="">Sélectionner</option>
-      </select>
+      <div class="traveler-input">
+        <label for="age_2_17">Enfants (2-17 ans)</label>
+        <div class="number-input">
+          <button type="button" onclick="this.parentNode.querySelector('input').stepDown(); validateTravelerInfo(); validateForm();" aria-label="Réduire le nombre">−</button>
+          <input type="number" id="age_2_17" min="0" value="0" required readonly>
+          <button type="button" onclick="this.parentNode.querySelector('input').stepUp(); validateTravelerInfo(); validateForm();" aria-label="Augmenter le nombre">+</button>
+        </div>
+      </div>
 
-      <label for="age_0_2">Bébés (0-2 ans)</label>
-      <select id="age_0_2" required>
-        <option value="">Sélectionner</option>
-      </select>
+      <div class="traveler-input">
+        <label for="age_0_2">Bébés (0-2 ans)</label>
+        <div class="number-input">
+          <button type="button" onclick="this.parentNode.querySelector('input').stepDown(); validateTravelerInfo(); validateForm();" aria-label="Réduire le nombre">−</button>
+          <input type="number" id="age_0_2" min="0" value="0" required readonly>
+          <button type="button" onclick="this.parentNode.querySelector('input').stepUp(); validateTravelerInfo(); validateForm();" aria-label="Augmenter le nombre">+</button>
+        </div>
+      </div>
 
       <div id="travelerError" style="color: var(--error-color); font-size:0.9rem; display:none;"></div>
     </div>
@@ -326,7 +384,7 @@
     checkin: new Date().toISOString(),
     checkout: new Date(Date.now() + 7*24*60*60*1000).toISOString(),
     currentTotalPreTax: 1000,
-    guests: 2,
+    guests: 3,  // For demonstration, if not set this value is used.
     hasDog: false
   };
 
@@ -388,31 +446,12 @@
     return true;
   }
 
-  function updateTravelerOptions(){
-    const total = bookingData.guests;
-    const adults = document.getElementById("adults");
-    adults.innerHTML = '<option value="">Sélectionner</option>';
-    for(let i=1;i<=total;i++){
-      adults.innerHTML += `<option value="${i}">${i}</option>`;
-    }
-    const age2 = document.getElementById("age_2_17");
-    age2.innerHTML = '<option value="">Sélectionner</option>';
-    for(let i=0;i<=total-1;i++){
-      age2.innerHTML += `<option value="${i}">${i}</option>`;
-    }
-    const age0 = document.getElementById("age_0_2");
-    age0.innerHTML = '<option value="">Sélectionner</option>';
-    for(let i=0;i<=total-1;i++){
-      age0.innerHTML += `<option value="${i}">${i}</option>`;
-    }
-  }
-
   function validateTravelerInfo(){
-    const A = parseInt(document.getElementById("adults").value||"-1");
-    const B = parseInt(document.getElementById("age_2_17").value||"-1");
-    const C = parseInt(document.getElementById("age_0_2").value||"-1");
+    const A = parseInt(document.getElementById("adults").value || "-1");
+    const B = parseInt(document.getElementById("age_2_17").value || "-1");
+    const C = parseInt(document.getElementById("age_0_2").value || "-1");
     const err = document.getElementById("travelerError");
-    if(A<0||B<0||C<0){
+    if(A < 0 || B < 0 || C < 0){
       err.style.display="none";
       return false;
     }
@@ -454,18 +493,21 @@
     document.getElementById(id).addEventListener("input", validateForm);
   });
   emailInput.addEventListener("blur", ()=>{
-    emailTouched=true; validateEmail(); validateForm();
+    emailTouched = true; 
+    validateEmail(); 
+    validateForm();
   });
   emailInput.addEventListener("input", ()=>{
     if(emailTouched) validateEmail();
     validateForm();
   });
   phoneInput.addEventListener("blur", ()=>{
-    phoneTouched=true;
+    phoneTouched = true;
     if(iti.isValidNumber()){
       phoneInput.value = iti.getNumber(intlTelInputUtils.numberFormat.NATIONAL);
     }
-    validatePhone(); validateForm();
+    validatePhone(); 
+    validateForm();
   });
   phoneInput.addEventListener("input", ()=>{
     if(phoneTouched) validatePhone();
@@ -473,6 +515,7 @@
   });
   phoneInput.addEventListener("countrychange", validateForm);
 
+  // Updated event listeners for number inputs instead of dropdowns
   ["adults","age_2_17","age_0_2"].forEach(id=>{
     document.getElementById(id).addEventListener("change", ()=>{
       validateTravelerInfo();
@@ -484,8 +527,13 @@
 
   document.addEventListener("DOMContentLoaded", ()=>{
     setTimeout(()=>window.dispatchEvent(new Event("resize")),100);
-    updateTravelerOptions();
+    // Set the default values based on previous step:
+    document.getElementById("adults").value = bookingData.guests;
+    document.getElementById("age_2_17").value = 0;
+    document.getElementById("age_0_2").value = 0;
     updateSummary();
+    validateTravelerInfo();
+    validateForm();
   });
 
   function updateSummary(){
