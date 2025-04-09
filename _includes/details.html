@@ -1,54 +1,106 @@
 <style>
 #details {
-    padding: 24px 16px; /* Mobile-first: 24px Top/Bottom, 16px Left/Right */
+    padding: 28px 20px;
+    background-color: #f8f9fa;
 }
 
 /* Tablet and above */
 @media (min-width: 768px) {
     #details {
-        padding: 32px 24px; /* More space inside the box on larger screens */
-          }
+        padding: 36px 32px;
+    }
 }
 
 /* Desktop and larger screens */
 @media (min-width: 1024px) {
     #details {
-        padding: 40px 32px;
+        padding: 48px 40px;
     }
 }
 
 .details-box {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
+    background-color: #ffffff;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.amenities-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
-    background-color: #ffffff;
-    padding: 20px; /* Internal spacing of the box content */
-    border-radius: 0px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    gap: 24px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 24px;
 }
 
-.details-box p {
-    font-size: 16px;
-    margin: 0;
-    flex-basis: 100%;
+.amenity-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 16px;
 }
 
-.details-box .info {
-    display: inline-block;
-    margin: 0;
-    font-size: 16px;
+.amenity-item i {
+    color: #3a86ff;
+    font-size: 18px;
 }
+
+.amenity-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+}
+
+.pet-policy {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 8px;
+    color: #4a4a4a;
+}
+
+.location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: #666;
+    font-weight: 500;
+}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </style>
-
-<section id="details" class="details-box">
-  <p>
-    <span class="info"><strong>6 voyageurs</strong></span>
-    <span class="info"><strong>3 chambres</strong></span>
-    <span class="info"><strong>1.5 salles de bains</strong></span>
-    <span class="info"><strong>Spa privé</strong></span>
-  </p>
-  <p>Chiens acceptés</p>
-  <p>Orford, Québec</p>
+<section id="details">
+    <div class="details-box">
+        <div class="amenities-row">
+            <div class="amenity-item">
+                <i class="fas fa-user-friends"></i>
+                <span class="amenity-text">6 voyageurs</span>
+            </div>
+            <div class="amenity-item">
+                <i class="fas fa-bed"></i>
+                <span class="amenity-text">3 chambres</span>
+            </div>
+            <div class="amenity-item">
+                <i class="fas fa-bath"></i>
+                <span class="amenity-text">1.5 salles de bains</span>
+            </div>
+            <div class="amenity-item">
+                <i class="fas fa-hot-tub"></i>
+                <span class="amenity-text">Spa privé</span>
+            </div>
+        </div>
+        
+        <div class="pet-policy">
+            <i class="fas fa-dog"></i>
+            <span>Chiens acceptés</span>
+        </div>
+        
+        <div class="location">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Orford, Québec</span>
+        </div>
+    </div>
 </section>
