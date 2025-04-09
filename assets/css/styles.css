@@ -362,9 +362,16 @@ nav a:hover {
 
 footer {
   text-align: center;
-  padding: 20px;
+  padding: 2rem 1rem;
   background-color: #fff;
-  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 0.9rem;
+  color: #333;
+}
+
+footer a {
+  color: inherit;
+  text-decoration: underline;
 }
 
 .amenities-intro {
