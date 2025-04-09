@@ -85,12 +85,19 @@
       align-items: center;
       color: var(--primary-color);
     }
+    .tip-icon img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      filter: invert(25%) sepia(12%) saturate(962%) hue-rotate(60deg) brightness(97%) contrast(85%);
+    }
     .farewell {
       text-align: center;
       font-style: italic;
       background-color: rgba(163, 177, 138, 0.1);
       padding: 1rem;
       border-radius: var(--border-radius);
+      margin-top: 2rem;
     }
   </style>
 </head>
@@ -119,15 +126,15 @@
         </div>
         <p>Papier, bois d’allumage et briquets disponibles à 4 minutes du chalet : <a href="https://bit.ly/42rbVM8">Voir la carte</a>.</p>
       </div>
-     <div class="tip-item">
-  <div class="tip-header">
-    <div class="tip-icon">
-      <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pjxzdmcgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNjQgNjQ7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCA2NCA2NCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGcgaWQ9IkxheWVyXzIiLz48ZyBpZD0iTGF5ZXJfMyIvPjxnIGlkPSJMYXllcl80Ii8+PGcgaWQ9IkxheWVyXzUiLz48ZyBpZD0iTGF5ZXJfNiIvPjxnIGlkPSJMYXllcl83Ii8+PGcgaWQ9IkxheWVyXzgiLz48ZyBpZD0iTGF5ZXJfOSI+PGc+PHBhdGggZD0iTTU5LjIsMzAuOWgtMS4xYzEtMS42LDEuNi0zLjksMS42LTYuNmMwLTUtMi4xLTguOC00LjgtOC44SDEwLjdjLTIuOCwwLTQuOCwzLjgtNC44LDguOGMwLDIuNywwLjYsNSwxLjYsNi42SDQuOCAgICBjLTIuOCwwLTQuOCwzLjgtNC44LDguOHMyLjEsOC44LDQuOCw4LjhIMTZoNDMuMWMyLjgsMCw0LjgtMy44LDQuOC04LjhTNjEuOSwzMC45LDU5LjIsMzAuOXogTTU0LjgsMTcuN2MxLjEsMCwyLjYsMi42LDIuNiw2LjYgICAgYzAsNC0xLjUsNi42LTIuNiw2LjZIMTZoLTIuMWMwLDAsMC4xLTAuMSwwLjEtMC4yYzAuMS0wLjEsMC4xLTAuMiwwLjItMC4zYzAuMS0wLjEsMC4xLTAuMiwwLjItMC40ICAgIGMwLTAuMSwwLjEtMC4yLDAuMS0wLjNjMC0wLjEsMC4xLTAuMywwLjEtMC40YzAtMC4xLDAuMS0wLjIsMC4xLTAuNGMwLTAuMSwwLjEtMC4zLDAuMS0wLjRjMC0wLjEsMC4xLTAuMiwwLjEtMC40ICAgIGMwLTAuMiwwLjEtMC4zLDAuMS0wLjVjMC0wLjEsMC4xLTAuMiwwLjEtMC40YzAtMC4yLDAuMS0wLjMsMC4xLTAuNWMwLTAuMSwwLTAuMiwwLTAuNGMwLTAuMiwwLTAuNCwwLjEtMC42YzAtMC4xLDAtMC4yLDAtMC4zICAgIGMwLTAuMywwLTAuNiwwLTFjMC0wLjMsMC0wLjYsMC0xYzAtMC4xLDAtMC4yLDAtMC4zYzAtMC4yLDAtMC40LTAuMS0wLjZjMC0wLjEsMC0wLjIsMC0wLjRjMC0wLjIsMC0wLjMtMC4xLTAuNSAgICBjMC0wLjEsMC0wLjItMC4xLTAuNGMwLTAuMi0wLjEtMC4zLTAuMS0wLjVjMC0wLjEtMC4xLTAuMi0wLjEtMC40YzAtMC4xLTAuMS0wLjMtMC4xLTAuNGMwLTAuMS0wLjEtMC4yLTAuMS0wLjQgICAgYzAtMC4xLTAuMS0wLjMtMC4xLTAuNGMwLTAuMS0wLjEtMC4zLTAuMS0wLjQgICAgQzksMzUuMiw5LDM1LjEsOC45LDM1YzAtMC4xLTAuMS0wLjMtMC4xLTAuNGMwLTAuMS0wLjEtMC4yLTAuMS0wLjNjLTAuMS0wLjEtMC4xLTAuMi0wLjItMC40YzAtMC4xLTAuMS0wLjItMC4yLTAuM2MtMC4xLTAuMS0wLjEtMC4yLTAuMi0wLjMgICAgYzAtMC4xLTAuMS0wLjEtMC4xLTAuMkg1NC44eiBNMTguNiwzOS43YzAsNC0xLjYsNi42LTIuNiw2LjZzLTIuNi0yLjYtMi42LTYuNmMwLTQsMS41LTYuNiwyLjYtNi42aDAgICAgQzE3LjEsMzMuMSwxOC42LDM1LjcsMTguNiwzOS43eiBNOCwyNC4zYzAtNCwxLjYtNi42LDIuNi02LjZzMi42LDIuNiwyLjYsNi42YzAsNC0xLjUsNi42LTIuNiw2LjZoMEM5LjYsMzAuOSw4LDI4LjMsOCwyNC4zeiAgICAgTTIuMiwzOS43YzAtNCwxLjYtNi42LDIuNi02LjZzMi42LDIuNiwyLjYsNi42cy0xLjYsNi42LTIuNiw2LjZTMi4yLDQzLjgsMi4yLDM5Ljd6IE04LjIsNDYuMmMwLjEtMC4xLDAuMS0wLjIsMC4yLTAuMyAgICBjMC4xLTAuMSwwLjEtMC4yLDAuMi0wLjNjMC4xLTAuMSwwLjEtMC4yLDAuMi0wLjRjMC0wLjEsMC4xLTAuMiwwLjEtMC4zYzAtMC4xLDAuMS0wLjMsMC4xLTAuNGMwLTAuMSwwLjEtMC4yLDAuMS0wLjQgICAgYzAtMC4xLDAuMS0wLjMsMC4xLTAuNGMwLTAuMSwwLjEtMC4yLDAuMS0wLjNjMC0wLjEsMC4xLTAuMywwLjEtMC41YzAtMC4xLDAuMS0wLjIsMC4xLTAuNGMwLTAuMiwwLjEtMC4zLDAuMS0wLjUgICAgYzAtMC4xLDAtMC4yLDAtMC40YzAtMC4yLDAtMC40LDAuMS0wLjZjMC0wLjEsMC0wLjIsMC0wLjNjMC0wLjMsMC0wLjYsMC0xczAtMC42LDAtMWMwLTAuMSwwLTAuMiwwLTAuM2MwLTAuMiwwLTAuNC0wLjEtMC42ICAgIGMwLTAuMSwwLTAuMi0wLjEtMC40YzAtMC4yLTAuMS0wLjMtMC4xLTAuNWMwLTAuMS0wLjEtMC4yLTAuMS0wLjNjMC0wLjItMC4xLTAuMy0wLjEtMC41YzAtMC4xLTAuMS0wLjItMC4xLTAuMyAgICBjMC0wLjEtMC4xLTAuMy0wLjEtMC40YzAtMC4xLTAuMS0wLjItMC4xLTAuM2MtMC4xLTAuMS0wLjEtMC4zLTAuMi0wLjRjMC0wLjEtMC4xLTAuMi0wLjEtMC4zYy0wLjEtMC4xLTAuMS0wLjItMC4yLTAuMyAgICBjMCwwLTAuMS0wLjEtMC4xLTAuMWgzNS41YzAsMCwwLDAsMCwwaDQuM2MxLjEsMCwyLjYsMi42LDIuNiw2LjZTNjAuMiw0Ni4zLDU5LjIsNDYuM3oiLz48cGF0aCBkPSJNMTguMywyMS43aDYuM2wzLjYsMS4yYzAuMSwwLDAuMiwwLjEsMC4zLDAuMWMwLjIsMCwwLjMsMCwwLjUtMC4xbDIuNC0xLjFIMzdjMC42LDAsMS4xLTAuNSwxLjEtMS4xcy0wLjUtMS4xLTEuMS0xLjEgICAgaC01LjhjLTAuMiwwLTAuMywwLTAuNSwwLjFsLTIuMiwxLjFsLTMuMy0xLjFjLTAuMSwwLTAuMi0wLjEtMC4zLTAuMWgtNi41Yy0wLjYsMC0xLjEsMC41LTEuMSwxLjFTMTcuNywyMS43LDE4LjMsMjEuN3oiLz48cGF0aCBkPSJNNDMsMjEuN2g4LjdjMC42LDAsMS4xLTAuNSwxLjEtMS4xcy0wLjUtMS4xLTEuMS0xLjFINDNjLTAuNiwwLTEuMSwwLjUtMS4xLDEuMVM0Mi40LDIxLjcsNDMsMjEuN3oiLz48cGF0aCBkPSJNMTguMywyOC42SDMyYzAuNiwwLDEuMS0wLjUsMS4xLTEuMXMtMC41LTEuMS0xLjEtMS4xSDE4LjNjLTAuNiwwLTEuMSwwLjUtMS4xLDEuMVMxNy43LDI4LjYsMTguMywyOC42eiIvPjxwYXRoIGQ9Ik0zNS45LDI3LjRjMCwwLjYsMC41LDEuMSwxLjEsMS4xaDMuNmMwLjEsMCwwLjIsMCwwLjMsMGw0LjctMS40bDIuMSwxLjNjMC4yLDAuMSwwLjQsMC4yLDAuNiwwLjJoNC44ICAgIGMwLjYsMCwxLjEtMC41LDEuMS0xLjFzLTAuNS0xLjEtMS4xLTEuMWgtNC41bC0yLjMtMS40Yy0wLjMtMC4yLTAuNi0wLjItMC45LTAuMWwtNSwxLjVIMzdDMzYuNCwyNi4zLDM1LjksMjYuOCwzNS45LDI3LjR6Ii8+PHBhdGggZD0iTTIzLjgsMzcuNGg2LjMsMy42LDEuMmMwLjEsMCwwLjIsMC4xLDAuMywwLjFjMC4yLDAsMC4zLDAsMC41LTAuMWwyLjQtMS4xaDUuNWMwLjYsMCwxLjEtMC41LDEuMS0xLjFzLTAuNS0xLjEtMS4xLTEuMSAgICBoLTUuOGMtMC4yLDAtMC4zLDAtMC41LDAuMWwtMi4yLDEuMWwtMy4zLTEuMWMtMC4xLDAtMC4yLTAuMS0wLjMtMC4xaC02LjVjLTAuNiwwLTEuMSwwLjUtMS4xLDEuMVMyMy4yLDM3LjQsMjMuOCwzNy40eiIvPjxwYXRoIGQ9Ik00OC41LDM3LjRoOC43YzAuNiwwLDEuMS0wLjUsMS4xLTEuMXMtMC41LTEuMS0xLjEtMS4xaC04LjdjLTAuNiwwLTEuMSwwLjUtMS4xLDEuMVM0Ny45LDM3LjQsNDguNSwzNy40eiIvPjxwYXRoIGQ9Ik0zNy40LDQyLjFIMjMuOGMtMC42LDAtMS4xLDAuNS0xLjEsMS4xczAuNSwxLjEsMS4xLDEuMWgxMy43YzAuNiwwLDEuMS0wLjUsMS4xLTEuMVMzOCw0Mi4xLDM3LjQsNDIuMXoiLz48cGF0aCBkPSJNNTguNSw0Mi4xSDU0bC0yLjMtMS40Yy0wLjMtMC4yLTAuNi0wLjItMC45LTAuMWwtNSwxLjVoLTMuNGMtMC42LDAtMS4xLDAuNS0xLjEsMS4xcy0wLjUtMS4xLTEuMS0xLjEgICAgaC01LjhjLTAuMiwwLTAuMywwLTAuNSwwLjFsLTIuMiwxLjFsLTMzLTEuMTciLz48L2c+PC9nPjxnIGlkPSJMYXllcl8xMCIvPjxnIGlkPSJMYXllcl8xMSIvPjxnIGlkPSJMYXllcl8xMiIvPjxnIGlkPSJMYXllcl8xMyIvPjxnIGlkPSJMYXllcl8xNSIvPjxnIGlkPSJMYXllcl8xNiIvPjxnIGlkPSJMYXllcl8xNyIvPjxnIGlkPSJMYXllcl8xOCIvPjxnIGlkPSJMYXllcl8xOSIvPjxnIGlkPSJMYXllcl8yMCIvPjxnIGlkPSJMYXllcl8yMSIvPjxnIGlkPSJMYXllcl8yMiIvPjxnIGlkPSJMYXllcl8yMyIvPjxnIGlkPSJMYXllcl8yNCIvPjxnIGlkPSJMYXllcl8yNSIvPjxnIGlkPSJMYXllcl8yNiIvPjxnIGlkPSJMYXllcl8yNyIvPjwvc3ZnPg==" alt="wood icon" style="width: 100%; height: 100%;" />
-    </div>
-    <h3>Bois fourni</h3>
-  </div>
-  <p>Bois fourni pendant tout votre séjour, sauf le bois d’allumage.</p>
-</div>
+      <div class="tip-item">
+        <div class="tip-header">
+          <div class="tip-icon">
+            <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/...[your full base64 continues here]..." alt="wood icon" />
+          </div>
+          <h3>Bois fourni</h3>
+        </div>
+        <p>Bois fourni pendant tout votre séjour, sauf le bois d’allumage.</p>
+      </div>
       <div class="tip-item">
         <div class="tip-header">
           <div class="tip-icon"><i class="fas fa-fire-extinguisher"></i></div>
@@ -144,4 +151,3 @@
 {% include footer.html %}
 </body>
 </html>
-
